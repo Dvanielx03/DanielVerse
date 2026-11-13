@@ -23,15 +23,15 @@ const tecnologias = stack ? stack.split(' · ') : [];
   <div class="folio hoja">
     <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
 
-    <div class="web trazo">
+    <div class="web trazo se-traza">
       <div class="web__barra" aria-hidden="true"><i></i><i></i><i></i><b class="trazo"></b></div>
 
       <div class="web__cuerpo">
         <div
-          class="web__retrato"
+          class="web__retrato se-traza"
           role="img"
           aria-label={textos.altAvatar.boceto}
-          style={`background-image:url(${retrato.src})`}
+          style={`background-image:url(${retrato.src});--orden:2`}
         >
         </div>
         <div class="web__texto">
@@ -57,7 +57,7 @@ const tecnologias = stack ? stack.split(' · ') : [];
       <ul class="web__tarjetas" aria-hidden="true">
         {
           [1, 2, 3].map((numero) => (
-            <li class="trazo">
+            <li class="trazo se-traza" style={`--orden:${numero + 3}`}>
               <span class="mono">
                 {textos.proyecto} {numero}
               </span>
@@ -69,7 +69,7 @@ const tecnologias = stack ? stack.split(' · ') : [];
 
     {
       plano.nota && (
-        <p class="nota a-mano">
+        <p class="nota a-mano se-traza" style="--orden:9">
           {plano.nota[idioma]}
           <svg viewBox="0 0 64 30" aria-hidden="true">
             <path d="M3 20 C18 6 38 6 58 14 M46 5 L59 14 L45 23" />

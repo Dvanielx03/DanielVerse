@@ -30,19 +30,19 @@ const rodar = plano.lineas?.[idioma]?.[1];
     </div>
 
     <dl class="campos">
-      <div class="trazo">
+      <div class="trazo se-traza" style="--orden:1">
         <dt class="mono">{textos.campoEscena}</dt>
         <dd class="a-mano">0</dd>
       </div>
-      <div class="trazo">
+      <div class="trazo se-traza" style="--orden:2">
         <dt class="mono">{textos.campoToma}</dt>
         <dd class="a-mano">1</dd>
       </div>
-      <div class="trazo">
+      <div class="trazo se-traza" style="--orden:3">
         <dt class="mono">{textos.campoDireccion}</dt>
         <dd class="a-mano">Daniel Mayorga</dd>
       </div>
-      <div class="trazo">
+      <div class="trazo se-traza" style="--orden:4">
         <dt class="mono">{textos.campoIdioma}</dt>
         <dd class="a-mano">
           <span class="idioma-actual">{idioma.toUpperCase()}</span>
@@ -53,7 +53,7 @@ const rodar = plano.lineas?.[idioma]?.[1];
       </div>
     </dl>
 
-    <p class="rodar a-mano">
+    <p class="rodar a-mano se-traza" style="--orden:7">
       {rodar}
       <svg viewBox="0 0 28 48" aria-hidden="true">
         <path d="M14 3 C12 16 16 26 13 42 M5 33 L13 44 L22 32" />

@@ -72,6 +72,48 @@ a {
   border-radius: var(--radio-trazo);
 }
 
+/* En el plano que está en pantalla, lo dibujado se traza al entrar y luego tiembla:
+   el trazo cambia de forma cada dos fotogramas, como en animación dibujada. */
+@media (prefers-reduced-motion: no-preference) {
+  .con-motor .es-activo .se-traza {
+    animation: trazar var(--f8) steps(8, end) calc(var(--orden, 0) * var(--f2)) backwards;
+  }
+
+  .con-motor .es-activo .trazo {
+    animation: temblor calc(var(--f2) * 3) steps(1, end) infinite;
+  }
+
+  .con-motor .es-activo .trazo.se-traza {
+    animation:
+      trazar var(--f8) steps(8, end) calc(var(--orden, 0) * var(--f2)) backwards,
+      temblor calc(var(--f2) * 3) steps(1, end) infinite;
+  }
+}
+
+@keyframes trazar {
+  from {
+    clip-path: inset(-10% 100% -10% -10%);
+  }
+
+  to {
+    clip-path: inset(-10%);
+  }
+}
+
+@keyframes temblor {
+  0% {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+
+  33.4% {
+    border-radius: 215px 24px 255px 11px / 22px 255px 11px 215px;
+  }
+
+  66.7% {
+    border-radius: 240px 9px 195px 22px / 10px 195px 22px 240px;
+  }
+}
+
 .solo-lectores {
   position: absolute;
   width: 1px;
