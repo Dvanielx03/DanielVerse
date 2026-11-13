@@ -4,8 +4,18 @@ import type { Idioma } from '../datos/pelicula';
 import { codigoDeTiempo, type Entrada } from '../motor/tiempo';
 import Avatar from './arte/Avatar.astro';
 import Claqueta from './arte/Claqueta.astro';
+import Contacto from './arte/Contacto.astro';
 import Convencional from './arte/Convencional.astro';
+import Creditos from './arte/Creditos.astro';
+import Diptico from './arte/Diptico.astro';
+import Herramientas from './arte/Herramientas.astro';
+import Inspeccion from './arte/Inspeccion.astro';
+import Pared from './arte/Pared.astro';
+import Pixel from './arte/Pixel.astro';
+import Proyecto from './arte/Proyecto.astro';
+import Reto from './arte/Reto.astro';
 import Ruptura from './arte/Ruptura.astro';
+import Truco from './arte/Truco.astro';
 
 interface Props {
   entrada: Entrada;
@@ -16,6 +26,27 @@ const { entrada, idioma } = Astro.props;
 const { plano, escena, inicio } = entrada;
 const idTitulo = `titulo-${plano.id}`;
 const arte = plano.arte;
+
+// La puesta en escena de cada tipo de plano.
+const piezas = {
+  claqueta: Claqueta,
+  convencional: Convencional,
+  ruptura: Ruptura,
+  'avatar-boceto': Avatar,
+  'avatar-tinta': Avatar,
+  'avatar-final': Avatar,
+  reto: Reto,
+  pared: Pared,
+  proyecto: Proyecto,
+  diptico: Diptico,
+  inspeccion: Inspeccion,
+  truco: Truco,
+  herramientas: Herramientas,
+  pixel: Pixel,
+  creditos: Creditos,
+  contacto: Contacto,
+};
+const Pieza = arte ? piezas[arte] : undefined;
 ---
 
 <section
@@ -35,10 +66,7 @@ const arte = plano.arte;
       <span>{codigoDeTiempo(inicio)}</span>
     </p>
 
-    {arte === 'claqueta' && <Claqueta plano={plano} idioma={idioma} idTitulo={idTitulo} />}
-    {arte === 'convencional' && <Convencional plano={plano} idioma={idioma} idTitulo={idTitulo} />}
-    {arte === 'ruptura' && <Ruptura plano={plano} idioma={idioma} idTitulo={idTitulo} />}
-    {arte?.startsWith('avatar') && <Avatar plano={plano} idioma={idioma} idTitulo={idTitulo} />}
+    {Pieza && <Pieza plano={plano} idioma={idioma} idTitulo={idTitulo} />}
 
     {
       !arte && (
