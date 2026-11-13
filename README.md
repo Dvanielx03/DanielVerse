@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".github/assets/tarjeta.jpg" alt="DanielVerse: una hoja con f(t) y una claqueta a lápiz, el lema «Más allá de lo convencional» y el avatar de Daniel sobre la línea de tiempo de la película" width="100%">
+<a href="https://dvanielx03.github.io/DanielVerse/"><img src=".github/assets/tarjeta.jpg" alt="DanielVerse: una hoja con f(t) y una claqueta a lápiz, el lema «Más allá de lo convencional» en tintas magenta y cian, una ciudad de noche y el avatar de Daniel" width="100%"></a>
 
 # DanielVerse · f(t)
 
@@ -10,13 +10,17 @@
 [![TypeScript estricto](https://img.shields.io/badge/TypeScript-estricto-2456A6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 ![Animación con CSS y scroll](https://img.shields.io/badge/Animaci%C3%B3n-CSS%20%2B%20scroll-D8334A?style=flat-square)
 ![Sonido con Web Audio](https://img.shields.io/badge/Sonido-Web%20Audio-00A37A?style=flat-square)
+[![Desplegado en GitHub Pages](https://img.shields.io/badge/En%20vivo-GitHub%20Pages-FF2D6F?style=flat-square&logo=github&logoColor=white)](https://dvanielx03.github.io/DanielVerse/)
 ![Bilingüe](https://img.shields.io/badge/Idiomas-ES%20%C2%B7%20EN-1F2327?style=flat-square)
 
-[La idea](#la-idea) • [Capturas](#capturas) • [Las siete escenas](#las-siete-escenas) • [Cómo correrlo](#cómo-correrlo) • [Por dentro](#por-dentro) • [Estado](#estado)
+**[▶ Ver en vivo](https://dvanielx03.github.io/DanielVerse/)** • [La idea](#la-idea) • [Capturas](#capturas) • [Las siete escenas](#las-siete-escenas) • [Cómo correrlo](#cómo-correrlo) • [Por dentro](#por-dentro) • [Estado](#estado)
 
 </div>
 
-Soy Daniel Mayorga, desarrollador Backend Junior enfocado en IA. Este es mi portafolio: en vez de una página con tarjetas, una película de 3 minutos y 20 segundos que avanza cuando deslizas y se detiene cuando te detienes.
+Soy Daniel Mayorga, desarrollador Backend Junior enfocado en IA. Este es mi portafolio: en vez de una página con tarjetas, una película que avanza cuando deslizas y se detiene cuando te detienes.
+
+> [!TIP]
+> Está publicado en **[dvanielx03.github.io/DanielVerse/](https://dvanielx03.github.io/DanielVerse/)**. Mejor en un computador, con el sonido encendido (tecla <kbd>S</kbd>).
 
 ## La idea
 
@@ -41,22 +45,26 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
     <td width="50%"><img src=".github/assets/02-lo-convencional.jpg" alt="Escena 1: el portafolio de siempre bocetado a lápiz, con nombre, tecnologías, enlaces y tres tarjetas vacías"><br><sub><b>1 · Lo convencional.</b> El portafolio de siempre, a lápiz.</sub></td>
   </tr>
   <tr>
-    <td><img src=".github/assets/03-ruptura.jpg" alt="La ruptura: la hoja agrietada resulta ser una viñeta más de una pared con los 25 planos de la película"><br><sub><b>1 · La ruptura.</b> La hoja rota era una viñeta de la pared de storyboard.</sub></td>
-    <td><img src=".github/assets/04-quien.jpg" alt="Escena 2: el avatar de Daniel en su pasada final, con el selector de pasadas boceto, tinta y final"><br><sub><b>2 · Quién.</b> El avatar en tres pasadas, con selector.</sub></td>
+    <td><img src=".github/assets/03-ruptura.jpg" alt="La ruptura: la hoja agrietada resulta ser una viñeta más de una pared con los 25 planos, sobre la ciudad de noche"><br><sub><b>1 · La ruptura.</b> La hoja rota era una viñeta de la pared de storyboard.</sub></td>
+    <td><img src=".github/assets/04-transicion.jpg" alt="Una transición a medio camino: un tajo en diagonal con bordes magenta y cian deja entrar la escena siguiente"><br><sub><b>Transición.</b> Cada sección entra a su manera; esta, con un tajo.</sub></td>
   </tr>
   <tr>
-    <td><img src=".github/assets/05-retos.jpg" alt="Escena 3: el reto «El campus bajo presión» con un esquema de salas que se dibuja con el scroll"><br><sub><b>3 · Retos.</b> Los esquemas se dibujan mientras deslizas.</sub></td>
-    <td><img src=".github/assets/06-diptico.jpg" alt="Escena 4: la pantalla partida en papel y sala; a la izquierda la solución convencional tachada y a la derecha la propia"><br><sub><b>4 · Díptico.</b> Lo convencional, tachado; lo que hice, al lado.</sub></td>
+    <td><img src=".github/assets/05-quien.jpg" alt="Escena 2: el avatar de Daniel en su pasada final, con el selector de pasadas boceto, tinta y final"><br><sub><b>2 · Quién.</b> El avatar en tres pasadas, con selector.</sub></td>
+    <td><img src=".github/assets/06-retos.jpg" alt="Escena 3: el reto «Primer puesto» con un robot dibujado en líneas sobre la ciudad"><br><sub><b>3 · Retos.</b> Los esquemas se dibujan mientras deslizas.</sub></td>
   </tr>
   <tr>
-    <td><img src=".github/assets/07-inspeccion.jpg" alt="Escena 4: la mesa de inspección del proyecto XEON con la capa de arquitectura y el selector de capas"><br><sub><b>4 · Inspección.</b> Boceto, arquitectura y datos de cada proyecto.</sub></td>
-    <td><img src=".github/assets/08-contacto.jpg" alt="Escena 6: «Fin. ¿Rodamos la siguiente?» con los enlaces de contacto y el avatar"><br><sub><b>6 · Contacto.</b> El cierre de la película.</sub></td>
+    <td><img src=".github/assets/07-pared.jpg" alt="Escena 4: la pared con los tres proyectos iluminados, cada uno con su acceso directo a GitHub"><br><sub><b>4 · Proyectos.</b> Cada viñeta lleva a su escena y a su repositorio.</sub></td>
+    <td><img src=".github/assets/08-diptico.jpg" alt="Escena 4: la pantalla partida en papel y noche; a la izquierda la solución convencional tachada y a la derecha la propia"><br><sub><b>4 · Díptico.</b> Lo convencional, tachado; lo que hice, al lado.</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/assets/09-inspeccion.jpg" alt="Escena 4: la mesa de inspección del proyecto XEON con la capa de arquitectura y el selector de capas"><br><sub><b>4 · Inspección.</b> Boceto, arquitectura y datos de cada proyecto.</sub></td>
+    <td><img src=".github/assets/10-contacto.jpg" alt="Escena 6: «Fin. ¿Rodamos la siguiente?» con los enlaces de contacto y el avatar"><br><sub><b>6 · Contacto.</b> El cierre.</sub></td>
   </tr>
 </table>
 
-<img src=".github/assets/09-movil.jpg" alt="Cuatro planos de la película a tamaño de móvil: la claqueta, un díptico, una inspección y el avatar" width="100%">
+<img src=".github/assets/11-movil.jpg" alt="Cinco momentos a tamaño de móvil: la claqueta, la pared de proyectos con sus accesos a GitHub, un díptico, el avatar y el contacto" width="100%">
 
-<sub>La misma película a 360 px de ancho.</sub>
+<sub>La misma experiencia a 340 px de ancho.</sub>
 
 ## Las siete escenas
 
@@ -64,11 +72,11 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
 |---|---|---|---|
 | 0 | Claqueta | Una hoja sobre la mesa de luz. Eliges idioma y sonido. | Tono de sala y el golpe de la claqueta |
 | 1 | Lo convencional | El portafolio de siempre se agrieta, resulta ser una viñeta de la pared de storyboard y la pared cae. | Lápiz y papel; después, la primera descarga |
-| 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | Tensión, casi vacía |
+| 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | El tema, lento y apagado |
 | 3 | Retos | Cuatro hitos en montaje rápido. | Descarga |
-| 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas. | Atmósfera sin batería, para poder leer |
+| 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas, con acceso directo al código. | El tema apagado, para poder leer |
 | 5 | Detrás de cámaras | Cómo está hecha la película y mis herramientas propias. | Segunda descarga |
-| 6 | Créditos y contacto | Créditos que suben y un iris que cierra. | Un final cálido |
+| 6 | Créditos y contacto | Créditos que suben y un iris que cierra. | El tema, lejos |
 
 Son 25 planos. Con las flechas <kbd>←</kbd> <kbd>→</kbd> saltas de plano; con <kbd>S</kbd> enciendes o apagas el sonido.
 
@@ -135,16 +143,16 @@ src/
 
 En producción. Lo que hay y lo que falta, sin adornos:
 
-- **Hecho:** las siete escenas, el sonido, las dos versiones de idioma y la hoja de contacto como vía rápida.
+- **Hecho:** las siete escenas con sus transiciones, la música, las dos versiones de idioma, la hoja de contacto como vía rápida y la [publicación en GitHub Pages](https://dvanielx03.github.io/DanielVerse/), que se actualiza sola con cada cambio en `main`.
 - **Comprobado:** en Chromium de escritorio y a anchos de móvil desde 320 px.
-- **Pendiente:** publicarlo en una dirección propia, la capa «final» de cada proyecto con capturas reales, y probarlo en Firefox, Safari, un teléfono de verdad y con lector de pantalla.
+- **Pendiente:** la pista de resolución para los créditos, la capa «final» de cada proyecto con capturas reales, y probarlo en Firefox, Safari, un teléfono de verdad y con lector de pantalla.
 
 ## Créditos
 
 - **Tipografías:** [Recursive](https://www.recursive.design) y [Shantell Sans](https://shantellsans.com).
 - **Avatar:** generado con IA a partir de una foto real.
-- **Sonido:** efectos sintetizados con Web Audio.
-- **Lenguaje visual:** el del cine de animación que mezcla boceto, tinta, semitonos y color fuera de registro. No se usan personajes, arte ni música de terceros.
+- **Música:** original, generada con ElevenLabs. Los efectos se sintetizan con Web Audio.
+- **Lenguaje visual:** el del cómic impreso y el cine de animación que mezcla boceto, tinta, semitonos y color fuera de registro. No se usan personajes, arte ni música de terceros.
 
 Si quieres hablar: [LinkedIn](https://www.linkedin.com/in/daniel-santiago-mayorga-tellez-5bb0463a0/) · [GitHub](https://github.com/Dvanielx03)
 
@@ -155,9 +163,11 @@ Si quieres hablar: [LinkedIn](https://www.linkedin.com/in/daniel-santiago-mayorg
 
 **DanielVerse · f(t)** is the portfolio of Daniel Mayorga, a Junior Backend Developer focused on AI, built as a film whose playhead is your scroll.
 
-It opens as the usual portfolio, sketched in pencil. Your scroll breaks it, and the real film is behind: seven scenes, 25 shots, two worlds (paper and screening room), and every drawing shown as sketch, ink and final colour.
+It opens as the usual portfolio, sketched in pencil. Your scroll breaks it, and the real film is behind: seven scenes, 25 shots, a creative transition into each section, two worlds (paper and a night city in comic-print inks), and every drawing shown as sketch, ink and final colour.
 
-The site is static ([Astro](https://astro.build) and TypeScript) with no animation library. The engine writes one variable per shot, its progress from 0 to 1, and CSS does the rest. Sound is off by default and fully synthesised in the browser with Web Audio.
+The site is static ([Astro](https://astro.build) and TypeScript) with no animation library. The engine writes one variable per shot, its progress from 0 to 1, and CSS does the rest. Sound is off by default; the music is original and generated with ElevenLabs.
+
+See it live at **[dvanielx03.github.io/DanielVerse/](https://dvanielx03.github.io/DanielVerse/)**.
 
 Run it with `npm install` and `npm run dev`. The English version lives at `/en/`.
 
