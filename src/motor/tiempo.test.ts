@@ -4,7 +4,6 @@ import { test } from 'node:test';
 import { ESCENAS } from '../datos/pelicula.ts';
 import { codigoDeTiempo, construirIndice, inicioDe, limitar, localizar, reposoDe } from './tiempo.ts';
 
-
 const indice = construirIndice(ESCENAS);
 
 test('la película dura 25 pantallas y tiene 25 planos en 7 escenas', () => {

@@ -70,7 +70,6 @@ export function reposoDe(indice: Indice, id: string): number | undefined {
   return redondear(entrada.inicio + (entrada.plano.reposo ?? 0) * entrada.plano.pantallas);
 }
 
-
 /** Código de tiempo mm:ss:ff a 12 fps. */
 export function codigoDeTiempo(t: number): string {
   const fotogramas = Math.floor(Math.max(0, t) * SEGUNDOS_POR_PANTALLA * FPS + 1e-6);
