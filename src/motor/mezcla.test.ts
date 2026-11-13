@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ESCENAS, type Arte, type Plano } from '../datos/pelicula.ts';
-import { CAIDA_DE_LA_PARED, golpesEntre, mezclaDe } from './mezcla.ts';
+import { CAIDA_DE_LA_PARED, CAIDA_DEL_REEL, golpesEntre, mezclaDe } from './mezcla.ts';
 
 const planos = ESCENAS.flatMap((escena) => escena.planos);
 const plano = (id: string): Plano => {
@@ -63,5 +63,17 @@ test('los golpes caen al cruzar su punto hacia delante y nunca al rebobinar', ()
   assert.deepEqual(
     golpesEntre(plano('E4-X1'), -1, 0.01).map((g) => g.sonido),
     ['sello'],
+  );
+});
+
+test('el showreel llega con suspenso y cae con la descarga, como el merodeador', () => {
+  const reel = plano('E5-R1');
+  assert.equal(mezclaDe(plano('E5-P2'), 0.5).descarga, 0);
+  assert.equal(mezclaDe(reel, CAIDA_DEL_REEL / 2).descarga, 0);
+  assert.ok(mezclaDe(reel, CAIDA_DEL_REEL / 2).subida > 0);
+  assert.equal(mezclaDe(reel, CAIDA_DEL_REEL).descarga, 1);
+  assert.deepEqual(
+    golpesEntre(reel, 0.1, 0.2).map((g) => g.sonido),
+    ['golpe-grave'],
   );
 });

@@ -36,6 +36,8 @@ const SILENCIO: Mezcla = { sala: 0.6, papel: 0, tension: 0, descarga: 0, resoluc
 
 /** Cuándo cae la pared en la ruptura: ahí entra la primera descarga. */
 export const CAIDA_DE_LA_PARED = 0.64;
+/** Cuándo cae la descarga en el showreel: cuando su entrada ya terminó. */
+export const CAIDA_DEL_REEL = 0.16;
 /** En el primer plano de «Quién» la descarga se apaga antes de que haya que leer. */
 const APAGADO_EN_QUIEN = 0.4;
 
@@ -73,10 +75,17 @@ export function mezclaDe(plano: Plano, p: number): Mezcla {
       // Sin batería, para poder leer.
       return { ...base, tension: 0.85 };
     case 'truco':
-    case 'herramientas':
     case 'pixel':
       // Segunda descarga.
       return { ...base, tension: 0.5, descarga: 1 };
+    case 'herramientas':
+      // Vuelve el suspenso, para preparar la caída del showreel.
+      return { ...base, tension: 1 };
+    case 'reel':
+      // Suspenso que sube mientras llega el showreel; cae la descarga cuando arranca.
+      return avance < CAIDA_DEL_REEL
+        ? { ...base, tension: 1, subida: avance / CAIDA_DEL_REEL }
+        : { ...base, tension: 0.4, descarga: 1 };
     case 'creditos':
     case 'contacto':
       // Resolución: el tema vuelve lento y lejano, como unos créditos, con el suspenso debajo.
@@ -97,6 +106,7 @@ const GOLPES: Partial<Record<Arte, Golpe[]>> = {
   // El sello de la claqueta de proyecto cae 667 ms después de entrar el plano.
   proyecto: [{ en: 0, sonido: 'sello', retraso: 0.67 }],
   diptico: [{ en: 0.46, sonido: 'tacha' }],
+  reel: [{ en: CAIDA_DEL_REEL, sonido: 'golpe-grave' }],
 };
 
 /** Los golpes de un plano, en orden. */

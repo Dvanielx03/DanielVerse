@@ -6,9 +6,9 @@ import { codigoDeTiempo, construirIndice, inicioDe, limitar, localizar, reposoDe
 
 const indice = construirIndice(ESCENAS);
 
-test('la película dura 25 pantallas y tiene 25 planos en 7 escenas', () => {
-  assert.equal(indice.total, 25);
-  assert.equal(indice.entradas.length, 25);
+test('la película dura 27 pantallas y tiene 26 planos en 7 escenas', () => {
+  assert.equal(indice.total, 27);
+  assert.equal(indice.entradas.length, 26);
   assert.equal(ESCENAS.length, 7);
 });
 
@@ -27,12 +27,12 @@ test('localizar devuelve el plano y el avance correctos', () => {
   assert.deepEqual(pos(1.25), ['E1-P1', 0]);
   assert.deepEqual(pos(1.75), ['E1-P1', 0.5]);
   assert.deepEqual(pos(2.25), ['E1-P2', 0]);
-  assert.deepEqual(pos(25), ['E6-P2', 1]);
+  assert.deepEqual(pos(27), ['E6-P2', 1]);
 });
 
 test('los instantes fuera de rango se limitan', () => {
   assert.equal(limitar(indice, -3), 0);
-  assert.equal(limitar(indice, 99), 25);
+  assert.equal(limitar(indice, 99), 27);
   assert.equal(limitar(indice, Number.NaN), 0);
   assert.deepEqual(pos(-3), ['E0-P1', 0]);
   assert.deepEqual(pos(99), ['E6-P2', 1]);
@@ -45,11 +45,11 @@ test('inicioDe encuentra el arranque de cada plano', () => {
   assert.equal(inicioDe(indice, 'no-existe'), undefined);
 });
 
-test('el código de tiempo va a 12 fps y la película dura 3:20', () => {
+test('el código de tiempo va a 12 fps y la película dura 3:36', () => {
   assert.equal(codigoDeTiempo(0), '00:00:00');
   assert.equal(codigoDeTiempo(1 / 96), '00:00:01');
   assert.equal(codigoDeTiempo(1), '00:08:00');
-  assert.equal(codigoDeTiempo(25), '03:20:00');
+  assert.equal(codigoDeTiempo(27), '03:36:00');
 });
 
 test('cada plano tiene sus textos en los dos idiomas', () => {

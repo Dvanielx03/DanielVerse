@@ -31,6 +31,8 @@ export interface TextosInterfaz {
   capaDatos: string;
   capasAyuda: string;
   repositorios: string;
+  reelAlt: string;
+  reelPausa: string;
   herramientas: { motion: string; flow: string };
 }
 
@@ -68,6 +70,8 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     capaDatos: 'Datos',
     capasAyuda: 'Capas del plano',
     repositorios: 'Repositorios',
+    reelAlt: 'Showreel «Siete mundos»: video con IA, collage, 2D por código, Blender, Three.js, low-poly y UI en movimiento',
+    reelPausa: 'Pausar o seguir el showreel',
     herramientas: {
       motion: 'Skill para crear videos con HTML y JavaScript',
       flow: 'Skill de producción audiovisual para Google Flow',
@@ -106,6 +110,8 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     capaDatos: 'Facts',
     capasAyuda: 'Layers of this shot',
     repositorios: 'Repositories',
+    reelAlt: 'Showreel «Seven worlds»: AI video, collage, 2D in code, Blender, Three.js, low-poly and UI in motion',
+    reelPausa: 'Pause or resume the showreel',
     herramientas: {
       motion: 'A skill for making videos with HTML and JavaScript',
       flow: 'A video production skill for Google Flow',

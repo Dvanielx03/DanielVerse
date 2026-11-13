@@ -20,7 +20,8 @@ export type Arte =
   | 'herramientas'
   | 'pixel'
   | 'creditos'
-  | 'contacto';
+  | 'contacto'
+  | 'reel';
 export type Dibujo = 'robot' | 'campus' | 'vision' | 'acceso';
 export type Lista = Record<Idioma, string[]>;
 
@@ -52,6 +53,9 @@ export interface Plano {
   /** Proyectos: color de acento, pasos de cada lado del díptico y capas de arquitectura. */
   acento?: string;
   pasos?: { convencional: Lista; propio: Lista };
+  /** Showreel: en qué segundo del video empieza cada mundo, y dónde termina el último. */
+  capitulos?: { desde: number; nombre: Bilingue }[];
+  finCapitulos?: number;
   capas?: Lista;
 }
 
@@ -454,6 +458,29 @@ export const ESCENAS: Escena[] = [
           { etiqueta: { es: 'Motion Studio', en: 'Motion Studio' }, url: `${GITHUB}/motion-studio-design` },
           { etiqueta: { es: 'GoogleFlow Studio', en: 'GoogleFlow Studio' }, url: `${GITHUB}/googleflow-studio` },
         ],
+      },
+      {
+        id: 'E5-R1',
+        arte: 'reel',
+        nombre: { es: 'Siete mundos', en: 'Seven worlds' },
+        pantallas: 2,
+        reposo: 0.2,
+        mundo: 'sala',
+        titular: { es: 'Siete mundos', en: 'Seven worlds' },
+        lineas: {
+          es: ['Dirección creativa con IA y código', 'Cada historia pide su propio lenguaje.'],
+          en: ['Creative direction with AI and code', 'Every story asks for its own language.'],
+        },
+        capitulos: [
+          { desde: 4.6, nombre: { es: 'Video IA · Flow', en: 'AI video · Flow' } },
+          { desde: 10, nombre: { es: 'Collage · capas · paralaje', en: 'Collage · layers · parallax' } },
+          { desde: 15, nombre: { es: '2D por código', en: '2D in code' } },
+          { desde: 18.2, nombre: { es: 'Blender · capas · line art', en: 'Blender · layers · line art' } },
+          { desde: 24.5, nombre: { es: '2.5D · Three.js', en: '2.5D · Three.js' } },
+          { desde: 30, nombre: { es: 'Low-poly · 8 bits', en: 'Low-poly · 8-bit' } },
+          { desde: 35, nombre: { es: 'UI · HTML + código', en: 'UI · HTML + code' } },
+        ],
+        finCapitulos: 40,
       },
       {
         id: 'E5-P3',

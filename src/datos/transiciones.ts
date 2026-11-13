@@ -37,6 +37,7 @@ export const TRANSICION_POR_ARTE: Record<Arte, Transicion> = {
   pixel: 'semitono',
   creditos: 'iris',
   contacto: 'zoom',
+  reel: 'estallido',
 };
 
 /** El color que tiñe el aire de cada escena. */
