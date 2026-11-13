@@ -1,8 +1,20 @@
 // El sonido de la película, visto desde el motor: se enciende, se apaga y sigue al instante t.
 // Está apagado por defecto y la síntesis no se descarga hasta que el visitante la activa.
 
-import { TRANSICION_POR_ARTE } from '../datos/transiciones.ts';
-import { golpesEntre, mezclaDe } from './mezcla.ts';
+import { TRANSICION_POR_ARTE, type Transicion } from '../datos/transiciones.ts';
+import { golpesEntre, mezclaDe, type TipoGolpe } from './mezcla.ts';
+
+/** Cada transición suena como se ve. */
+const SONIDO_DE_TRANSICION: Record<Transicion, TipoGolpe | undefined> = {
+  corte: undefined,
+  tajo: 'tajo',
+  semitono: 'trama',
+  glitch: 'glitch',
+  vineta: 'papel',
+  estallido: 'impacto',
+  iris: 'iris',
+  zoom: 'zoom',
+};
 import type { Motor } from './sintesis.ts';
 import type { Entrada } from './tiempo.ts';
 
@@ -37,7 +49,8 @@ export function alInstante(entrada: Entrada, progreso: number): void {
     desde = -1;
     // Cada sección que llega con transición trae su soplo de aire.
     const arte = entrada.plano.arte;
-    if (arte && TRANSICION_POR_ARTE[arte] !== 'corte') motor.golpe({ en: 0, sonido: 'barrido' });
+    const sonido = arte ? SONIDO_DE_TRANSICION[TRANSICION_POR_ARTE[arte]] : undefined;
+    if (sonido) motor.golpe({ en: 0, sonido });
   }
   if (desde === undefined) return;
   for (const golpe of golpesEntre(entrada.plano, desde, progreso)) motor.golpe(golpe);
@@ -72,6 +85,12 @@ export async function alternarSonido(): Promise<boolean> {
 }
 
 // Con la pestaña oculta el audio se detiene; al volver, sigue.
+// Las piezas de la página piden efectos sueltos (cambiar de capa, por ejemplo) con un evento.
+window.addEventListener('danielverse:efecto', (evento) => {
+  const sonido = (evento as CustomEvent<TipoGolpe>).detail;
+  if (activo && motor && sonido) motor.golpe({ en: 0, sonido });
+});
+
 document.addEventListener('visibilitychange', () => {
   if (!activo || !contexto) return;
   if (document.hidden) void contexto.suspend();

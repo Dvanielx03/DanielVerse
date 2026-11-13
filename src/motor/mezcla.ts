@@ -21,7 +21,24 @@ export interface Mezcla {
   reverb: number;
 }
 
-export type TipoGolpe = 'claqueta' | 'rasgado' | 'golpe-grave' | 'golpe-suave' | 'barrido' | 'sello' | 'tacha';
+export type TipoGolpe =
+  | 'claqueta'
+  | 'rasgado'
+  | 'golpe-grave'
+  | 'golpe-suave'
+  | 'barrido'
+  | 'sello'
+  | 'tacha'
+  // Los sonidos de las transiciones y de los saltos de dimensión.
+  | 'tajo'
+  | 'trama'
+  | 'glitch'
+  | 'papel'
+  | 'impacto'
+  | 'iris'
+  | 'zoom'
+  | 'rebobinado'
+  | 'tic';
 
 /** Un sonido suelto que cae cuando el plano cruza un punto de su avance. */
 export interface Golpe {
@@ -96,6 +113,11 @@ export function mezclaDe(plano: Plano, p: number): Mezcla {
 }
 
 const GOLPES: Partial<Record<Arte, Golpe[]>> = {
+  // El dibujo se rebobina y cae la toma real, como un salto entre dimensiones.
+  contacto: [
+    { en: 0.15, sonido: 'rebobinado' },
+    { en: 0.3, sonido: 'impacto' },
+  ],
   claqueta: [{ en: 0.7, sonido: 'claqueta' }],
   ruptura: [
     { en: 0.42, sonido: 'rasgado' },

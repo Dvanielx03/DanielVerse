@@ -277,6 +277,62 @@ export function crearMotor(ctx: AudioContext): Motor {
         soplo(t, busGolpes, { f0: 2600, f1: 3900, q: 2.5, pico: 0.3, ataque: 0.02, caida: 0.16 });
         soplo(t + 0.21, busGolpes, { f0: 3700, f1: 2400, q: 2.5, pico: 0.3, ataque: 0.02, caida: 0.18 });
         break;
+      case 'tajo':
+        // Un corte de aire que cae de agudo a grave, con un filo metálico.
+        soplo(t, busGolpes, { f0: 5200, f1: 650, q: 2, pico: 0.55, ataque: 0.01, caida: 0.2 });
+        tono(t, busGolpes, { onda: 'triangle', f0: 2100, f1: 1300, pico: 0.12, caida: 0.22 });
+        break;
+      case 'trama':
+        // Una prensa de imprenta: golpecitos secos que se aceleran y un asiento final.
+        for (const [i, d] of [0, 0.07, 0.125, 0.17, 0.205, 0.235].entries()) {
+          soplo(t + d, busGolpes, { f0: 1400 + i * 250, q: 3, pico: 0.35, caida: 0.018 });
+        }
+        tono(t + 0.26, busGolpes, { f0: 140, f1: 70, pico: 0.4, caida: 0.16 });
+        break;
+      case 'glitch': {
+        // Una señal que se rompe: ráfagas cuadradas a alturas al azar, con huecos.
+        let d = 0;
+        for (let i = 0; i < 9; i++) {
+          const f = 260 + azar(t * 13 + i) * 1800;
+          tono(t + d, busGolpes, { onda: 'square', f0: f, f1: f * (0.6 + azar(i + t) * 0.8), pico: 0.09, ataque: 0.002, caida: 0.025 });
+          if (i % 3 === 0) soplo(t + d, busGolpes, { tipo: 'highpass', f0: 5000, pico: 0.25, caida: 0.012 });
+          d += 0.03 + azar(i * 7 + t) * 0.03;
+        }
+        break;
+      }
+      case 'papel':
+        // Una viñeta que se desliza sobre otra.
+        soplo(t, busGolpes, { f0: 700, f1: 2600, q: 0.9, pico: 0.3, ataque: 0.12, caida: 0.2 });
+        soplo(t + 0.27, busGolpes, { f0: 1800, q: 2, pico: 0.25, caida: 0.03 });
+        break;
+      case 'impacto':
+        // Un estallido de cómic: golpe grave, chasquido y cola.
+        tono(t, busGolpes, { f0: 130, f1: 38, barrido: 0.25, pico: 0.9, caida: 0.7 });
+        soplo(t, busGolpes, { tipo: 'highpass', f0: 2500, pico: 0.7, caida: 0.02 });
+        soplo(t, busGolpes, { tipo: 'lowpass', f0: 1400, f1: 120, pico: 0.55, caida: 0.5 });
+        break;
+      case 'iris':
+        // Una ola que se abre.
+        soplo(t, busGolpes, { f0: 220, f1: 1500, q: 1.2, pico: 0.4, ataque: 0.3, caida: 0.18 });
+        break;
+      case 'zoom':
+        // La cámara pasa de largo: el aire sube y vuelve a bajar.
+        soplo(t, busGolpes, { f0: 400, f1: 3400, q: 1.4, pico: 0.38, ataque: 0.16, caida: 0.12 });
+        soplo(t + 0.24, busGolpes, { f0: 3000, f1: 380, q: 1.4, pico: 0.3, ataque: 0.02, caida: 0.3 });
+        break;
+      case 'rebobinado':
+        // Un disco que se rebobina a mano: la aguja va y viene, cada vez más rápido.
+        for (const [i, [d, dur, sube]] of ([[0, 0.14, true], [0.15, 0.1, false], [0.26, 0.08, true], [0.35, 0.06, false], [0.42, 0.05, true]] as const).entries()) {
+          const [a, b] = sube ? [500, 2600] : [2600, 420];
+          soplo(t + d, busGolpes, { f0: a, f1: b, q: 5, pico: 0.42, ataque: 0.01, caida: dur });
+          tono(t + d, busGolpes, { onda: 'sawtooth', f0: a / 4, f1: b / 4, pico: 0.08 + i * 0.01, ataque: 0.005, caida: dur });
+        }
+        break;
+      case 'tic':
+        // Cambiar de capa: un clic de mesa de luz.
+        soplo(t, busGolpes, { tipo: 'highpass', f0: 3800, pico: 0.3, caida: 0.014 });
+        tono(t, busGolpes, { onda: 'triangle', f0: 1500, f1: 1100, pico: 0.12, caida: 0.03 });
+        break;
     }
   };
 
