@@ -4,6 +4,7 @@
 export type Idioma = 'es' | 'en';
 export type Mundo = 'papel' | 'sala';
 export type Bilingue = Record<Idioma, string>;
+export type Arte = 'claqueta' | 'convencional' | 'ruptura' | 'avatar-boceto' | 'avatar-tinta' | 'avatar-final';
 
 export interface Enlace {
   etiqueta: Bilingue;
@@ -21,6 +22,10 @@ export interface Plano {
   nota?: Bilingue;
   sello?: Bilingue;
   enlaces?: Enlace[];
+  /** Puesta en escena propia del plano. Sin ella, se usa la composición tipográfica. */
+  arte?: Arte;
+  /** El plano entra con un fundido de cuatro fotogramas en vez de corte seco. */
+  fundido?: boolean;
 }
 
 export interface Escena {
@@ -51,6 +56,7 @@ export const ESCENAS: Escena[] = [
         nombre: { es: 'Claqueta', en: 'Slate' },
         pantallas: 1.25,
         mundo: 'papel',
+        arte: 'claqueta',
         titular: { es: 'f(t)', en: 'f(t)' },
         lineas: {
           es: ['Escena 0 · Toma 1', 'Desliza para rodar'],
@@ -68,6 +74,7 @@ export const ESCENAS: Escena[] = [
         nombre: { es: 'El portafolio de siempre', en: 'The usual portfolio' },
         pantallas: 1,
         mundo: 'papel',
+        arte: 'convencional',
         titular: { es: 'Daniel Mayorga', en: 'Daniel Mayorga' },
         lineas: {
           es: ['Desarrollador Backend Junior enfocado en IA', 'Java · Spring Boot · Python · FastAPI · PostgreSQL'],
@@ -81,6 +88,7 @@ export const ESCENAS: Escena[] = [
         nombre: { es: 'La ruptura', en: 'The break' },
         pantallas: 1,
         mundo: 'sala',
+        arte: 'ruptura',
         titular: { es: 'Más allá de lo convencional', en: 'Beyond the conventional' },
       },
     ],
@@ -94,6 +102,8 @@ export const ESCENAS: Escena[] = [
         nombre: { es: 'Boceto', en: 'Sketch' },
         pantallas: 1,
         mundo: 'sala',
+        arte: 'avatar-boceto',
+        fundido: true,
         lineas: {
           es: ['Soy Daniel, desarrollador Backend Junior enfocado en IA, apasionado por la tecnología y la creación de soluciones.'],
           en: ["I'm Daniel, a Junior Backend Developer focused on AI, passionate about technology and building solutions."],
@@ -104,6 +114,8 @@ export const ESCENAS: Escena[] = [
         nombre: { es: 'Tinta', en: 'Ink' },
         pantallas: 1,
         mundo: 'sala',
+        arte: 'avatar-tinta',
+        fundido: true,
         lineas: {
           es: ['Veo cada reto como una oportunidad para aprender, explorar nuevas ideas y hacer las cosas de manera diferente.'],
           en: ['I see every challenge as a chance to learn, explore new ideas and do things differently.'],
@@ -114,6 +126,8 @@ export const ESCENAS: Escena[] = [
         nombre: { es: 'Final', en: 'Final' },
         pantallas: 1,
         mundo: 'sala',
+        arte: 'avatar-final',
+        fundido: true,
         lineas: {
           es: ['Me caracterizo por mi iniciativa, mentalidad positiva y creatividad para aportar valor a cada proyecto en el que participo.'],
           en: ['I bring initiative, a positive mindset and creativity to add value to every project I take part in.'],

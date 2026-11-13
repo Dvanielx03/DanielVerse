@@ -12,6 +12,13 @@ export interface TextosInterfaz {
   codigoDeTiempo: string;
   hojaTitulo: string;
   hojaIntro: string;
+  campoEscena: string;
+  campoToma: string;
+  campoDireccion: string;
+  campoIdioma: string;
+  proyecto: string;
+  pasada: string;
+  altAvatar: { boceto: string; tinta: string; final: string };
 }
 
 export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
@@ -25,6 +32,17 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     codigoDeTiempo: 'Código de tiempo',
     hojaTitulo: 'Hoja de contacto',
     hojaIntro: 'Todos los planos de la película, a la vista.',
+    campoEscena: 'Escena',
+    campoToma: 'Toma',
+    campoDireccion: 'Dirección',
+    campoIdioma: 'Idioma',
+    proyecto: 'Proyecto',
+    pasada: 'Pasada',
+    altAvatar: {
+      boceto: 'Boceto a lápiz azul de Daniel con los brazos cruzados',
+      tinta: 'El mismo dibujo de Daniel pasado a tinta',
+      final: 'Ilustración final de Daniel con los brazos cruzados, sobre fondo oscuro',
+    },
   },
   en: {
     titulo: 'Daniel Mayorga · f(t)',
@@ -36,5 +54,16 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     codigoDeTiempo: 'Timecode',
     hojaTitulo: 'Contact sheet',
     hojaIntro: 'Every shot in the film, at a glance.',
+    campoEscena: 'Scene',
+    campoToma: 'Take',
+    campoDireccion: 'Director',
+    campoIdioma: 'Language',
+    proyecto: 'Project',
+    pasada: 'Pass',
+    altAvatar: {
+      boceto: 'Blue pencil sketch of Daniel with his arms crossed',
+      tinta: 'The same drawing of Daniel in ink',
+      final: 'Final illustration of Daniel with his arms crossed, on a dark background',
+    },
   },
 };

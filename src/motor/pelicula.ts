@@ -19,8 +19,8 @@ for (const el of document.querySelectorAll<HTMLElement>('[data-plano]')) {
 }
 
 const codigo = document.querySelector<HTMLElement>('[data-codigo]');
-const enlaceIdioma = document.querySelector<HTMLAnchorElement>('a[data-idioma]');
-const baseIdioma = enlaceIdioma?.getAttribute('href') ?? '';
+const enlacesIdioma = [...document.querySelectorAll<HTMLAnchorElement>('a[data-idioma]')];
+const baseIdioma = enlacesIdioma[0]?.getAttribute('href') ?? '';
 // La línea de tiempo nace con la ruptura: aparece al entrar en la escena 2.
 const nacimiento = inicioDe(indice, 'E2-P1') ?? 0;
 
@@ -66,7 +66,7 @@ function pintar(t: number): void {
       if (marcador.dataset.escenaMarcador === entrada.escena.id) marcador.setAttribute('aria-current', 'true');
       else marcador.removeAttribute('aria-current');
     }
-    if (enlaceIdioma) enlaceIdioma.href = `${baseIdioma}#${entrada.plano.id}`;
+    for (const enlace of enlacesIdioma) enlace.href = `${baseIdioma}#${entrada.plano.id}`;
     history.replaceState(null, '', `#${entrada.plano.id}`);
   }
 
