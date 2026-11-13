@@ -1,0 +1,251 @@
+---
+// E3 · Retos. Montaje rápido: cada plano entra y sale con un barrido ligado al scroll.
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const dibujo = plano.dibujo;
+---
+
+<div class="reto">
+  <p class="reto__fecha" aria-hidden="true">{plano.fecha}</p>
+
+  <div class="reto__texto">
+    <h2 id={idTitulo} class="reto__titular">{plano.titular?.[idioma]}</h2>
+    <ul class="reto__lineas">
+      {plano.lineas?.[idioma].map((linea) => <li>{linea}</li>)}
+    </ul>
+    {plano.sello && <p class="reto__sello">{plano.sello[idioma]}</p>}
+    {
+      plano.enlaces?.map((enlace) => (
+        <a class="reto__enlace" href={enlace.url}>
+          {enlace.etiqueta[idioma]}
+        </a>
+      ))
+    }
+  </div>
+
+  <svg class="reto__dibujo" viewBox="0 0 400 300" aria-hidden="true">
+    {
+      dibujo === 'robot' && (
+        <g>
+          <rect x="60" y="212" width="280" height="48" rx="24" />
+          <circle cx="96" cy="236" r="13" />
+          <circle cx="152" cy="236" r="13" />
+          <circle cx="208" cy="236" r="13" />
+          <circle cx="264" cy="236" r="13" />
+          <circle cx="312" cy="236" r="13" />
+          <rect x="112" y="140" width="176" height="72" rx="8" />
+          <line x1="170" y1="140" x2="170" y2="96" />
+          <rect class="acento" x="142" y="62" width="56" height="36" rx="8" />
+          <circle cx="170" cy="80" r="8" />
+          <path d="M288 164 L334 124 L358 146" />
+          <path d="M358 146 L372 132 M358 146 L374 156" />
+          <path class="acento" d="M228 140 L228 112 M218 112 L238 112" />
+        </g>
+      )
+    }
+    {
+      dibujo === 'campus' && (
+        <g>
+          {[0, 1, 2].flatMap((fila) =>
+            [0, 1, 2, 3].map((col) => (
+              <rect
+                class={(fila * 4 + col) % 5 === 1 ? 'lleno' : (fila * 4 + col) % 7 === 3 ? 'alerta' : undefined}
+                x={36 + col * 84}
+                y={48 + fila * 72}
+                width="72"
+                height="58"
+                rx="6"
+              />
+            )),
+          )}
+          <path class="acento" d="M36 276 L364 276" />
+        </g>
+      )
+    }
+    {
+      dibujo === 'vision' && (
+        <g>
+          <rect x="36" y="36" width="328" height="228" rx="8" />
+          <path d="M36 210 L120 150 L176 190 L250 120 L364 204" />
+          <circle cx="300" cy="84" r="18" />
+          <rect class="caja" x="92" y="118" width="96" height="92" />
+          <rect class="caja" x="222" y="92" width="86" height="118" />
+          <rect class="etiqueta" x="92" y="100" width="52" height="18" />
+          <rect class="etiqueta" x="222" y="74" width="52" height="18" />
+        </g>
+      )
+    }
+    {
+      dibujo === 'acceso' && (
+        <g>
+          <path d="M170 20 L200 56 L230 20" />
+          <rect x="124" y="56" width="152" height="212" rx="14" />
+          <rect x="182" y="68" width="36" height="10" rx="5" />
+          <circle cx="200" cy="130" r="30" />
+          <line x1="152" y1="188" x2="248" y2="188" />
+          <line x1="164" y1="210" x2="236" y2="210" />
+          <circle class="lleno" cx="282" cy="236" r="40" />
+          <path class="visto" d="M262 236 L277 252 L304 220" />
+        </g>
+      )
+    }
+  </svg>
+</div>
+
+<style>
+  /* Sin motor: el plano quieto en su sitio. */
+  .reto {
+    --entra: 1;
+    --sale: 0;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(16px, 4vw, 56px);
+    min-height: 0;
+  }
+
+  /* Barrido: entra desde la derecha y sale por la izquierda, a saltos de animación dibujada. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .reto {
+      --entra: round(up, clamp(0, calc(var(--p, 0) / 0.14), 1), 0.2);
+      --sale: round(down, clamp(0, calc((var(--p, 0) - 0.86) / 0.14), 1), 0.2);
+    }
+  }
+
+  .reto__texto,
+  .reto__dibujo {
+    transform: translateX(calc((1 - var(--entra)) * 70vw - var(--sale) * 70vw))
+      skewX(calc(((1 - var(--entra)) + var(--sale)) * -14deg));
+    opacity: calc(var(--entra) - var(--sale));
+  }
+
+  .reto__fecha {
+    position: absolute;
+    top: 50%;
+    right: -1vw;
+    z-index: -1;
+    font-size: clamp(6rem, 24vw, 20rem);
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 2px rgb(243 235 221 / 0.13);
+    translate: 0 -50%;
+  }
+
+  .reto__texto {
+    display: grid;
+    justify-items: start;
+    gap: clamp(12px, 2vw, 22px);
+    min-width: 0;
+  }
+
+  .reto__titular {
+    font-size: clamp(2.3rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    text-shadow:
+      -0.035em 0 var(--rojo-luz),
+      0.035em 0 var(--azul-luz);
+  }
+
+  .reto__lineas {
+    display: grid;
+    gap: 6px;
+    max-width: 46ch;
+    padding-left: 16px;
+    border-left: 3px solid var(--amarillo);
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    color: var(--texto-2);
+  }
+
+  .reto__sello {
+    padding: 5px 16px 4px;
+    border: 3px double var(--rojo-luz);
+    border-radius: 4px;
+    color: var(--rojo-luz);
+    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    rotate: -5deg;
+  }
+
+  .reto__enlace {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 18px;
+    background: var(--pantalla);
+    color: var(--sala);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .reto__enlace:hover {
+    background: var(--amarillo);
+  }
+
+  /* Esquemas en línea clara, con el amarillo para lo que importa. */
+  .reto__dibujo {
+    width: 100%;
+    max-height: 62svh;
+    fill: none;
+    stroke: var(--pantalla);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .reto__dibujo :global(.acento) {
+    stroke: var(--amarillo);
+  }
+
+  .reto__dibujo :global(.lleno) {
+    fill: var(--amarillo);
+    stroke: var(--amarillo);
+  }
+
+  .reto__dibujo :global(.alerta) {
+    stroke: var(--rojo-luz);
+    stroke-dasharray: 6 6;
+  }
+
+  .reto__dibujo :global(.caja) {
+    stroke: var(--amarillo);
+    stroke-dasharray: 8 6;
+  }
+
+  .reto__dibujo :global(.etiqueta) {
+    fill: var(--amarillo);
+    stroke: none;
+  }
+
+  .reto__dibujo :global(.visto) {
+    stroke: var(--sala);
+    stroke-width: 7;
+  }
+
+  @media (max-width: 760px) {
+    .reto {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+    }
+
+    .reto__dibujo {
+      order: -1;
+      max-height: 26svh;
+    }
+  }
+</style>
