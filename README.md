@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://dvanielx03.github.io/DanielVerse/"><img src=".github/assets/tarjeta.jpg" alt="DanielVerse: una hoja con f(t) y una claqueta a lápiz, el lema «Más allá de lo convencional» en tintas magenta y cian, una ciudad de noche y el avatar de Daniel" width="100%"></a>
+<a href="https://dvanielx03.github.io/DanielVerse/"><img src=".github/assets/tarjeta.jpg" alt="DanielVerse, 7 escenas y 26 planos: una hoja con f(t) y una claqueta a lápiz, el lema «Más allá de lo convencional» en tintas magenta y cian, una ciudad de noche y el avatar de Daniel" width="100%"></a>
 
 # DanielVerse · f(t)
 
@@ -45,7 +45,7 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
     <td width="50%"><img src=".github/assets/02-lo-convencional.jpg" alt="Escena 1: el portafolio de siempre bocetado a lápiz, con nombre, tecnologías, enlaces y tres tarjetas vacías"><br><sub><b>1 · Lo convencional.</b> El portafolio de siempre, a lápiz.</sub></td>
   </tr>
   <tr>
-    <td><img src=".github/assets/03-ruptura.jpg" alt="La ruptura: la hoja agrietada resulta ser una viñeta más de una pared con los 25 planos, sobre la ciudad de noche"><br><sub><b>1 · La ruptura.</b> La hoja rota era una viñeta de la pared de storyboard.</sub></td>
+    <td><img src=".github/assets/03-ruptura.jpg" alt="La ruptura: la hoja agrietada resulta ser una viñeta más de una pared con los 26 planos, sobre la ciudad de noche"><br><sub><b>1 · La ruptura.</b> La hoja rota era una viñeta de la pared de storyboard.</sub></td>
     <td><img src=".github/assets/04-transicion.jpg" alt="Una transición a medio camino: un tajo en diagonal con bordes magenta y cian deja entrar la escena siguiente"><br><sub><b>Transición.</b> Cada sección entra a su manera; esta, con un tajo.</sub></td>
   </tr>
   <tr>
@@ -62,6 +62,10 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
   </tr>
 </table>
 
+<img src=".github/assets/12-showreel.jpg" alt="Escena 5: el showreel «Siete mundos» en una viñeta vertical, con la lista de los siete mundos y el que está sonando encendido" width="100%">
+
+<sub><b>5 · Siete mundos.</b> Mi showreel corre al llegar a la sección y enciende el mundo que está sonando: video con IA, collage, 2D por código, Blender, Three.js, low-poly y UI.</sub>
+
 <img src=".github/assets/11-movil.jpg" alt="Cinco momentos a tamaño de móvil: la claqueta, la pared de proyectos con sus accesos a GitHub, un díptico, el avatar y el contacto" width="100%">
 
 <sub>La misma experiencia a 340 px de ancho.</sub>
@@ -75,10 +79,10 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
 | 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | Suspenso: silencios, oleadas y golpes graves |
 | 3 | Retos | Cuatro hitos en montaje rápido. | Descarga |
 | 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas, con acceso directo al código. | Suspenso, para poder leer |
-| 5 | Detrás de cámaras | Cómo está hecha la película y mis herramientas propias. | Segunda descarga |
+| 5 | Detrás de cámaras | Cómo está hecha la película, mis herramientas propias y el showreel «Siete mundos». | Suspenso que sube y cae la segunda descarga cuando arranca el showreel |
 | 6 | Créditos y contacto | Créditos que suben y un iris que cierra. | El tema, lento y lejano |
 
-Son 25 planos. Con las flechas <kbd>←</kbd> <kbd>→</kbd> saltas de plano; con <kbd>S</kbd> enciendes o apagas el sonido.
+Son 26 planos. Con las flechas <kbd>←</kbd> <kbd>→</kbd> saltas de plano; con <kbd>S</kbd> enciendes o apagas el sonido.
 
 > [!NOTE]
 > El sonido está apagado por defecto y no se descarga hasta que lo activas.
@@ -163,7 +167,7 @@ Si quieres hablar: [LinkedIn](https://www.linkedin.com/in/daniel-santiago-mayorg
 
 **DanielVerse · f(t)** is the portfolio of Daniel Mayorga, a Junior Backend Developer focused on AI, built as a film whose playhead is your scroll.
 
-It opens as the usual portfolio, sketched in pencil. Your scroll breaks it, and the real film is behind: seven scenes, 25 shots, a creative transition into each section, two worlds (paper and a night city in comic-print inks), and every drawing shown as sketch, ink and final colour.
+It opens as the usual portfolio, sketched in pencil. Your scroll breaks it, and the real film is behind: seven scenes, 26 shots including a showreel, a creative transition into each section, two worlds (paper and a night city in comic-print inks), and every drawing shown as sketch, ink and final colour.
 
 The site is static ([Astro](https://astro.build) and TypeScript) with no animation library. The engine writes one variable per shot, its progress from 0 to 1, and CSS does the rest. Sound is off by default; the music is original and generated with ElevenLabs.
 
