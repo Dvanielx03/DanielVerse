@@ -1,0 +1,109 @@
+---
+// La hoja de contacto: todos los planos a la vista. Índice, vía rápida y versión sin movimiento.
+import { INTERFAZ } from '../datos/interfaz';
+import { ESCENAS, type Idioma } from '../datos/pelicula';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const textos = INTERFAZ[idioma];
+---
+
+<section id="hoja" class="hoja" data-mundo="papel" aria-labelledby="hoja-titulo">
+  <h2 id="hoja-titulo" class="hoja__titulo">{textos.hojaTitulo}</h2>
+  <p class="hoja__intro">{textos.hojaIntro}</p>
+  <ol class="hoja__escenas">
+    {
+      ESCENAS.map((escena, numero) => (
+        <li class="hoja__escena">
+          <h3>
+            <span class="mono">{numero}</span> {escena.nombre[idioma]}
+          </h3>
+          <ol class="hoja__planos">
+            {escena.planos.map((plano) => (
+              <li>
+                <a href={`#${plano.id}`} data-ir={plano.id} data-mundo={plano.mundo}>
+                  <span class="mono">{plano.id}</span>
+                  <span>{plano.titular?.[idioma] ?? plano.nombre[idioma]}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .hoja {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 24px;
+    min-height: 100svh;
+    padding: 72px max(16px, 5vw) 128px;
+    background: var(--fondo);
+    color: var(--texto);
+  }
+
+  .hoja__titulo {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .hoja__intro {
+    max-width: 60ch;
+    color: var(--texto-2);
+  }
+
+  .hoja__escenas {
+    display: grid;
+    gap: 28px;
+  }
+
+  .hoja__escena {
+    display: grid;
+    gap: 10px;
+  }
+
+  .hoja__escena h3 {
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .hoja__planos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+    gap: 12px;
+  }
+
+  .hoja__planos a {
+    display: grid;
+    align-content: space-between;
+    gap: 12px;
+    aspect-ratio: 16 / 9;
+    padding: 10px 12px;
+    border: 1.5px solid var(--grafito);
+    background: var(--fondo);
+    color: var(--texto);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .hoja__planos a .mono {
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--texto-2);
+  }
+
+  .hoja__planos a:hover {
+    outline: 3px solid var(--amarillo);
+    outline-offset: 2px;
+  }
+</style>
