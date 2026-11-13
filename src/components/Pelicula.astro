@@ -1,0 +1,106 @@
+---
+// La página entera: los planos en orden, la hoja de contacto y la línea de tiempo.
+import '@fontsource-variable/recursive';
+import '@fontsource-variable/shantell-sans';
+import '../estilos/tokens.css';
+import '../estilos/base.css';
+
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+import { INTERFAZ } from '../datos/interfaz';
+import { ESCENAS, type Idioma } from '../datos/pelicula';
+import { construirIndice } from '../motor/tiempo';
+import HojaDeContacto from './HojaDeContacto.astro';
+import LineaDeTiempo from './LineaDeTiempo.astro';
+import Plano from './Plano.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const textos = INTERFAZ[idioma];
+const otroIdioma: Idioma = idioma === 'es' ? 'en' : 'es';
+const indice = construirIndice(ESCENAS);
+---
+
+<!doctype html>
+<html lang={idioma} data-mundo="papel">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={textos.descripcion} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{textos.titulo}</title>
+  </head>
+  <body>
+    <a class="salto" href="#hoja">{textos.saltarAHoja}</a>
+    <header class="controles">
+      <h1 class="solo-lectores">{textos.titulo}</h1>
+      <a data-idioma href={getRelativeLocaleUrl(otroIdioma, '')} lang={otroIdioma} hreflang={otroIdioma}>
+        {textos.cambiarIdioma}
+      </a>
+      <a href="#hoja">{textos.hoja}</a>
+    </header>
+    <main>
+      {indice.entradas.map((entrada) => <Plano entrada={entrada} idioma={idioma} />)}
+    </main>
+    <HojaDeContacto idioma={idioma} />
+    <LineaDeTiempo idioma={idioma} />
+    <script>
+      import '../motor/pelicula.ts';
+    </script>
+  </body>
+</html>
+
+<style>
+  .salto {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 5;
+    padding: 10px 14px;
+    background: var(--amarillo);
+    color: var(--grafito);
+    font-weight: 800;
+    transform: translateY(-200%);
+  }
+
+  .salto:focus {
+    transform: none;
+  }
+
+  .controles {
+    position: fixed;
+    top: max(10px, env(safe-area-inset-top, 0px));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    z-index: 4;
+    display: flex;
+    gap: 8px;
+  }
+
+  .controles a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 4px 12px;
+    border: 1.5px solid var(--texto);
+    background: var(--fondo);
+    color: var(--texto);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .controles a:hover {
+    background: var(--texto);
+    color: var(--fondo);
+  }
+
+  @media (pointer: coarse) {
+    .controles a {
+      min-height: 44px;
+    }
+  }
+</style>
