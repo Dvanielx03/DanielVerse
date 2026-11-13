@@ -27,7 +27,9 @@ La película empieza como el portafolio de siempre, dibujado a lápiz. Tu scroll
 Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has deslizado:
 
 - **Mismo scroll, mismo fotograma.** No hay animaciones que arranquen solas y se pierdan: cada plano se calcula a partir de su avance.
-- **Dos mundos.** El papel (boceto y tinta, claro y seco) y la sala (el resultado final, oscura y con eco). La capa decide la paleta.
+- **Nada entra de golpe.** El scroll lleva inercia y cada sección llega con su propia transición: un tajo en diagonal, puntos de semitono que crecen, una viñeta que empuja a la anterior o un estallido de cómic.
+- **Dos mundos.** El papel (boceto y tinta, claro y seco) y la ciudad de noche (el resultado final, con las tintas de imprenta a todo color). La capa decide la paleta.
+- **El sitio reacciona.** Las tintas se separan cuando deslizas rápido y el cursor es una linterna que revela la trama de puntos.
 - **Tres pasadas.** Cada cosa se ve primero como boceto, luego en tinta y al final en color, igual que en un estudio de animación.
 - **Capas que se pueden mirar.** En cada proyecto puedes cambiar entre la idea a lápiz, la arquitectura y los datos.
 
@@ -63,15 +65,15 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
 | 0 | Claqueta | Una hoja sobre la mesa de luz. Eliges idioma y sonido. | Tono de sala y el golpe de la claqueta |
 | 1 | Lo convencional | El portafolio de siempre se agrieta, resulta ser una viñeta de la pared de storyboard y la pared cae. | Lápiz y papel; después, la primera descarga |
 | 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | Tensión, casi vacía |
-| 3 | Retos | Cuatro hitos en montaje rápido. | Descarga, con el lápiz como percusión |
+| 3 | Retos | Cuatro hitos en montaje rápido. | Descarga |
 | 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas. | Atmósfera sin batería, para poder leer |
-| 5 | Detrás de cámaras | Cómo está hecha la película y mis herramientas propias. | Segunda descarga, con clics de proyector |
-| 6 | Créditos y contacto | Créditos que suben y un iris que cierra. | Un acorde cálido |
+| 5 | Detrás de cámaras | Cómo está hecha la película y mis herramientas propias. | Segunda descarga |
+| 6 | Créditos y contacto | Créditos que suben y un iris que cierra. | Un final cálido |
 
 Son 25 planos. Con las flechas <kbd>←</kbd> <kbd>→</kbd> saltas de plano; con <kbd>S</kbd> enciendes o apagas el sonido.
 
 > [!NOTE]
-> El sonido está apagado por defecto y no se descarga hasta que lo activas. No hay archivos de audio: todo se sintetiza en el navegador.
+> El sonido está apagado por defecto y no se descarga hasta que lo activas.
 
 ## Cómo correrlo
 
@@ -115,9 +117,9 @@ seek(t);                     // la película en ese instante, venga de donde ven
 }
 ```
 
-Lo dibujado se mueve a saltos de 12 fotogramas por segundo; la cámara y la interfaz, fluidas.
+El instante que se pinta no es el del scroll tal cual: lo persigue con inercia, y de esa persecución sale la velocidad a la que reaccionan las tintas y el fondo.
 
-**3. El sonido también es función de `t`.** `src/motor/mezcla.ts` decide qué capas suenan en cada plano, y una prueba vigila la regla principal: la descarga nunca suena mientras hay que leer. `src/motor/sintesis.ts` genera cada sonido con Web Audio, a 90 pulsos por minuto, de modo que una semicorchea dura exactamente dos fotogramas.
+**3. El sonido también es función de `t`.** `src/motor/mezcla.ts` decide qué capas suenan en cada plano, y una prueba vigila la regla principal: la descarga nunca suena mientras hay que leer. `src/motor/sintesis.ts` cruza las pistas de música según esa mezcla y sintetiza los efectos con Web Audio.
 
 ```text
 src/
@@ -141,7 +143,7 @@ En producción. Lo que hay y lo que falta, sin adornos:
 
 - **Tipografías:** [Recursive](https://www.recursive.design) y [Shantell Sans](https://shantellsans.com).
 - **Avatar:** generado con IA a partir de una foto real.
-- **Sonido:** síntesis original en Web Audio.
+- **Sonido:** efectos sintetizados con Web Audio.
 - **Lenguaje visual:** el del cine de animación que mezcla boceto, tinta, semitonos y color fuera de registro. No se usan personajes, arte ni música de terceros.
 
 Si quieres hablar: [LinkedIn](https://www.linkedin.com/in/daniel-santiago-mayorga-tellez-5bb0463a0/) · [GitHub](https://github.com/Dvanielx03)
