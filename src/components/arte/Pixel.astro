@@ -10,32 +10,50 @@ interface Props {
 
 const { plano, idioma, idTitulo } = Astro.props;
 
-// Un signo de interrogación de 5 x 7 píxeles y unas cuantas estrellas.
-const pregunta = ['.###.', '#...#', '....#', '...#.', '..#..', '.....', '..#..'];
-const pixeles = pregunta.flatMap((fila, y) => [...fila].map((c, x) => (c === '#' ? { x: 22 + x, y: 4 + y } : null))).filter((p) => p !== null);
+// Cada dibujo es una rejilla de caracteres; cada carácter, un color de la paleta.
+const paleta: Record<string, string> = {
+  p: '#3a2418', // pelo
+  c: '#f0c9a0', // cara
+  o: '#1b1440', // ojos
+  r: '#ff5a47', // camiseta
+  a: '#6ea2ff', // pantalón
+  b: '#f3ebdd', // perro
+  m: '#b9793f', // mancha del perro
+  y: '#ffc93c', // interrogación
+};
+const nino = ['..pppp..', '.pppppp.', '.pccccp.', '.coccoc.', '.cccccc.', '..rrrr..', '.rrrrrr.', 'crrrrrrc', '..rrrr..', '..a..a..', '..a..a..'];
+const perro = ['......b.b', 'b.....bbb', 'bbmmbbbob', '.bbmbbbbb', '.b.b..b.b', '.b.b..b.b'];
+const pregunta = ['.yyy.', 'y...y', '....y', '...y.', '..y..', '.....', '..y..'];
+const pintar = (filas: string[], x0: number, y0: number) =>
+  filas.flatMap((fila, y) =>
+    [...fila].flatMap((c, x) => (paleta[c] ? [{ x: x0 + x, y: y0 + y, color: paleta[c] }] : [])),
+  );
+const suelo = 21;
+const figuras = [...pintar(nino, 9, suelo - nino.length), ...pintar(perro, 20, suelo - perro.length)];
+const signo = pintar(pregunta, 31, 4);
 const estrellas = [
   [4, 3],
-  [9, 8],
   [14, 2],
-  [36, 5],
-  [41, 11],
-  [33, 13],
-  [6, 14],
-  [44, 3],
+  [24, 6],
+  [40, 4],
+  [44, 11],
+  [3, 11],
+  [27, 12],
+  [37, 14],
 ];
 ---
 
 <div class="pix">
   <svg class="pix__cuadro" viewBox="0 0 48 27" shape-rendering="crispEdges" aria-hidden="true">
     <rect width="48" height="27" fill="#1b1440"></rect>
-    {estrellas.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#f3ebdd" />)}
-    <rect x="0" y="20" width="48" height="7" fill="#2b2f6b"></rect>
-    <rect x="0" y="20" width="48" height="1" fill="#6ea2ff"></rect>
-    {pixeles.map((p) => <rect x={p.x} y={p.y} width="1" height="1" fill="#ffc93c" />)}
-    <rect x="8" y="16" width="3" height="4" fill="#ff5a47"></rect>
-    <rect x="9" y="14" width="1" height="2" fill="#f3ebdd"></rect>
-    <rect x="14" y="18" width="3" height="2" fill="#f3ebdd"></rect>
-    <rect x="17" y="17" width="1" height="1" fill="#f3ebdd"></rect>
+    <rect x="36" y="2" width="5" height="5" fill="#f3ebdd" opacity="0.12"></rect>
+    {estrellas.map(([x, y], i) => <rect class={`estrella estrella--${i % 2}`} x={x} y={y} width="1" height="1" fill="#f3ebdd" />)}
+    <rect x="0" y={suelo} width="48" height="6" fill="#2b2f6b"></rect>
+    <rect x="0" y={suelo} width="48" height="1" fill="#6ea2ff"></rect>
+    {figuras.map((p) => <rect x={p.x} y={p.y} width="1" height="1" fill={p.color} />)}
+    <g class="pix__signo">
+      {signo.map((p) => <rect x={p.x} y={p.y} width="1" height="1" fill={p.color} />)}
+    </g>
   </svg>
 
   <div class="pix__texto">
@@ -66,6 +84,29 @@ const estrellas = [
     border: 4px solid var(--pantalla);
     image-rendering: pixelated;
     rotate: -2deg;
+  }
+
+  /* Dos fotogramas por segundo, como un sprite: la pregunta flota y las estrellas parpadean. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor .es-activo) .pix__signo {
+      animation: flotar 1s steps(1, end) infinite;
+    }
+
+    :global(.con-motor .es-activo) .estrella--1 {
+      animation: parpadear 1.5s steps(1, end) infinite;
+    }
+  }
+
+  @keyframes flotar {
+    50% {
+      translate: 0 -1px;
+    }
+  }
+
+  @keyframes parpadear {
+    50% {
+      opacity: 0.25;
+    }
   }
 
   .pix__texto {
