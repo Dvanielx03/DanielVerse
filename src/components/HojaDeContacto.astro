@@ -49,6 +49,13 @@ const textos = INTERFAZ[idioma];
     color: var(--texto);
   }
 
+  /* Deja una pantalla libre para que el último plano se vea entero antes de que suba la hoja. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .hoja {
+      margin-top: 100svh;
+    }
+  }
+
   .hoja__titulo {
     font-size: clamp(2rem, 6vw, 3.5rem);
     font-weight: 900;
