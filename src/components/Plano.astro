@@ -1,0 +1,198 @@
+---
+// Un plano de la película en versión animática: su claqueta y sus textos reales.
+import type { Idioma } from '../datos/pelicula';
+import { codigoDeTiempo, type Entrada } from '../motor/tiempo';
+
+interface Props {
+  entrada: Entrada;
+  idioma: Idioma;
+}
+
+const { entrada, idioma } = Astro.props;
+const { plano, escena, inicio } = entrada;
+const idTitulo = `titulo-${plano.id}`;
+---
+
+<section
+  class="plano"
+  id={plano.id}
+  data-plano={plano.id}
+  data-mundo={plano.mundo}
+  style={`--pantallas:${plano.pantallas}`}
+  aria-labelledby={idTitulo}
+>
+  <div class="plano__escenario">
+    <p class="plano__claqueta mono">
+      <span>{escena.nombre[idioma]}</span>
+      <span>{plano.id}</span>
+      <span>{codigoDeTiempo(inicio)}</span>
+    </p>
+    <div class="plano__contenido">
+      {
+        plano.titular ? (
+          <h2 id={idTitulo} class="plano__titular">{plano.titular[idioma]}</h2>
+        ) : (
+          <h2 id={idTitulo} class="solo-lectores">{plano.nombre[idioma]}</h2>
+        )
+      }
+      {
+        plano.lineas && (
+          <ul class:list={['plano__lineas', { 'plano__lineas--solas': !plano.titular }]}>
+            {plano.lineas[idioma].map((linea) => <li>{linea}</li>)}
+          </ul>
+        )
+      }
+      {plano.sello && <p class="plano__sello">{plano.sello[idioma]}</p>}
+      {plano.nota && <p class="plano__nota">{plano.nota[idioma]}</p>}
+      {
+        plano.enlaces && (
+          <ul class="plano__enlaces">
+            {plano.enlaces.map((enlace) => (
+              <li>
+                <a href={enlace.url}>{enlace.etiqueta[idioma]}</a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .plano {
+    position: relative;
+  }
+
+  .plano__escenario {
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 24px;
+    padding: 64px max(16px, 5vw) 104px;
+    background: var(--fondo);
+    color: var(--texto);
+  }
+
+  /* Con el motor en marcha, cada sección es duración de scroll y su escenario queda fijo. */
+  :global(.con-motor) .plano {
+    height: calc(var(--pantallas) * 100svh);
+  }
+
+  :global(.con-motor) .plano__escenario {
+    position: fixed;
+    inset: 0;
+    min-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.con-motor) .plano.es-activo .plano__escenario {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Movimiento reducido: los planos vuelven al flujo normal, uno debajo de otro. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.con-motor) .plano {
+      height: auto;
+    }
+
+    :global(.con-motor) .plano__escenario {
+      position: static;
+      min-height: 100svh;
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .plano__claqueta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--linea);
+    color: var(--texto-2);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .plano__claqueta span:last-child {
+    margin-left: auto;
+  }
+
+  .plano__contenido {
+    align-self: center;
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+    max-width: 62rem;
+    min-width: 0;
+  }
+
+  .plano__titular {
+    font-size: clamp(2.25rem, 7.5vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .plano__lineas {
+    display: grid;
+    gap: 8px;
+    max-width: 48ch;
+    font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+    color: var(--texto-2);
+  }
+
+  .plano__lineas--solas {
+    max-width: 30ch;
+    font-size: clamp(1.5rem, 4.2vw, 2.75rem);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--texto);
+    text-wrap: balance;
+  }
+
+  .plano__sello {
+    padding: 4px 14px;
+    border: 3px solid var(--nota);
+    color: var(--nota);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transform: rotate(-4deg);
+  }
+
+  .plano__nota {
+    font-family: var(--fuente-mano);
+    font-size: 1.35rem;
+    color: var(--nota);
+    transform: rotate(-2deg);
+    transform-origin: left center;
+  }
+
+  .plano__enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .plano__enlaces a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1.5px solid var(--texto);
+    color: var(--texto);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .plano__enlaces a:hover {
+    background: var(--texto);
+    color: var(--fondo);
+  }
+</style>
