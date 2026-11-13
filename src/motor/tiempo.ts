@@ -2,6 +2,7 @@
 // La unidad de t es la pantalla de scroll; el código de tiempo la convierte a segundos.
 
 import type { Escena, Plano } from '../datos/pelicula.ts';
+import { DURACION_TRANSICION, TRANSICION_POR_ARTE } from '../datos/transiciones.ts';
 
 /** Una pantalla equivale a tres compases a 90 BPM. */
 export const SEGUNDOS_POR_PANTALLA = 8;
@@ -63,11 +64,17 @@ export function inicioDe(indice: Indice, id: string): number | undefined {
   return indice.entradas.find((e) => e.plano.id === id)?.inicio;
 }
 
-/** Dónde caen los saltos a un plano: el instante en que su composición ya está formada. */
+/**
+ * Dónde caen los saltos a un plano: el instante en que su composición ya está formada.
+ * Como mínimo, cuando su transición de entrada ya terminó; si no, se vería el plano anterior.
+ */
 export function reposoDe(indice: Indice, id: string): number | undefined {
   const entrada = indice.entradas.find((e) => e.plano.id === id);
   if (!entrada) return undefined;
-  return redondear(entrada.inicio + (entrada.plano.reposo ?? 0) * entrada.plano.pantallas);
+  const { plano } = entrada;
+  const transicion = entrada.indice === 0 || !plano.arte ? 'corte' : TRANSICION_POR_ARTE[plano.arte];
+  const trasLaEntrada = transicion === 'corte' ? 0 : (DURACION_TRANSICION + 0.02) / plano.pantallas;
+  return redondear(entrada.inicio + Math.max(plano.reposo ?? 0, trasLaEntrada) * plano.pantallas);
 }
 
 /** Código de tiempo mm:ss:ff a 12 fps. */
