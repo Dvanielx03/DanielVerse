@@ -2,21 +2,29 @@
 // los efectos sueltos (golpes, barridos, papel) se sintetizan aquí mismo con Web Audio.
 // Este módulo solo se descarga cuando el visitante activa el sonido.
 
+import auricularesUrl from '../assets/sonido/auriculares.mp3?url';
 import descargaUrl from '../assets/sonido/descarga.mp3?url';
+import pixelUrl from '../assets/sonido/pixel.mp3?url';
 import resolucionUrl from '../assets/sonido/resolucion.mp3?url';
 import tensionUrl from '../assets/sonido/tension.mp3?url';
 import type { Golpe, Mezcla } from './mezcla.ts';
 
 /** Las capas de música. Una capa sin pista queda en silencio y lo demás sigue sonando. */
-type NombrePista = 'tension' | 'descarga' | 'resolucion';
+type NombrePista = 'tension' | 'descarga' | 'auriculares' | 'pixel' | 'resolucion';
 // Tensión: suspenso con silencios y golpes graves. Descarga: el tema completo.
-// Resolución: el mismo tema, lento y lejano, para cerrar.
+// Auriculares: el mismo tema en lo-fi. Pixel: el tema en 8 bits. Resolución: el tema lento y lejano, para cerrar.
 // Se importan como archivos con huella: si cambia una pista, cambia su nombre y nadie oye la vieja.
 const PISTAS: Partial<Record<NombrePista, string>> = {
   tension: tensionUrl,
   descarga: descargaUrl,
+  auriculares: auricularesUrl,
+  pixel: pixelUrl,
   resolucion: resolucionUrl,
 };
+
+/** El tema y su versión en audífonos duran lo mismo y suenan siempre a la vez, al mismo compás:
+ * así cruzar de una a otra no descuadra el ritmo. */
+const TEMA: NombrePista[] = ['descarga', 'auriculares'];
 
 /** Segundos que se solapan el final y el principio de una pista al repetirse. */
 const SOLAPE = 2.4;
@@ -122,13 +130,24 @@ export function crearMotor(ctx: AudioContext): Motor {
   const busMusica: Record<NombrePista, GainNode> = {
     tension: crearBus(0),
     descarga: crearBus(0),
+    auriculares: crearBus(0),
+    pixel: crearBus(0),
     resolucion: crearBus(0),
   };
+  // Los audífonos: un filtro que se abre o se cierra según lo que haya en pantalla.
+  const filtroAuriculares = ctx.createBiquadFilter();
+  filtroAuriculares.type = 'lowpass';
+  filtroAuriculares.Q.value = 0.8;
+  filtroAuriculares.frequency.value = 4000;
+  filtroAuriculares.connect(busMusica.auriculares);
 
   // ——— La música: pistas grabadas que se repiten solapando su final con su principio ———
   const grabaciones: Partial<Record<NombrePista, AudioBuffer>> = {};
-  const proximo: Record<NombrePista, number> = { tension: 0, descarga: 0, resolucion: 0 };
-  const sonando: Record<NombrePista, AudioBufferSourceNode[]> = { tension: [], descarga: [], resolucion: [] };
+  const proximo: Record<NombrePista, number> = { tension: 0, descarga: 0, auriculares: 0, pixel: 0, resolucion: 0 };
+  const sonando: Record<NombrePista, AudioBufferSourceNode[]> = { tension: [], descarga: [], auriculares: [], pixel: [], resolucion: [] };
+  /** Cuándo empezó la pasada actual del tema y cuándo empieza la siguiente. */
+  let inicioTema: number | undefined;
+  let proximoTema = 0;
 
   for (const [nombre, ruta] of Object.entries(PISTAS) as [NombrePista, string][]) {
     fetch(ruta)
@@ -142,21 +161,21 @@ export function crearMotor(ctx: AudioContext): Motor {
       });
   }
 
-  /** Programa una pasada de la pista, con su entrada y su salida fundidas. */
-  const lanzar = (nombre: NombrePista, cuando: number, conEntrada: boolean) => {
+  /** Programa una pasada de la pista, con su entrada y su salida fundidas. `desde` salta dentro de la pista. */
+  const lanzar = (nombre: NombrePista, cuando: number, conEntrada: boolean, desde = 0) => {
     const buffer = grabaciones[nombre];
     if (!buffer) return;
     const fuente = ctx.createBufferSource();
     fuente.buffer = buffer;
     const g = ctx.createGain();
-    const fin = cuando + buffer.duration;
+    const fin = cuando + buffer.duration - desde;
     g.gain.setValueAtTime(conEntrada ? 0 : 1, cuando);
     if (conEntrada) g.gain.linearRampToValueAtTime(1, cuando + SOLAPE);
     g.gain.setValueAtTime(1, fin - SOLAPE);
     g.gain.linearRampToValueAtTime(0, fin);
     fuente.connect(g);
-    g.connect(busMusica[nombre]);
-    fuente.start(cuando);
+    g.connect(nombre === 'auriculares' ? filtroAuriculares : busMusica[nombre]);
+    fuente.start(cuando, desde);
     fuente.stop(fin + 0.05);
     sonando[nombre].push(fuente);
     fuente.onended = () => {
@@ -165,8 +184,7 @@ export function crearMotor(ctx: AudioContext): Motor {
     proximo[nombre] = fin - SOLAPE;
   };
 
-  /** Vuelve a empezar una pista desde su primer compás: así la descarga entra con su golpe. */
-  const reiniciar = (nombre: NombrePista) => {
+  const callar = (nombre: NombrePista) => {
     for (const fuente of sonando[nombre]) {
       try {
         fuente.stop(ctx.currentTime + 0.06);
@@ -175,7 +193,27 @@ export function crearMotor(ctx: AudioContext): Motor {
       }
     }
     sonando[nombre] = [];
+  };
+
+  /** Vuelve a empezar una pista desde su primer compás: así la descarga entra con su golpe. */
+  const reiniciar = (nombre: NombrePista) => {
+    callar(nombre);
     lanzar(nombre, ctx.currentTime + 0.03, false);
+  };
+
+  /** Una pasada del tema: todas sus versiones a la vez, desde el mismo instante. */
+  const lanzarTema = (cuando: number, conEntrada: boolean) => {
+    const duraciones = TEMA.map((nombre) => grabaciones[nombre]?.duration).filter((d): d is number => d !== undefined);
+    if (duraciones.length === 0) return;
+    for (const nombre of TEMA) lanzar(nombre, cuando, conEntrada);
+    inicioTema = cuando;
+    proximoTema = cuando + Math.min(...duraciones) - SOLAPE;
+  };
+
+  /** El tema vuelve a su primer compás, con todas sus versiones. */
+  const reiniciarTema = () => {
+    for (const nombre of TEMA) callar(nombre);
+    lanzarTema(ctx.currentTime + 0.03, false);
   };
 
   // ——— Piezas con las que se arma cada efecto ———
@@ -328,6 +366,14 @@ export function crearMotor(ctx: AudioContext): Motor {
           tono(t + d, busGolpes, { onda: 'sawtooth', f0: a / 4, f1: b / 4, pico: 0.08 + i * 0.01, ataque: 0.005, caida: dur });
         }
         break;
+      case 'ficha': {
+        // Un objeto de consola: tres notas cuadradas que suben.
+        const base = 784;
+        for (const [i, k] of [1, 1.26, 1.5, 2].entries()) {
+          tono(t + i * 0.055, busGolpes, { onda: 'square', f0: base * k, pico: 0.08, ataque: 0.002, caida: 0.07 });
+        }
+        break;
+      }
       case 'tic':
         // Cambiar de capa: un clic de mesa de luz.
         soplo(t, busGolpes, { tipo: 'highpass', f0: 3800, pico: 0.3, caida: 0.014 });
@@ -353,7 +399,8 @@ export function crearMotor(ctx: AudioContext): Motor {
     fijarMezcla(mezcla, enSeguida = false) {
       // Una capa que entra desde el silencio empieza por su primer compás.
       if (objetivo) {
-        if (mezcla.descarga > 0.001 && objetivo.descarga <= 0.001) reiniciar('descarga');
+        if (mezcla.descarga > 0.001 && objetivo.descarga <= 0.001) reiniciarTema();
+        if (mezcla.pixel > 0.001 && objetivo.pixel <= 0.001) reiniciar('pixel');
         if (mezcla.resolucion > 0.001 && objetivo.resolucion <= 0.001) reiniciar('resolucion');
       }
       objetivo = mezcla;
@@ -365,6 +412,11 @@ export function crearMotor(ctx: AudioContext): Motor {
       llevar(busMusica.tension.gain, mezcla.tension * (1 - 0.85 * mezcla.descarga) * cedeResolucion, 0.6, enSeguida);
       llevar(busMusica.descarga.gain, mezcla.descarga, mezcla.descarga > 0.5 ? 0.05 : 0.5, enSeguida);
       llevar(busMusica.resolucion.gain, mezcla.resolucion * 0.85, 0.8, enSeguida);
+      // Los audífonos ceden ante la descarga: es el mismo tema, y al cruzarse no deben sumarse.
+      llevar(busMusica.auriculares.gain, mezcla.auriculares * (1 - 0.9 * mezcla.descarga), 0.5, enSeguida);
+      // De 1,5 kHz (audífonos de otro, para leer) a casi 14 kHz (con todo su brillo).
+      llevar(filtroAuriculares.frequency, 1500 * 2 ** (mezcla.brillo * 3.2), 0.35, enSeguida);
+      llevar(busMusica.pixel.gain, mezcla.pixel, 0.4, enSeguida);
       llevar(retorno.gain, mezcla.reverb * 0.5, 0.3, enSeguida);
 
       const sube = mezcla.subida;
@@ -376,14 +428,30 @@ export function crearMotor(ctx: AudioContext): Motor {
 
     programarHasta(hasta) {
       if (!objetivo) return;
-      // La tensión suena siempre de fondo; las otras dos solo mientras su capa está abierta.
+      // La tensión y el tema suenan siempre de fondo, aunque callados; así el tema nunca pierde el compás.
       const activas: NombrePista[] = ['tension'];
-      if (objetivo.descarga > 0.001) activas.push('descarga');
+      if (objetivo.pixel > 0.001) activas.push('pixel');
       if (objetivo.resolucion > 0.001) activas.push('resolucion');
       for (const nombre of activas) {
         if (!grabaciones[nombre]) continue;
         if (proximo[nombre] < ctx.currentTime - 0.5) proximo[nombre] = ctx.currentTime + 0.05;
         if (proximo[nombre] < hasta + 0.5) lanzar(nombre, proximo[nombre], true);
+      }
+
+      if (inicioTema === undefined || proximoTema < ctx.currentTime - 0.5) {
+        lanzarTema(ctx.currentTime + 0.05, true);
+      } else if (proximoTema < hasta + 0.5) {
+        lanzarTema(proximoTema, true);
+      }
+      // Una versión que terminó de cargar tarde entra en el compás en que va el tema.
+      if (inicioTema !== undefined) {
+        for (const nombre of TEMA) {
+          const buffer = grabaciones[nombre];
+          const desde = ctx.currentTime + 0.05 - inicioTema;
+          if (buffer && sonando[nombre].length === 0 && desde > 0 && desde < buffer.duration - SOLAPE) {
+            lanzar(nombre, ctx.currentTime + 0.05, true, desde);
+          }
+        }
       }
 
       // Papel: de vez en cuando, un trazo de lápiz. Seco y cercano.

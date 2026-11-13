@@ -15,6 +15,12 @@ export interface Mezcla {
   descarga: number;
   /** La pista de resolución: el final cálido. */
   resolucion: number;
+  /** El tema en los audífonos de Daniel: lo-fi, cálido, para presentarse y para leer. */
+  auriculares: number;
+  /** El tema en una consola de 8 bits, para el mundo de píxeles. */
+  pixel: number;
+  /** Cuánto se abren los audífonos: 0 apagado y cercano, 1 con todo su brillo. */
+  brillo: number;
   /** La subida de ruido que precede a la ruptura. */
   subida: number;
   /** Cuánta reverberación: en papel todo suena seco; en sala se abre el espacio. */
@@ -38,7 +44,8 @@ export type TipoGolpe =
   | 'iris'
   | 'zoom'
   | 'rebobinado'
-  | 'tic';
+  | 'tic'
+  | 'ficha';
 
 /** Un sonido suelto que cae cuando el plano cruza un punto de su avance. */
 export interface Golpe {
@@ -49,7 +56,18 @@ export interface Golpe {
   retraso?: number;
 }
 
-const SILENCIO: Mezcla = { sala: 0.6, papel: 0, tension: 0, descarga: 0, resolucion: 0, subida: 0, reverb: 1 };
+const SILENCIO: Mezcla = {
+  sala: 0.6,
+  papel: 0,
+  tension: 0,
+  descarga: 0,
+  resolucion: 0,
+  auriculares: 0,
+  pixel: 0,
+  brillo: 0.5,
+  subida: 0,
+  reverb: 1,
+};
 
 /** Cuándo cae la pared en la ruptura: ahí entra la primera descarga. */
 export const CAIDA_DE_LA_PARED = 0.64;
@@ -77,24 +95,31 @@ export function mezclaDe(plano: Plano, p: number): Mezcla {
       return avance < CAIDA_DE_LA_PARED
         ? { ...base, papel: 1 - avance / CAIDA_DE_LA_PARED, subida: avance / CAIDA_DE_LA_PARED, reverb: avance }
         : { ...base, tension: 0.6, descarga: 1 };
-    case 'avatar-boceto':
-      // La descarga se apaga hasta quedar el fondo de tensión.
-      return { ...base, tension: 1, descarga: limitar(1 - avance / APAGADO_EN_QUIEN) };
+    case 'avatar-boceto': {
+      // Al presentarse, la descarga se mete en sus audífonos: el mismo tema, cálido y cercano.
+      const paso = limitar(avance / APAGADO_EN_QUIEN);
+      return { ...base, descarga: 1 - paso, auriculares: paso, brillo: 0.55 };
+    }
     case 'avatar-tinta':
     case 'avatar-final':
-      return { ...base, tension: 1 };
+      return { ...base, auriculares: 1, brillo: 0.55 };
     case 'reto':
       return { ...base, tension: 0.5, descarga: 1 };
+    // Proyectos: el tema sigue en los audífonos. Se abre con brillo en cada claqueta y se cierra para leer.
     case 'pared':
+      return { ...base, auriculares: 1, brillo: 0.65 };
     case 'proyecto':
+      return { ...base, auriculares: 1, brillo: 1 };
     case 'diptico':
+      return { ...base, auriculares: 0.85, brillo: 0.3 };
     case 'inspeccion':
-      // Sin batería, para poder leer.
-      return { ...base, tension: 0.85 };
+      return { ...base, auriculares: 0.75, brillo: 0.15 };
     case 'truco':
-    case 'pixel':
       // Segunda descarga.
       return { ...base, tension: 0.5, descarga: 1 };
+    case 'pixel':
+      // El mundo de píxeles suena a su manera: el tema en una consola de 8 bits.
+      return { ...base, pixel: 1 };
     case 'herramientas':
       // Vuelve el suspenso, para preparar la caída del showreel.
       return { ...base, tension: 1 };
@@ -128,6 +153,7 @@ const GOLPES: Partial<Record<Arte, Golpe[]>> = {
   // El sello de la claqueta de proyecto cae 667 ms después de entrar el plano.
   proyecto: [{ en: 0, sonido: 'sello', retraso: 0.67 }],
   diptico: [{ en: 0.46, sonido: 'tacha' }],
+  pixel: [{ en: 0.22, sonido: 'ficha' }],
   reel: [{ en: CAIDA_DEL_REEL, sonido: 'golpe-grave' }],
 };
 

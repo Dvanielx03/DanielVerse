@@ -77,3 +77,19 @@ test('el showreel llega con suspenso y cae con la descarga, como el merodeador',
     ['golpe-grave'],
   );
 });
+
+test('Quién y Proyectos suenan en los audífonos, sin suspenso; Y Si Pixel, en 8 bits', () => {
+  for (const id of ['E2-P2', 'E2-P3', 'E4-P0', 'E4-X1', 'E4-X2', 'E4-X3']) {
+    const mezcla = mezclaDe(plano(id), 0.5);
+    assert.ok(mezcla.auriculares > 0, id);
+    assert.equal(mezcla.tension, 0, id);
+  }
+  // Al presentarse, la descarga se va metiendo en los audífonos.
+  assert.ok(mezclaDe(plano('E2-P1'), 0.1).descarga > mezclaDe(plano('E2-P1'), 0.3).descarga);
+  assert.equal(mezclaDe(plano('E2-P1'), 0.5).auriculares, 1);
+  // Las claquetas se oyen con todo su brillo; la inspección, cerrada para leer.
+  assert.ok(mezclaDe(plano('E4-X1'), 0.5).brillo > mezclaDe(plano('E4-X3'), 0.5).brillo);
+  const pixel = mezclaDe(plano('E5-P3'), 0.5);
+  assert.equal(pixel.pixel, 1);
+  assert.equal(pixel.descarga, 0);
+});
