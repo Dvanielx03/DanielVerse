@@ -12,6 +12,7 @@ html {
 body {
   margin: 0;
   font-family: var(--fuente);
+  font-variation-settings: 'MONO' 0, 'CASL' 0, 'slnt' 0, 'CRSV' 0.5;
   font-size: 1rem;
   line-height: 1.5;
   background: var(--fondo);
@@ -24,6 +25,8 @@ h3,
 p,
 ul,
 ol,
+dl,
+dd,
 figure {
   margin: 0;
 }
@@ -44,10 +47,29 @@ a {
   outline-offset: 3px;
 }
 
+/* Código y código de tiempo: Recursive en su eje monoespaciado. */
 .mono {
   font-family: var(--fuente-codigo);
+  font-variation-settings: 'MONO' 1, 'CASL' 0, 'slnt' 0, 'CRSV' 0.5;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+}
+
+/* Letra de boceto: Recursive en su eje casual, inclinada. */
+.letra-boceto {
+  font-variation-settings: 'MONO' 0, 'CASL' 1, 'slnt' -8, 'CRSV' 1;
+}
+
+/* Notas a mano */
+.a-mano {
+  font-family: var(--fuente-mano);
+  font-variation-settings: normal;
+}
+
+/* Caja trazada a lápiz */
+.trazo {
+  border: 2px solid var(--lapiz-azul);
+  border-radius: var(--radio-trazo);
 }
 
 .solo-lectores {
@@ -57,4 +79,60 @@ a {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Nota adhesiva con cinta */
+.adhesiva {
+  position: relative;
+  max-width: 16ch;
+  padding: 18px 16px 14px;
+  background: var(--amarillo);
+  color: var(--grafito);
+  font-size: 1.15rem;
+  line-height: 1.2;
+  transform: rotate(-3deg);
+}
+
+.adhesiva::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 30%;
+  width: 40%;
+  height: 18px;
+  border: 1px solid rgb(31 35 39 / 0.18);
+  background: rgb(255 255 255 / 0.55);
+  transform: rotate(2deg);
+}
+
+/* La hoja del animador, con sus perforaciones de registro */
+.folio {
+  position: relative;
+  border: 1px solid #bcc4bf;
+  background: #fdfefd var(--grano-papel);
+  color: var(--grafito);
+}
+
+.folio__clavijas {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: clamp(36px, 9vw, 96px);
+  translate: -50% 0;
+}
+
+.folio__clavijas i {
+  width: 30px;
+  height: 9px;
+  border: 1.5px solid #bcc4bf;
+  border-radius: 4px;
+  background: var(--papel);
+}
+
+.folio__clavijas i:nth-child(2) {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
 }
