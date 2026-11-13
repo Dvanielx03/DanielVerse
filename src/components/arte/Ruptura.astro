@@ -1,0 +1,210 @@
+---
+// E1-P2 · La ruptura. La hoja se agrieta, sus trozos salen despedidos y detrás aparece el lema.
+// Todo depende de --p, el avance del plano: mismo scroll, mismo fotograma.
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+
+// La hoja se parte en triángulos desde un punto de impacto hasta el borde.
+type Punto = [number, number];
+const impacto: Punto = [1050, 420];
+const borde: Punto[] = [
+  [0, 0],
+  [520, 0],
+  [1100, 0],
+  [1600, 0],
+  [1600, 380],
+  [1600, 900],
+  [1000, 900],
+  [380, 900],
+  [0, 900],
+  [0, 430],
+];
+
+// Cada grieta se quiebra a mitad de camino para no parecer trazada con regla.
+const grietas = borde.map((punto, i) => {
+  const mx = (impacto[0] + punto[0]) / 2;
+  const my = (impacto[1] + punto[1]) / 2;
+  const largo = Math.hypot(punto[0] - impacto[0], punto[1] - impacto[1]);
+  const desvio = (i % 2 === 0 ? 1 : -1) * 14;
+  const qx = Math.round(mx - ((punto[1] - impacto[1]) / largo) * desvio);
+  const qy = Math.round(my + ((punto[0] - impacto[0]) / largo) * desvio);
+  return `M${impacto.join(' ')} L${qx} ${qy} L${punto.join(' ')}`;
+});
+
+const trozos = borde.map((a, i) => {
+  const b = borde[(i + 1) % borde.length] as Punto;
+  const cx = (impacto[0] + a[0] + b[0]) / 3;
+  const cy = (impacto[1] + a[1] + b[1]) / 3;
+  const largo = Math.hypot(cx - impacto[0], cy - impacto[1]);
+  return {
+    puntos: `${impacto.join(',')} ${a.join(',')} ${b.join(',')}`,
+    cx: Math.round(cx),
+    cy: Math.round(cy),
+    dx: Math.round(((cx - impacto[0]) / largo) * 1500),
+    dy: Math.round(((cy - impacto[1]) / largo) * 1500),
+    giro: (i % 2 === 0 ? -1 : 1) * (16 + i * 5),
+  };
+});
+---
+
+<div class="rup">
+  <h2 id={idTitulo} class="lema">{plano.titular?.[idioma]}</h2>
+
+  <svg class="papel" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      {
+        trozos.map((trozo, i) => (
+          <clipPath id={`rup-recorte-${i}`}>
+            <polygon points={trozo.puntos} />
+          </clipPath>
+        ))
+      }
+      <g id="rup-hoja">
+        <rect width="1600" height="900" fill="#f6f8f6"></rect>
+        <g fill="none" stroke="#3f7fd9" stroke-width="4" stroke-linecap="round">
+          <rect x="250" y="130" width="1100" height="640" rx="16"></rect>
+          <line x1="250" y1="196" x2="1350" y2="196"></line>
+          <circle cx="292" cy="163" r="9"></circle>
+          <circle cx="324" cy="163" r="9"></circle>
+          <circle cx="356" cy="163" r="9"></circle>
+          <circle cx="470" cy="385" r="100"></circle>
+          <rect x="630" y="398" width="340" height="18" rx="6"></rect>
+          <rect x="630" y="436" width="96" height="30" rx="12"></rect>
+          <rect x="738" y="436" width="126" height="30" rx="12"></rect>
+          <rect x="876" y="436" width="96" height="30" rx="12"></rect>
+          <rect x="300" y="580" width="310" height="140" rx="10"></rect>
+          <path d="M300 580 L610 720 M610 580 L300 720"></path>
+          <rect x="645" y="580" width="310" height="140" rx="10"></rect>
+          <path d="M645 580 L955 720 M955 580 L645 720"></path>
+          <rect x="990" y="580" width="310" height="140" rx="10"></rect>
+          <path d="M990 580 L1300 720 M1300 580 L990 720"></path>
+        </g>
+        <rect x="630" y="318" width="470" height="56" rx="6" fill="#1f2327"></rect>
+      </g>
+    </defs>
+
+    <g class="camara">
+      <rect class="base" width="1600" height="900" fill="#f6f8f6"></rect>
+      {
+        trozos.map((trozo, i) => (
+          <g
+            class="trozo"
+            clip-path={`url(#rup-recorte-${i})`}
+            style={`--dx:${trozo.dx}px;--dy:${trozo.dy}px;--giro:${trozo.giro}deg;transform-origin:${trozo.cx}px ${trozo.cy}px`}
+          >
+            <use href="#rup-hoja" />
+          </g>
+        ))
+      }
+      <g class="grietas">
+        {grietas.map((d) => <path pathLength="1" d={d} />)}
+      </g>
+      <ellipse class="cerco" cx="800" cy="450" rx="640" ry="350" pathLength="1" transform="rotate(-4 800 450)"
+      ></ellipse>
+    </g>
+  </svg>
+</div>
+
+<style>
+  /* Sin motor o con movimiento reducido: el lema ya terminado y sin hoja encima. */
+  .rup {
+    --cerco: 1;
+    --grieta: 1;
+    --avance: 1;
+    display: grid;
+    align-items: center;
+    min-height: 0;
+  }
+
+  .papel {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .rup {
+      /* Tres tiempos: el cerco rojo, las grietas y el vuelo de los trozos. */
+      --cerco: clamp(0, calc(var(--p, 0) / 0.2), 1);
+      --grieta: clamp(0, calc((var(--p, 0) - 0.16) / 0.2), 1);
+      --vuelo: clamp(0, calc((var(--p, 0) - 0.34) / 0.5), 1);
+      /* El vuelo va a saltos, como animación dibujada, y acelera. */
+      --paso: round(nearest, var(--vuelo), 0.04);
+      --avance: calc(var(--paso) * var(--paso));
+    }
+
+    :global(.con-motor) .papel {
+      display: block;
+    }
+  }
+
+  .papel {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* La cámara se aleja un poco mientras se dibuja el cerco. */
+  .camara {
+    transform-origin: 800px 450px;
+    transform: scale(calc(1.1 - 0.1 * var(--cerco)));
+  }
+
+  /* Tapa las juntas entre trozos hasta que empiezan a volar. */
+  .base {
+    opacity: calc(1 - var(--avance) * 1000);
+  }
+
+  .trozo {
+    transform: translate(calc(var(--dx) * var(--avance)), calc(var(--dy) * var(--avance)))
+      rotate(calc(var(--giro) * var(--avance)));
+  }
+
+  .grietas path {
+    fill: none;
+    stroke: #1f2327;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--grieta));
+    opacity: calc(1 - var(--avance) * 30);
+  }
+
+  .cerco {
+    fill: none;
+    stroke: #d8334a;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--cerco));
+    opacity: calc(1 - var(--grieta));
+  }
+
+  /* El lema pasa de letra de boceto a letra exacta y gana su fuera de registro. */
+  .lema {
+    max-width: 13ch;
+    font-size: clamp(2.75rem, 11.5vw, 10rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    font-variation-settings:
+      'MONO' 0,
+      'CASL' calc(1 - var(--avance)),
+      'slnt' calc(-8 * (1 - var(--avance))),
+      'CRSV' 0.5;
+    text-shadow:
+      calc(-0.04em * var(--avance)) 0 var(--rojo-luz),
+      calc(0.04em * var(--avance)) 0 var(--azul-luz);
+    transform: scale(calc(0.88 + 0.12 * var(--avance)));
+    transform-origin: left center;
+  }
+</style>
