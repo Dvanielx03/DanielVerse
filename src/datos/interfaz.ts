@@ -16,6 +16,10 @@ export interface TextosInterfaz {
   campoToma: string;
   campoDireccion: string;
   campoIdioma: string;
+  campoSonido: string;
+  sonido: string;
+  sonidoNo: string;
+  sonidoSi: string;
   proyecto: string;
   pasada: string;
   altAvatar: { boceto: string; tinta: string; final: string };
@@ -44,6 +48,10 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     campoToma: 'Toma',
     campoDireccion: 'Dirección',
     campoIdioma: 'Idioma',
+    campoSonido: 'Sonido',
+    sonido: 'Sonido',
+    sonidoNo: 'no',
+    sonidoSi: 'sí',
     proyecto: 'Proyecto',
     pasada: 'Pasada',
     altAvatar: {
@@ -77,6 +85,10 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     campoToma: 'Take',
     campoDireccion: 'Director',
     campoIdioma: 'Language',
+    campoSonido: 'Sound',
+    sonido: 'Sound',
+    sonidoNo: 'off',
+    sonidoSi: 'on',
     proyecto: 'Project',
     pasada: 'Pass',
     altAvatar: {

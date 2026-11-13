@@ -2,6 +2,7 @@
 // seek(t) deja la película en el estado exacto de t, venga de donde venga.
 
 import { ESCENAS } from '../datos/pelicula.ts';
+import { alInstante, alternarSonido } from './sonido.ts';
 import { codigoDeTiempo, construirIndice, inicioDe, limitar, localizar, reposoDe, type Entrada } from './tiempo.ts';
 
 declare global {
@@ -75,6 +76,7 @@ function pintar(t: number): void {
   raiz.dataset.linea = instante >= nacimiento ? 'viva' : 'oculta';
   if (codigo) codigo.textContent = codigoDeTiempo(instante);
   tPintado = instante;
+  alInstante(entrada, progreso);
 }
 
 function seek(t: number): void {
@@ -106,10 +108,24 @@ function irAPlano(id: string): void {
   if (reposo !== undefined) seek(reposo);
 }
 
+const botonesDeSonido = [...document.querySelectorAll<HTMLButtonElement>('button[data-sonido]')];
+
+/** Enciende o apaga el sonido y deja los botones diciendo la verdad. */
+async function cambiarSonido(): Promise<void> {
+  const encendido = await alternarSonido();
+  raiz.dataset.sonido = encendido ? 'si' : 'no';
+  for (const boton of botonesDeSonido) boton.setAttribute('aria-pressed', String(encendido));
+}
+
 function alPulsarTecla(evento: KeyboardEvent): void {
   if (evento.altKey || evento.ctrlKey || evento.metaKey) return;
   const destino = evento.target;
   if (destino instanceof HTMLElement && destino.closest('input, textarea, select, [contenteditable]')) return;
+  if (evento.key === 's' || evento.key === 'S') {
+    evento.preventDefault();
+    void cambiarSonido();
+    return;
+  }
   if (evento.key !== 'ArrowRight' && evento.key !== 'ArrowLeft') return;
   const actual = activo?.indice ?? 0;
   const siguiente = indice.entradas[actual + (evento.key === 'ArrowRight' ? 1 : -1)];
@@ -119,6 +135,9 @@ function alPulsarTecla(evento: KeyboardEvent): void {
 }
 
 raiz.classList.add('con-motor');
+raiz.dataset.sonido = 'no';
+
+for (const boton of botonesDeSonido) boton.addEventListener('click', () => void cambiarSonido());
 
 for (const enlace of document.querySelectorAll<HTMLAnchorElement>('a[data-ir]')) {
   enlace.addEventListener('click', (evento) => {
@@ -150,6 +169,5 @@ window.pelicula = {
 };
 
 const inicial = reposoDe(indice, decodeURIComponent(location.hash.slice(1)));
-
 if (inicial !== undefined) seek(inicial);
 else pintar(tDelScroll());

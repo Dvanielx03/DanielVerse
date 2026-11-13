@@ -51,6 +51,15 @@ const rodar = plano.lineas?.[idioma]?.[1];
           </a>
         </dd>
       </div>
+      <div class="trazo se-traza campo-sonido" style="--orden:5">
+        <dt class="mono">{textos.campoSonido}</dt>
+        <dd class="a-mano">
+          <button type="button" data-sonido aria-pressed="false" aria-label={textos.sonido}>
+            <span class="no">{textos.sonidoNo}</span>
+            <span class="si">{textos.sonidoSi}</span>
+          </button>
+        </dd>
+      </div>
     </dl>
 
     <p class="rodar a-mano se-traza" style="--orden:7">
@@ -128,8 +137,43 @@ const rodar = plano.lineas?.[idioma]?.[1];
 
   .campos {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: 0.7fr 0.7fr 1.3fr 1fr 1fr;
     gap: 10px;
+  }
+
+  /* El sonido necesita el motor: sin JavaScript su campo no aparece. */
+  .campos .campo-sonido {
+    display: none;
+  }
+
+  :global(.con-motor) .campos .campo-sonido {
+    display: grid;
+  }
+
+  :global(html:not(.con-motor)) .campos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* El interruptor de sonido se escribe como el de idioma: la opción elegida, resaltada. */
+  .campos button {
+    display: inline-flex;
+    gap: 2px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--tinta-azul);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .campos button span {
+    padding: 0 6px;
+  }
+
+  .campos button[aria-pressed='false'] .no,
+  .campos button[aria-pressed='true'] .si {
+    background: var(--amarillo);
+    color: var(--grafito);
   }
 
   .campos div {
@@ -203,8 +247,13 @@ const rodar = plano.lineas?.[idioma]?.[1];
       padding-top: 46px;
     }
 
-    .campos {
+    .campos,
+    :global(html:not(.con-motor)) .campos {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .campo-sonido {
+      grid-column: 1 / -1;
     }
   }
 </style>

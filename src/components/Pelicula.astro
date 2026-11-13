@@ -38,6 +38,10 @@ const indice = construirIndice(ESCENAS);
     <a class="salto" href="#hoja">{textos.saltarAHoja}</a>
     <header class="controles">
       <h1 class="solo-lectores">{textos.titulo}</h1>
+      <button type="button" data-sonido aria-pressed="false">
+        <span class="altavoz" aria-hidden="true"><i></i><i></i><i></i></span>
+        {textos.sonido}
+      </button>
       <a data-idioma href={getRelativeLocaleUrl(otroIdioma, '')} lang={otroIdioma} hreflang={otroIdioma}>
         {textos.cambiarIdioma}
       </a>
@@ -80,27 +84,84 @@ const indice = construirIndice(ESCENAS);
     gap: 8px;
   }
 
-  .controles a {
+  .controles :is(a, button) {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     min-height: 36px;
     padding: 4px 12px;
     border: 1.5px solid var(--texto);
     background: var(--fondo);
     color: var(--texto);
+    font: inherit;
     font-size: 0.8125rem;
     font-weight: 700;
     text-decoration: none;
+    cursor: pointer;
   }
 
-  .controles a:hover {
+  .controles :is(a, button):hover {
     background: var(--texto);
     color: var(--fondo);
   }
 
+  /* El sonido necesita el motor: sin JavaScript el botón no aparece. */
+  .controles button {
+    display: none;
+  }
+
+  :global(.con-motor) .controles button {
+    display: inline-flex;
+  }
+
+  .controles button[aria-pressed='true'] {
+    border-color: var(--amarillo);
+    background: var(--amarillo);
+    color: var(--grafito);
+  }
+
+  /* Tres barras de vúmetro: quietas y bajas con el sonido apagado; a saltos cuando suena. */
+  .altavoz {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+  }
+
+  .altavoz i {
+    width: 3px;
+    height: 3px;
+    background: currentColor;
+  }
+
+  button[aria-pressed='true'] .altavoz i {
+    height: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    button[aria-pressed='true'] .altavoz i {
+      animation: vumetro 0.667s steps(4, end) infinite;
+    }
+
+    button[aria-pressed='true'] .altavoz i:nth-child(2) {
+      animation-delay: -0.25s;
+    }
+
+    button[aria-pressed='true'] .altavoz i:nth-child(3) {
+      animation-delay: -0.45s;
+    }
+  }
+
+  @keyframes vumetro {
+    50% {
+      height: 30%;
+    }
+  }
+
   @media (pointer: coarse) {
-    .controles a {
+    .controles :is(a, button) {
       min-height: 44px;
     }
   }
+
 </style>
