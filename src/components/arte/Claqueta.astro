@@ -54,7 +54,8 @@ const rodar = plano.lineas?.[idioma]?.[1];
       <div class="trazo se-traza campo-sonido" style="--orden:5">
         <dt class="mono">{textos.campoSonido}</dt>
         <dd class="a-mano">
-          <button type="button" data-sonido aria-pressed="false" aria-label={textos.sonido}>
+          <button type="button" data-sonido aria-pressed="false">
+            <span class="solo-lectores">{textos.sonido}:</span>
             <span class="no">{textos.sonidoNo}</span>
             <span class="si">{textos.sonidoSi}</span>
           </button>
