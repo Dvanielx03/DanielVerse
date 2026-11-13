@@ -1,0 +1,142 @@
+---
+// E5-P1 · El truco: la película resulta ser una línea de tiempo. El cabezal marca el scroll real.
+import { ESCENAS, type Escena, type Idioma, type Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, p) => suma + p.pantallas, 0);
+// Las tres pasadas de la escena 2 dan nombre a la pista de capas.
+const pasadas = ESCENAS.find((escena) => escena.id === 'E2')?.planos.map((p) => p.nombre[idioma]) ?? [];
+---
+
+<div class="truco">
+  <div class="truco__texto">
+    <h2 id={idTitulo} class="truco__titular">{plano.titular?.[idioma]}</h2>
+    <pre class="truco__codigo mono"><code>const t = scroll / pantalla;
+{plano.lineas?.[idioma][0]};</code></pre>
+  </div>
+
+  <div class="truco__editor" aria-hidden="true">
+    <div class="truco__pista">
+      {ESCENAS.map((escena) => <span style={`flex-grow:${pantallasDe(escena)}`}>{escena.nombre[idioma]}</span>)}
+    </div>
+    <div class="truco__pista truco__pista--capas">
+      {pasadas.map((pasada) => <span>{pasada}</span>)}
+    </div>
+    <div class="truco__pista truco__pista--sonido">
+      <span style="flex-grow:3"></span><span style="flex-grow:7"></span><span style="flex-grow:10"></span><span
+        style="flex-grow:5"></span>
+    </div>
+    <i class="truco__cabezal"></i>
+  </div>
+</div>
+
+<style>
+  .truco {
+    --sube: 1;
+    display: grid;
+    align-content: center;
+    gap: clamp(20px, 4vw, 44px);
+    min-height: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .truco {
+      --sube: clamp(0, calc(var(--p, 0) / 0.35), 1);
+    }
+  }
+
+  .truco__texto {
+    display: grid;
+    justify-items: start;
+    gap: clamp(12px, 2vw, 20px);
+  }
+
+  .truco__titular {
+    font-size: clamp(2.3rem, 7.4vw, 5.75rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    text-shadow:
+      -0.035em 0 var(--rojo-luz),
+      0.035em 0 var(--azul-luz);
+  }
+
+  .truco__codigo {
+    margin: 0;
+    padding: 12px 18px;
+    border-left: 3px solid var(--amarillo);
+    background: rgb(243 235 221 / 0.06);
+    color: var(--amarillo);
+    font-size: clamp(0.9rem, 2vw, 1.3rem);
+    white-space: pre-wrap;
+  }
+
+  /* El editor sube desde abajo mientras el plano avanza. */
+  .truco__editor {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    padding: 14px 0;
+    border-block: 1.5px solid var(--linea);
+    translate: 0 calc((1 - var(--sube)) * 60px);
+    opacity: var(--sube);
+  }
+
+  .truco__pista {
+    display: flex;
+    gap: 3px;
+    height: clamp(28px, 5vw, 44px);
+  }
+
+  .truco__pista span {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    overflow: hidden;
+    background: var(--pantalla);
+    color: var(--sala);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .truco__pista--capas span {
+    background: none;
+    box-shadow: inset 0 0 0 2px var(--azul-luz);
+    color: var(--azul-luz);
+  }
+
+  .truco__pista--sonido span {
+    background: repeating-linear-gradient(90deg, var(--rojo-luz) 0 3px, transparent 3px 7px);
+    opacity: 0.8;
+  }
+
+  /* El cabezal está donde está el scroll de verdad: usa el tiempo global de la película. */
+  .truco__cabezal {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--t, 0) * 100%);
+    width: 3px;
+    background: var(--amarillo);
+  }
+
+  .truco__cabezal::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -7px;
+    border: 8px solid transparent;
+    border-top-color: var(--amarillo);
+  }
+</style>

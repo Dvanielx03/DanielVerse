@@ -1,0 +1,115 @@
+---
+// E5-P3 · Y Si Pixel: un cuadro pequeño de estética píxel junto al enlace al canal.
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+
+// Un signo de interrogación de 5 x 7 píxeles y unas cuantas estrellas.
+const pregunta = ['.###.', '#...#', '....#', '...#.', '..#..', '.....', '..#..'];
+const pixeles = pregunta.flatMap((fila, y) => [...fila].map((c, x) => (c === '#' ? { x: 22 + x, y: 4 + y } : null))).filter((p) => p !== null);
+const estrellas = [
+  [4, 3],
+  [9, 8],
+  [14, 2],
+  [36, 5],
+  [41, 11],
+  [33, 13],
+  [6, 14],
+  [44, 3],
+];
+---
+
+<div class="pix">
+  <svg class="pix__cuadro" viewBox="0 0 48 27" shape-rendering="crispEdges" aria-hidden="true">
+    <rect width="48" height="27" fill="#1b1440"></rect>
+    {estrellas.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#f3ebdd" />)}
+    <rect x="0" y="20" width="48" height="7" fill="#2b2f6b"></rect>
+    <rect x="0" y="20" width="48" height="1" fill="#6ea2ff"></rect>
+    {pixeles.map((p) => <rect x={p.x} y={p.y} width="1" height="1" fill="#ffc93c" />)}
+    <rect x="8" y="16" width="3" height="4" fill="#ff5a47"></rect>
+    <rect x="9" y="14" width="1" height="2" fill="#f3ebdd"></rect>
+    <rect x="14" y="18" width="3" height="2" fill="#f3ebdd"></rect>
+    <rect x="17" y="17" width="1" height="1" fill="#f3ebdd"></rect>
+  </svg>
+
+  <div class="pix__texto">
+    <h2 id={idTitulo} class="pix__titular mono">{plano.titular?.[idioma]}</h2>
+    <p class="pix__linea">{plano.lineas?.[idioma][0]}</p>
+    {
+      plano.enlaces?.map((enlace) => (
+        <a class="pix__enlace" href={enlace.url}>
+          {enlace.etiqueta[idioma]}
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .pix {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(16px, 4vw, 56px);
+    min-height: 0;
+  }
+
+  .pix__cuadro {
+    width: 100%;
+    max-height: 60svh;
+    border: 4px solid var(--pantalla);
+    image-rendering: pixelated;
+    rotate: -2deg;
+  }
+
+  .pix__texto {
+    display: grid;
+    justify-items: start;
+    gap: clamp(12px, 2vw, 20px);
+  }
+
+  .pix__titular {
+    font-size: clamp(2.2rem, 6.6vw, 5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    color: var(--amarillo);
+  }
+
+  .pix__linea {
+    max-width: 24ch;
+    font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+    color: var(--texto-2);
+  }
+
+  .pix__enlace {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 18px;
+    background: var(--amarillo);
+    color: var(--grafito);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .pix__enlace:hover {
+    background: var(--pantalla);
+  }
+
+  @media (max-width: 760px) {
+    .pix {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+    }
+
+    .pix__cuadro {
+      max-height: 30svh;
+    }
+  }
+</style>

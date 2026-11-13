@@ -1,0 +1,118 @@
+---
+// E5-P2 · Las herramientas propias: dos claquetas con su sello de licencia.
+import { INTERFAZ } from '../../datos/interfaz';
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const textos = INTERFAZ[idioma];
+const descripciones = [textos.herramientas.motion, textos.herramientas.flow];
+---
+
+<div class="herr">
+  <h2 id={idTitulo} class="solo-lectores">{plano.titular?.[idioma]}</h2>
+  <ul class="herr__lista">
+    {
+      plano.enlaces?.map((enlace, i) => (
+        <li class="herr__tarjeta">
+          <span class="herr__barras" aria-hidden="true" />
+          <div class="herr__cuerpo">
+            <h3 class="herr__nombre">{enlace.etiqueta[idioma]}</h3>
+            <p class="herr__desc">{descripciones[i]}</p>
+            <a class="herr__enlace" href={enlace.url}>
+              GitHub
+            </a>
+            {plano.sello && <p class="herr__sello">{plano.sello[idioma]}</p>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .herr {
+    align-self: center;
+    min-height: 0;
+  }
+
+  .herr__lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: clamp(14px, 3vw, 36px);
+  }
+
+  .herr__tarjeta:nth-child(odd) {
+    rotate: -1.5deg;
+  }
+
+  .herr__tarjeta:nth-child(even) {
+    rotate: 1.2deg;
+  }
+
+  .herr__barras {
+    display: block;
+    height: clamp(20px, 3.4vw, 34px);
+    background: repeating-linear-gradient(-58deg, var(--pantalla) 0 20px, var(--sala) 20px 40px);
+    box-shadow: inset 0 0 0 3px var(--pantalla);
+  }
+
+  .herr__cuerpo {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: clamp(8px, 1.6vw, 16px);
+    padding: clamp(16px, 3vw, 34px);
+    border: 3px solid var(--pantalla);
+    border-top: 0;
+    background: rgb(14 18 32 / 0.72);
+  }
+
+  .herr__nombre {
+    font-size: clamp(1.8rem, 4.6vw, 3.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .herr__desc {
+    max-width: 28ch;
+    font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+    color: var(--texto-2);
+  }
+
+  .herr__enlace {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 18px;
+    background: var(--pantalla);
+    color: var(--sala);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .herr__enlace:hover {
+    background: var(--amarillo);
+  }
+
+  .herr__sello {
+    position: absolute;
+    top: clamp(10px, 2vw, 22px);
+    right: clamp(10px, 2vw, 22px);
+    padding: 4px 12px 3px;
+    border: 3px double var(--rojo-luz);
+    border-radius: 4px;
+    color: var(--rojo-luz);
+    font-size: clamp(0.7rem, 1.3vw, 0.95rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    rotate: 6deg;
+  }
+</style>
