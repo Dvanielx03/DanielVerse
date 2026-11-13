@@ -19,6 +19,10 @@ export interface TextosInterfaz {
   proyecto: string;
   pasada: string;
   altAvatar: { boceto: string; tinta: string; final: string };
+  capaArquitectura: string;
+  capaDatos: string;
+  capasAyuda: string;
+  herramientas: { motion: string; flow: string };
 }
 
 export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
@@ -43,6 +47,13 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
       tinta: 'El mismo dibujo de Daniel pasado a tinta',
       final: 'Ilustración final de Daniel con los brazos cruzados, sobre fondo oscuro',
     },
+    capaArquitectura: 'Arquitectura',
+    capaDatos: 'Datos',
+    capasAyuda: 'Capas del plano',
+    herramientas: {
+      motion: 'Skill para crear videos con HTML y JavaScript',
+      flow: 'Skill de producción audiovisual para Google Flow',
+    },
   },
   en: {
     titulo: 'Daniel Mayorga · f(t)',
@@ -64,6 +75,13 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
       boceto: 'Blue pencil sketch of Daniel with his arms crossed',
       tinta: 'The same drawing of Daniel in ink',
       final: 'Final illustration of Daniel with his arms crossed, on a dark background',
+    },
+    capaArquitectura: 'Architecture',
+    capaDatos: 'Facts',
+    capasAyuda: 'Layers of this shot',
+    herramientas: {
+      motion: 'A skill for making videos with HTML and JavaScript',
+      flow: 'A video production skill for Google Flow',
     },
   },
 };

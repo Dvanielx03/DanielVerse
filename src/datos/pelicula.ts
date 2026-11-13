@@ -4,7 +4,25 @@
 export type Idioma = 'es' | 'en';
 export type Mundo = 'papel' | 'sala';
 export type Bilingue = Record<Idioma, string>;
-export type Arte = 'claqueta' | 'convencional' | 'ruptura' | 'avatar-boceto' | 'avatar-tinta' | 'avatar-final';
+export type Arte =
+  | 'claqueta'
+  | 'convencional'
+  | 'ruptura'
+  | 'avatar-boceto'
+  | 'avatar-tinta'
+  | 'avatar-final'
+  | 'reto'
+  | 'pared'
+  | 'proyecto'
+  | 'diptico'
+  | 'inspeccion'
+  | 'truco'
+  | 'herramientas'
+  | 'pixel'
+  | 'creditos'
+  | 'contacto';
+export type Dibujo = 'robot' | 'campus' | 'vision' | 'acceso';
+export type Lista = Record<Idioma, string[]>;
 
 export interface Enlace {
   etiqueta: Bilingue;
@@ -26,6 +44,13 @@ export interface Plano {
   arte?: Arte;
   /** El plano entra con un fundido de cuatro fotogramas en vez de corte seco. */
   fundido?: boolean;
+  /** Retos: el esquema que acompaña al texto y su fecha. */
+  dibujo?: Dibujo;
+  fecha?: string;
+  /** Proyectos: color de acento, pasos de cada lado del díptico y capas de arquitectura. */
+  acento?: string;
+  pasos?: { convencional: Lista; propio: Lista };
+  capas?: Lista;
 }
 
 export interface Escena {
@@ -142,6 +167,9 @@ export const ESCENAS: Escena[] = [
     planos: [
       {
         id: 'E3-P1',
+        arte: 'reto',
+        dibujo: 'robot',
+        fecha: '2024–25',
         nombre: { es: 'Robótica', en: 'Robotics' },
         pantallas: 0.9,
         mundo: 'sala',
@@ -153,6 +181,9 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E3-P2',
+        arte: 'reto',
+        dibujo: 'campus',
+        fecha: '2026',
         nombre: { es: 'El campus bajo presión', en: 'El campus bajo presión' },
         pantallas: 0.9,
         mundo: 'sala',
@@ -170,6 +201,9 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E3-P3',
+        arte: 'reto',
+        dibujo: 'vision',
+        fecha: '2026',
         nombre: { es: 'Visual Agents', en: 'Visual Agents' },
         pantallas: 0.9,
         mundo: 'sala',
@@ -181,6 +215,9 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E3-P4',
+        arte: 'reto',
+        dibujo: 'acceso',
+        fecha: '2026',
         nombre: { es: 'Access Hub', en: 'Access Hub' },
         pantallas: 1.05,
         mundo: 'sala',
@@ -199,6 +236,7 @@ export const ESCENAS: Escena[] = [
     planos: [
       {
         id: 'E4-P0',
+        arte: 'pared',
         nombre: { es: 'Tres proyectos', en: 'Three projects' },
         pantallas: 1,
         mundo: 'sala',
@@ -210,6 +248,8 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-X1',
+        arte: 'proyecto',
+        acento: '#00D9A3',
         nombre: { es: 'XEON · Claqueta', en: 'XEON · Slate' },
         pantallas: 1,
         mundo: 'sala',
@@ -222,6 +262,18 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-X2',
+        arte: 'diptico',
+        acento: '#00D9A3',
+        pasos: {
+          convencional: {
+            es: ['El cliente pregunta', 'El modelo responde un precio'],
+            en: ['The customer asks', 'The model answers with a price'],
+          },
+          propio: {
+            es: ['El cliente pregunta', 'La IA interpreta', 'El backend calcula', 'Borrador de cotización'],
+            en: ['The customer asks', 'AI interprets', 'The backend computes', 'Draft quote'],
+          },
+        },
         nombre: { es: 'XEON · Díptico', en: 'XEON · Diptych' },
         pantallas: 1,
         mundo: 'sala',
@@ -233,6 +285,12 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-X3',
+        arte: 'inspeccion',
+        acento: '#00D9A3',
+        capas: {
+          es: ['Entradas: API y terminal', 'Aplicación: casos de uso y puertos', 'Dominio: dinero, producto y cotización', 'Adaptadores: catálogo, inventario, modelo y WhatsApp'],
+          en: ['Entry points: API and terminal', 'Application: use cases and ports', 'Domain: money, product and quote', 'Adapters: catalog, inventory, model and WhatsApp'],
+        },
         nombre: { es: 'XEON · Inspección', en: 'XEON · Inspection' },
         pantallas: 1,
         mundo: 'sala',
@@ -244,6 +302,8 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-T1',
+        arte: 'proyecto',
+        acento: '#6EA2FF',
         nombre: { es: 'Tool Rental · Claqueta', en: 'Tool Rental · Slate' },
         pantallas: 1,
         mundo: 'sala',
@@ -256,6 +316,15 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-T2',
+        arte: 'diptico',
+        acento: '#6EA2FF',
+        pasos: {
+          convencional: { es: ['Un formulario', 'Una tabla'], en: ['A form', 'A table'] },
+          propio: {
+            es: ['Catálogo', 'Alquiler', 'Devolución'],
+            en: ['Catalog', 'Rental', 'Return'],
+          },
+        },
         nombre: { es: 'Tool Rental · Díptico', en: 'Tool Rental · Diptych' },
         pantallas: 1,
         mundo: 'sala',
@@ -267,6 +336,12 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-T3',
+        arte: 'inspeccion',
+        acento: '#6EA2FF',
+        capas: {
+          es: ['Seguridad por roles', 'Aplicación', 'Dominio', 'Adaptadores'],
+          en: ['Role-based security', 'Application', 'Domain', 'Adapters'],
+        },
         nombre: { es: 'Tool Rental · Inspección', en: 'Tool Rental · Inspection' },
         pantallas: 1,
         mundo: 'sala',
@@ -278,6 +353,8 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-R1',
+        arte: 'proyecto',
+        acento: '#FF5A47',
         nombre: { es: 'ResumeLens · Claqueta', en: 'ResumeLens · Slate' },
         pantallas: 1,
         mundo: 'sala',
@@ -289,6 +366,18 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-R2',
+        arte: 'diptico',
+        acento: '#FF5A47',
+        pasos: {
+          convencional: {
+            es: ['El CV', 'El modelo pone una nota'],
+            en: ['The résumé', 'The model gives a grade'],
+          },
+          propio: {
+            es: ['CV y puesto', 'El modelo valora la evidencia', 'Python calcula el porcentaje', 'Informe con citas'],
+            en: ['Résumé and role', 'The model weighs the evidence', 'Python computes the score', 'Report with quotes'],
+          },
+        },
         nombre: { es: 'ResumeLens · Díptico', en: 'ResumeLens · Diptych' },
         pantallas: 1,
         mundo: 'sala',
@@ -303,6 +392,12 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E4-R3',
+        arte: 'inspeccion',
+        acento: '#FF5A47',
+        capas: {
+          es: ['Interfaz: Streamlit', 'Servicios: documentos, evaluación e informe', 'Dominio: criterios y fórmula', 'Modelo: Gemini u OpenAI con LangChain'],
+          en: ['Interface: Streamlit', 'Services: documents, evaluation and report', 'Domain: criteria and formula', 'Model: Gemini or OpenAI through LangChain'],
+        },
         nombre: { es: 'ResumeLens · Inspección', en: 'ResumeLens · Inspection' },
         pantallas: 1,
         mundo: 'sala',
@@ -320,6 +415,7 @@ export const ESCENAS: Escena[] = [
     planos: [
       {
         id: 'E5-P1',
+        arte: 'truco',
         nombre: { es: 'El truco', en: 'The trick' },
         pantallas: 1,
         mundo: 'sala',
@@ -328,6 +424,7 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E5-P2',
+        arte: 'herramientas',
         nombre: { es: 'Las herramientas', en: 'The tools' },
         pantallas: 1,
         mundo: 'sala',
@@ -340,6 +437,7 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E5-P3',
+        arte: 'pixel',
         nombre: { es: 'Y Si Pixel', en: 'Y Si Pixel' },
         pantallas: 1,
         mundo: 'sala',
@@ -363,6 +461,7 @@ export const ESCENAS: Escena[] = [
     planos: [
       {
         id: 'E6-P1',
+        arte: 'creditos',
         nombre: { es: 'Créditos', en: 'Credits' },
         pantallas: 1,
         mundo: 'sala',
@@ -382,6 +481,7 @@ export const ESCENAS: Escena[] = [
       },
       {
         id: 'E6-P2',
+        arte: 'contacto',
         nombre: { es: 'Contacto', en: 'Contact' },
         pantallas: 1,
         mundo: 'sala',
