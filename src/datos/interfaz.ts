@@ -19,6 +19,8 @@ export interface TextosInterfaz {
   proyecto: string;
   pasada: string;
   altAvatar: { boceto: string; tinta: string; final: string };
+  capaBoceto: string;
+  capaBocetoNota: string;
   capaArquitectura: string;
   capaDatos: string;
   capasAyuda: string;
@@ -47,6 +49,8 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
       tinta: 'El mismo dibujo de Daniel pasado a tinta',
       final: 'Ilustración final de Daniel con los brazos cruzados, sobre fondo oscuro',
     },
+    capaBoceto: 'Boceto',
+    capaBocetoNota: 'la idea, antes del código',
     capaArquitectura: 'Arquitectura',
     capaDatos: 'Datos',
     capasAyuda: 'Capas del plano',
@@ -76,6 +80,8 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
       tinta: 'The same drawing of Daniel in ink',
       final: 'Final illustration of Daniel with his arms crossed, on a dark background',
     },
+    capaBoceto: 'Sketch',
+    capaBocetoNota: 'the idea, before the code',
     capaArquitectura: 'Architecture',
     capaDatos: 'Facts',
     capasAyuda: 'Layers of this shot',

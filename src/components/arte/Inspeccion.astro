@@ -1,7 +1,8 @@
 ---
-// E4 · Plano de inspección: el visitante cambia de capa. Funciona sin JavaScript, con radios.
+// E4 · Plano de inspección: una mesa de capas. El visitante elige qué capa del proyecto mira.
+// Funciona sin JavaScript, con radios.
 import { INTERFAZ } from '../../datos/interfaz';
-import type { Idioma, Plano } from '../../datos/pelicula';
+import { ESCENAS, type Idioma, type Plano } from '../../datos/pelicula';
 
 interface Props {
   plano: Plano;
@@ -11,153 +12,462 @@ interface Props {
 
 const { plano, idioma, idTitulo } = Astro.props;
 const textos = INTERFAZ[idioma];
-const capas = plano.capas?.[idioma] ?? [];
 const grupo = `capa-${plano.id}`;
+const [proyecto, rotulo] = plano.nombre[idioma].split(' · ');
+
+// La idea a lápiz sale del díptico del mismo proyecto: el más cercano hacia atrás.
+const planos = ESCENAS.flatMap((escena) => escena.planos);
+const aqui = planos.findIndex((p) => p.id === plano.id);
+const diptico = planos
+  .slice(0, aqui)
+  .reverse()
+  .find((p) => p.arte === 'diptico');
+const idea = diptico?.pasos?.propio[idioma] ?? [];
+const frase = diptico?.titular?.[idioma];
+
+// «Dominio: dinero, producto y cotización» se parte en nombre y detalle.
+const capas = (plano.capas?.[idioma] ?? []).map((capa) => {
+  const corte = capa.indexOf(':');
+  return corte === -1
+    ? { nombre: capa, detalle: undefined }
+    : { nombre: capa.slice(0, corte), detalle: capa.slice(corte + 1).trim() };
+});
+
+// Los límites se dicen tan claro como los logros: van aparte, con su sello.
+const hechos = (plano.lineas?.[idioma] ?? []).map((linea) => {
+  const limite = /^(Límite|Limit):\s*/.exec(linea);
+  return limite ? { texto: linea.slice(limite[0].length), limite: limite[1] } : { texto: linea, limite: undefined };
+});
+
+const pestanas = [
+  { clave: 'boceto', nombre: textos.capaBoceto },
+  { clave: 'arquitectura', nombre: textos.capaArquitectura },
+  { clave: 'datos', nombre: textos.capaDatos },
+];
+const dosCifras = (n: number) => String(n).padStart(2, '0');
 ---
 
 <div class="insp" style={`--acento:${plano.acento}`}>
-  <h2 id={idTitulo} class="insp__titulo mono">{plano.nombre[idioma]}</h2>
+  <div class="insp__mesa" role="radiogroup" aria-label={textos.capasAyuda}>
+    <h2 id={idTitulo} class="insp__cabecera">
+      <span class="insp__proyecto">{proyecto}</span>
+      <span class="insp__rotulo mono">{rotulo}</span>
+    </h2>
 
-  <fieldset class="insp__capas">
-    <legend class="solo-lectores">{textos.capasAyuda}</legend>
+    {
+      pestanas.map((pestana, i) => (
+        <>
+          <input
+            class={`solo-lectores es-${pestana.clave}`}
+            type="radio"
+            name={grupo}
+            id={`${grupo}-${pestana.clave}`}
+            checked={pestana.clave === 'arquitectura'}
+          />
+          <label for={`${grupo}-${pestana.clave}`} style={`--fila:${i}`}>
+            <span class="mono">{dosCifras(i + 1)}</span>
+            {pestana.nombre}
+          </label>
+        </>
+      ))
+    }
 
-    <input class="solo-lectores es-arquitectura" type="radio" name={grupo} id={`${grupo}-arquitectura`} checked />
-    <label for={`${grupo}-arquitectura`}>{textos.capaArquitectura}</label>
-    <input class="solo-lectores es-datos" type="radio" name={grupo} id={`${grupo}-datos`} />
-    <label for={`${grupo}-datos`}>{textos.capaDatos}</label>
+    <div class="insp__panel insp__panel--boceto">
+      <p class="insp__marca mono">{dosCifras(1)} · {textos.capaBoceto}</p>
+      <div class="insp__hoja folio">
+        <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
+        <p class="insp__idea a-mano">{frase}</p>
+        <ol class="insp__trazos">
+          {idea.map((paso) => <li class="trazo a-mano">{paso}</li>)}
+        </ol>
+        <p class="insp__apunte a-mano">{textos.capaBocetoNota}</p>
+      </div>
+    </div>
 
     <div class="insp__panel insp__panel--arquitectura">
+      <p class="insp__marca mono">{dosCifras(2)} · {textos.capaArquitectura}</p>
       <ol class="insp__pila">
-        {capas.map((capa, i) => <li style={`--n:${i}`}>{capa}</li>)}
+        {
+          capas.map((capa, i) => (
+            <li style={`--n:${i}`}>
+              <span class="insp__numero mono">{dosCifras(i + 1)}</span>
+              <span class="insp__capa">
+                <strong>{capa.nombre}</strong>
+                {capa.detalle && <span>{capa.detalle}</span>}
+              </span>
+            </li>
+          ))
+        }
       </ol>
     </div>
 
     <div class="insp__panel insp__panel--datos">
+      <p class="insp__marca mono">{dosCifras(3)} · {textos.capaDatos}</p>
       <ul class="insp__hechos">
-        {plano.lineas?.[idioma].map((linea) => <li>{linea}</li>)}
+        {
+          hechos.map((hecho) =>
+            hecho.limite ? (
+              <li class="insp__limite">
+                <span class="mono">{hecho.limite}</span>
+                {hecho.texto}
+              </li>
+            ) : (
+              <li>{hecho.texto}</li>
+            ),
+          )
+        }
       </ul>
-      {
-        plano.enlaces?.map((enlace) => (
-          <a class="insp__enlace" href={enlace.url}>
-            {enlace.etiqueta[idioma]}
-          </a>
-        ))
-      }
     </div>
-  </fieldset>
+
+    {
+      plano.enlaces?.map((enlace) => (
+        <a class="insp__enlace" href={enlace.url}>
+          {enlace.etiqueta[idioma]}
+        </a>
+      ))
+    }
+  </div>
 </div>
 
 <style>
+  /* Sin motor: la mesa quieta. */
   .insp {
-    align-self: center;
+    --abre: 1;
+    align-self: stretch;
     display: grid;
-    gap: clamp(12px, 2vw, 20px);
-    width: min(940px, 100%);
     min-height: 0;
   }
 
-  .insp__titulo {
+  /* Acercamiento: las capas se separan a medida que avanza el plano. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .insp {
+      --abre: clamp(0, calc(var(--p, 0) / 0.6), 1);
+    }
+  }
+
+  /* A la izquierda, la capa elegida; a la derecha, el proyecto, el selector y el enlace. */
+  .insp__mesa {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(190px, 0.6fr);
+    grid-template-rows: auto repeat(3, auto) minmax(0, 1fr) auto;
+    column-gap: clamp(16px, 3vw, 48px);
+    row-gap: 8px;
+    min-height: 0;
+  }
+
+  .insp__cabecera {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    gap: 4px;
+    margin-bottom: clamp(8px, 2vw, 20px);
+  }
+
+  .insp__proyecto {
+    font-size: clamp(2rem, 4.6vw, 4rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+    color: var(--acento);
+    overflow-wrap: anywhere;
+  }
+
+  .insp__rotulo {
+    order: -1;
     font-size: 0.75rem;
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: var(--acento);
+    color: var(--texto-2);
   }
 
-  .insp__capas {
+  /* El selector: una pila de capas, como en un programa de animación. */
+  .insp__mesa label {
+    grid-column: 2;
+    grid-row: calc(var(--fila) + 2);
     display: flex;
-    flex-wrap: wrap;
-    gap: 0;
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-
-  /* Pestañas de capa */
-  .insp__capas label {
-    display: inline-flex;
     align-items: center;
-    min-height: 44px;
-    padding: 8px 20px;
-    border: 2px solid var(--acento);
-    border-bottom: 0;
-    color: var(--acento);
+    gap: 12px;
+    min-height: 48px;
+    padding: 8px 14px;
+    border: 2px solid color-mix(in srgb, var(--acento) 55%, transparent);
+    color: var(--texto);
+    font-size: clamp(0.95rem, 1.5vw, 1.15rem);
     font-weight: 800;
     cursor: pointer;
   }
 
-  .insp__capas label + input + label {
-    border-left: 0;
+  .insp__mesa label .mono {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--acento);
   }
 
-  .insp__capas input:checked + label {
+  .insp__mesa label:hover {
+    border-color: var(--acento);
+  }
+
+  .insp__mesa input:checked + label {
+    border-color: var(--acento);
     background: var(--acento);
+    color: var(--sala);
+    box-shadow: -8px 0 0 var(--pantalla);
+  }
+
+  .insp__mesa input:checked + label .mono {
     color: var(--sala);
   }
 
-  .insp__capas input:focus-visible + label {
+  .insp__mesa input:focus-visible + label {
     outline: 3px solid var(--amarillo);
     outline-offset: 3px;
   }
 
-  .insp__panel {
-    display: none;
-    flex-basis: 100%;
-    min-height: clamp(220px, 44svh, 380px);
-    padding: clamp(16px, 3vw, 36px);
-    border: 2px solid var(--acento);
-    background: rgb(14 18 32 / 0.72);
-  }
-
-  .es-arquitectura:checked ~ .insp__panel--arquitectura,
-  .es-datos:checked ~ .insp__panel--datos {
-    display: grid;
-    align-content: center;
-    gap: clamp(12px, 2vw, 20px);
-    justify-items: start;
-  }
-
-  /* La arquitectura como capas apiladas, cada una un poco más adentro. */
-  .insp__pila {
-    display: grid;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .insp__pila li {
-    margin-left: calc(var(--n) * clamp(10px, 3vw, 44px));
-    padding: 10px 16px;
-    border: 2px solid var(--acento);
-    border-left-width: 10px;
-    font-size: clamp(0.9rem, 1.8vw, 1.2rem);
-    font-weight: 600;
-  }
-
-  .insp__hechos {
-    display: grid;
-    gap: 8px;
-    font-size: clamp(1rem, 2.2vw, 1.5rem);
-    font-weight: 600;
-  }
-
-  .insp__hechos li {
-    padding-left: 18px;
-    border-left: 3px solid var(--acento);
-  }
-
   .insp__enlace {
+    grid-column: 2;
+    grid-row: 6;
+    justify-self: start;
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
-    padding: 8px 18px;
-    background: var(--acento);
+    min-height: 48px;
+    padding: 10px 20px;
+    background: var(--pantalla);
     color: var(--sala);
     font-weight: 800;
     text-decoration: none;
   }
 
   .insp__enlace:hover {
-    background: var(--pantalla);
+    background: var(--amarillo);
+  }
+
+  /* La mesa de inspección: cuadrícula tenue en el color del proyecto y marcas de corte. */
+  .insp__panel {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    display: none;
+    min-height: clamp(260px, 50svh, 520px);
+    padding: clamp(40px, 5vw, 64px) clamp(16px, 3.4vw, 48px) clamp(20px, 3vw, 40px);
+    border: 2px solid var(--acento);
+    background:
+      linear-gradient(color-mix(in srgb, var(--acento) 9%, transparent) 1px, transparent 1px) 0 0 / 100% 32px,
+      linear-gradient(90deg, color-mix(in srgb, var(--acento) 9%, transparent) 1px, transparent 1px) 0 0 / 32px 100%,
+      rgb(10 13 24 / 0.78);
+    overflow: hidden;
+  }
+
+  .es-boceto:checked ~ .insp__panel--boceto,
+  .es-arquitectura:checked ~ .insp__panel--arquitectura,
+  .es-datos:checked ~ .insp__panel--datos {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+  }
+
+  .insp__marca {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 6px 12px;
+    background: var(--acento);
+    color: var(--sala);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* Capa 1 · La idea, a lápiz sobre su hoja. */
+  .insp__panel--boceto {
+    justify-items: center;
+  }
+
+  .insp__hoja {
+    justify-self: center;
+    display: grid;
+    gap: clamp(12px, 2vw, 22px);
+    width: min(100%, 720px);
+    padding: clamp(34px, 4vw, 48px) clamp(16px, 3vw, 36px) clamp(18px, 3vw, 30px);
+    rotate: -1.4deg;
+    box-shadow: 10px 12px 0 rgb(4 6 12 / 0.5);
+  }
+
+  .insp__idea {
+    font-size: clamp(1.2rem, 2.6vw, 1.9rem);
+    line-height: 1.15;
+    color: var(--tinta-azul);
+    text-wrap: balance;
+  }
+
+  .insp__trazos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 0;
+  }
+
+  .insp__trazos li {
+    position: relative;
+    margin-right: 34px;
+    padding: 6px 14px;
+    font-size: clamp(0.95rem, 1.7vw, 1.2rem);
+  }
+
+  .insp__trazos li:last-child {
+    margin-right: 0;
+    border-color: var(--carmin);
+  }
+
+  .insp__trazos li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    width: 18px;
+    height: 10px;
+    background: var(--lapiz-azul);
+    clip-path: polygon(0 35%, 60% 35%, 60% 0, 100% 50%, 60% 100%, 60% 65%, 0 65%);
+    translate: 0 -50%;
+  }
+
+  .insp__apunte {
+    justify-self: end;
+    color: var(--carmin-texto);
+    font-size: 1.05rem;
+    rotate: -3deg;
+  }
+
+  /* Capa 2 · La arquitectura: placas apiladas en escalera, cada una un nivel más adentro. */
+  .insp__pila {
+    display: grid;
+    gap: calc(8px + var(--abre) * 12px);
+    width: min(100%, 780px);
+  }
+
+  .insp__pila li {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    margin-left: calc(var(--n) * (6px + var(--abre) * clamp(6px, 3vw, 46px)));
+    border: 2px solid var(--acento);
+    background: color-mix(in srgb, var(--acento) 12%, var(--sala));
+    box-shadow: 6px 6px 0 color-mix(in srgb, var(--acento) 38%, transparent);
+  }
+
+  /* El codo que une cada placa con la de arriba. */
+  .insp__pila li:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    bottom: 50%;
+    width: calc(var(--abre) * clamp(4px, 2.2vw, 34px));
+    height: calc(50% + 10px + var(--abre) * 12px);
+    border-left: 2px dashed var(--acento);
+    border-bottom: 2px dashed var(--acento);
+  }
+
+  .insp__numero {
+    display: grid;
+    place-items: center;
+    padding: 0 clamp(8px, 1.4vw, 16px);
+    background: var(--acento);
+    color: var(--sala);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  .insp__capa {
+    display: grid;
+    gap: 2px;
+    padding: clamp(8px, 1.4vw, 13px) clamp(12px, 2vw, 20px);
+    min-width: 0;
+  }
+
+  .insp__capa strong {
+    font-size: clamp(0.95rem, 1.9vw, 1.4rem);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .insp__capa span {
+    font-size: clamp(0.85rem, 1.45vw, 1.05rem);
+    color: var(--texto-2);
+  }
+
+  /* Capa 3 · Los hechos, y el límite con su sello. */
+  .insp__hechos {
+    display: grid;
+    gap: clamp(8px, 1.6vw, 16px);
+    font-size: clamp(1.15rem, 2.7vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .insp__hechos li {
+    padding-left: clamp(12px, 2vw, 22px);
+    border-left: 6px solid var(--acento);
+    text-wrap: balance;
+  }
+
+  .insp__hechos .insp__limite {
+    justify-self: start;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    margin-top: clamp(4px, 1vw, 12px);
+    padding: 8px 16px;
+    border: 3px double var(--rojo-luz);
+    border-radius: 4px;
+    color: var(--rojo-luz);
+    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+    rotate: -1.5deg;
+  }
+
+  .insp__limite .mono {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* En pantallas estrechas: nombre, pestañas en fila, panel y enlace. */
+  @media (max-width: 760px) {
+    .insp__mesa {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      column-gap: 6px;
+      align-content: center;
+    }
+
+    .insp__cabecera {
+      grid-column: 1 / -1;
+      margin-bottom: 0;
+    }
+
+    .insp__mesa label {
+      grid-column: calc(var(--fila) + 1);
+      grid-row: 2;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding: 6px 8px;
+      font-size: 0.875rem;
+    }
+
+    .insp__mesa input:checked + label {
+      box-shadow: 0 -6px 0 var(--pantalla);
+    }
+
+    .insp__panel {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      min-height: 0;
+    }
+
+    .insp__enlace {
+      grid-column: 1 / -1;
+      grid-row: 4;
+    }
   }
 </style>
