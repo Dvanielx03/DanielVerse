@@ -72,11 +72,11 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
 |---|---|---|---|
 | 0 | Claqueta | Una hoja sobre la mesa de luz. Eliges idioma y sonido. | Tono de sala y el golpe de la claqueta |
 | 1 | Lo convencional | El portafolio de siempre se agrieta, resulta ser una viñeta de la pared de storyboard y la pared cae. | Lápiz y papel; después, la primera descarga |
-| 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | El tema, lento y apagado |
+| 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | Suspenso: silencios, oleadas y golpes graves |
 | 3 | Retos | Cuatro hitos en montaje rápido. | Descarga |
-| 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas, con acceso directo al código. | El tema apagado, para poder leer |
+| 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas, con acceso directo al código. | Suspenso, para poder leer |
 | 5 | Detrás de cámaras | Cómo está hecha la película y mis herramientas propias. | Segunda descarga |
-| 6 | Créditos y contacto | Créditos que suben y un iris que cierra. | El tema, lejos |
+| 6 | Créditos y contacto | Créditos que suben y un iris que cierra. | El tema, lento y lejano |
 
 Son 25 planos. Con las flechas <kbd>←</kbd> <kbd>→</kbd> saltas de plano; con <kbd>S</kbd> enciendes o apagas el sonido.
 
@@ -145,13 +145,13 @@ En producción. Lo que hay y lo que falta, sin adornos:
 
 - **Hecho:** las siete escenas con sus transiciones, la música, las dos versiones de idioma, la hoja de contacto como vía rápida y la [publicación en GitHub Pages](https://dvanielx03.github.io/DanielVerse/), que se actualiza sola con cada cambio en `main`.
 - **Comprobado:** en Chromium de escritorio y a anchos de móvil desde 320 px.
-- **Pendiente:** la pista de resolución para los créditos, la capa «final» de cada proyecto con capturas reales, y probarlo en Firefox, Safari, un teléfono de verdad y con lector de pantalla.
+- **Pendiente:** la capa «final» de cada proyecto con capturas reales, y probarlo en Firefox, Safari, un teléfono de verdad y con lector de pantalla.
 
 ## Créditos
 
 - **Tipografías:** [Recursive](https://www.recursive.design) y [Shantell Sans](https://shantellsans.com).
 - **Avatar:** generado con IA a partir de una foto real.
-- **Música:** original, generada con ElevenLabs. Los efectos se sintetizan con Web Audio.
+- **Música:** original, generada con ElevenLabs; el suspenso y el cierre se montaron a partir de esa misma grabación. Los efectos se sintetizan con Web Audio.
 - **Lenguaje visual:** el del cómic impreso y el cine de animación que mezcla boceto, tinta, semitonos y color fuera de registro. No se usan personajes, arte ni música de terceros.
 
 Si quieres hablar: [LinkedIn](https://www.linkedin.com/in/daniel-santiago-mayorga-tellez-5bb0463a0/) · [GitHub](https://github.com/Dvanielx03)
