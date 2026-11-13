@@ -72,7 +72,8 @@ const [proyecto] = plano.nombre[idioma].split(' · ');
   .dip__papel {
     position: absolute;
     inset: 0 auto 0 0;
-    z-index: 1;
+    /* Por encima de la mitad propia, a la que tapa y va descubriendo; por debajo de la claqueta. */
+    z-index: 2;
     width: var(--corte);
     filter: drop-shadow(10px 0 0 rgb(4 6 12 / 0.55));
   }
@@ -163,7 +164,8 @@ const [proyecto] = plano.nombre[idioma].split(' · ');
   /* La mitad propia ocupa lo que deja el papel. */
   .dip__mio {
     position: relative;
-    z-index: 2;
+    z-index: 1;
+
     display: grid;
     justify-items: start;
     gap: clamp(12px, 2.2vw, 26px);
@@ -257,8 +259,10 @@ const [proyecto] = plano.nombre[idioma].split(' · ');
   /* En vertical el corte es horizontal: papel arriba, lo propio debajo. */
   @media (max-width: 760px) {
     .dip {
-      --alto: calc(44svh - 12svh * var(--viaje));
-      align-items: end;
+      /* Alto del papel al final del viaje, y mientras la cámara aún no ha bajado. */
+      --fin: max(36svh, 262px);
+      --alto: calc(var(--fin) + 8svh * (1 - var(--viaje)));
+      align-items: start;
     }
 
     .dip__papel {
@@ -269,7 +273,9 @@ const [proyecto] = plano.nombre[idioma].split(' · ');
     }
 
     .dip__hoja {
-      padding: 104px max(16px, 4vw) 34px;
+      align-content: end;
+      gap: 10px;
+      padding: 96px max(16px, 4vw) 40px;
       clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 0 100%);
     }
 
@@ -282,18 +288,30 @@ const [proyecto] = plano.nombre[idioma].split(' · ');
     }
 
     .dip__lapiz li {
-      padding: 5px 12px;
+      padding: 4px 12px;
+      font-size: 1rem;
     }
 
     .dip__mio {
-      align-self: end;
-      margin: calc(32svh + 8px) 0 0;
-      padding-top: 8px;
+      /* El díptico empieza bajo la claqueta del plano, a unos 92 px del borde de la pantalla. */
+      gap: 10px;
+      margin: calc(var(--fin) - 92px + 14px) 0 0;
+    }
+
+
+    .dip__frase {
+      font-size: clamp(1.45rem, 6.2vw, 2rem);
+    }
+
+    .dip__cadena {
+      gap: 8px 0;
     }
 
     .dip__cadena li {
       margin-right: 28px;
-      padding: 7px 10px 7px 7px;
+      padding: 5px 10px 5px 5px;
+      font-size: 0.875rem;
     }
+
   }
 </style>
