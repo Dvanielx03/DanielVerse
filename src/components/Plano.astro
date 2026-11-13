@@ -1,7 +1,8 @@
 ---
-// Un plano de la película. Si tiene puesta en escena propia la usa; si no, composición tipográfica.
-import type { Idioma } from '../datos/pelicula';
-import { codigoDeTiempo, type Entrada } from '../motor/tiempo';
+// Una sección de la experiencia: su puesta en escena, su aire y su manera de entrar.
+import { ESCENAS, type Idioma } from '../datos/pelicula';
+import { TONO_POR_ESCENA, TRANSICION_POR_ARTE } from '../datos/transiciones';
+import type { Entrada } from '../motor/tiempo';
 import Avatar from './arte/Avatar.astro';
 import Claqueta from './arte/Claqueta.astro';
 import Contacto from './arte/Contacto.astro';
@@ -23,7 +24,7 @@ interface Props {
 }
 
 const { entrada, idioma } = Astro.props;
-const { plano, escena, inicio } = entrada;
+const { plano, escena, indice } = entrada;
 const idTitulo = `titulo-${plano.id}`;
 const arte = plano.arte;
 
@@ -47,6 +48,13 @@ const piezas = {
   contacto: Contacto,
 };
 const Pieza = arte ? piezas[arte] : undefined;
+
+// La primera sección no tiene de dónde venir: aparece sin más.
+const transicion = indice === 0 || !arte ? 'corte' : TRANSICION_POR_ARTE[arte];
+// Las secciones alternan de lado para que no entren todas por el mismo sitio.
+const lado = indice % 2 === 0 ? 1 : -1;
+const tono = TONO_POR_ESCENA[escena.id] ?? '#7b3dff';
+const numero = String(ESCENAS.indexOf(escena)).padStart(2, '0');
 ---
 
 <section
@@ -54,53 +62,41 @@ const Pieza = arte ? piezas[arte] : undefined;
   id={plano.id}
   data-plano={plano.id}
   data-mundo={plano.mundo}
-  data-fundido={plano.fundido ? '' : undefined}
-  style={`--pantallas:${plano.pantallas}`}
+  data-transicion={transicion}
+  data-lado={lado}
+  data-ciudad={arte === 'avatar-final' || arte === 'contacto' ? 'izquierda' : undefined}
+  style={`--pantallas:${plano.pantallas};--lado:${lado};--tono:${tono}`}
   aria-labelledby={idTitulo}
 >
-  <div class="plano__escenario">
-    <p class="plano__claqueta mono">
-      <span class="plano__barras" aria-hidden="true"></span>
-      <span>{escena.nombre[idioma]}</span>
-      <span>{plano.id}</span>
-      <span>{codigoDeTiempo(inicio)}</span>
-    </p>
+  <div class="plano__marco">
+    <div class="plano__escenario">
+      {plano.mundo === 'sala' && <span class="plano__ciudad" aria-hidden="true" />}
+      <span class="plano__trama" aria-hidden="true"></span>
 
-    {Pieza && <Pieza plano={plano} idioma={idioma} idTitulo={idTitulo} />}
+      <p class="plano__rotulo">
+        <span class="mono">{numero}</span>
+        {escena.nombre[idioma]}
+      </p>
 
-    {
-      !arte && (
-        <div class="plano__contenido">
-          {plano.titular ? (
+      {Pieza && <Pieza plano={plano} idioma={idioma} idTitulo={idTitulo} />}
+
+      {
+        !Pieza && (
+          <div class="plano__contenido">
             <h2 id={idTitulo} class="plano__titular">
-              {plano.titular[idioma]}
+              {plano.titular?.[idioma] ?? plano.nombre[idioma]}
             </h2>
-          ) : (
-            <h2 id={idTitulo} class="plano__etiqueta mono">
-              {plano.nombre[idioma]}
-            </h2>
-          )}
-          {plano.lineas && (
-            <ul class:list={['plano__lineas', { 'plano__lineas--solas': !plano.titular }]}>
-              {plano.lineas[idioma].map((linea) => (
-                <li>{linea}</li>
-              ))}
-            </ul>
-          )}
-          {plano.sello && <p class="plano__sello">{plano.sello[idioma]}</p>}
-          {plano.nota && <p class="adhesiva a-mano">{plano.nota[idioma]}</p>}
-          {plano.enlaces && (
-            <ul class="plano__enlaces">
-              {plano.enlaces.map((enlace) => (
-                <li>
-                  <a href={enlace.url}>{enlace.etiqueta[idioma]}</a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )
-    }
+            {plano.lineas && (
+              <ul class="plano__lineas">
+                {plano.lineas[idioma].map((linea) => (
+                  <li>{linea}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )
+      }
+    </div>
   </div>
 </section>
 
@@ -128,93 +124,98 @@ const Pieza = arte ? piezas[arte] : undefined;
       radial-gradient(ellipse 85% 95% at 50% 58%, #fbfcfb 0%, var(--papel) 52%, #cdd5d0 100%);
   }
 
-  /* Mundo de sala: un solo haz desde arriba a la izquierda. */
+  /* Mundo de sala: la noche de la ciudad, teñida con el color de la escena. */
   .plano[data-mundo='sala'] .plano__escenario {
     background:
       var(--grano-sala),
-      conic-gradient(
-        from 98deg at 0% 6%,
-        transparent 0deg,
-        rgb(243 235 221 / 0.13) 7deg,
-        rgb(243 235 221 / 0.03) 19deg,
-        transparent 27deg
+      radial-gradient(
+        ellipse 62% 72% at calc(50% + var(--lado) * 24%) 38%,
+        color-mix(in oklab, var(--tono) 30%, transparent) 0%,
+        transparent 72%
       ),
-      radial-gradient(ellipse 70% 80% at 68% 45%, #1a2038 0%, var(--sala) 62%, #080b14 100%);
+      linear-gradient(180deg, #090716 0%, #110b29 52%, #1d0f3c 100%);
   }
 
-  /* Con el motor en marcha, cada sección es duración de scroll y su escenario queda fijo. */
-  :global(.con-motor) .plano {
-    height: calc(var(--pantallas) * 100svh);
-  }
-
-  :global(.con-motor) .plano__escenario {
-    position: fixed;
-    inset: 0;
-    min-height: 0;
-    opacity: 0;
+  /* La trama: dos campos de puntos de semitono, uno por tinta, que asoman desde las esquinas. */
+  .plano__trama,
+  .plano__trama::after {
+    position: absolute;
+    inset: -8%;
+    z-index: -1;
     pointer-events: none;
   }
 
-  :global(.con-motor) .plano.es-activo .plano__escenario {
-    opacity: 1;
-    pointer-events: auto;
+  .plano__trama {
+    background: radial-gradient(circle, var(--tono) 30%, transparent 32%) 0 0 / 15px 15px;
+    mask-image: radial-gradient(ellipse 52% 58% at calc(50% - var(--lado) * 46%) 96%, #000 0%, transparent 72%);
+    opacity: 0.55;
+    translate: 0 calc(var(--v, 0) * -36px);
   }
 
-  :global(.con-motor) .plano[data-fundido] .plano__escenario {
-    transition: opacity var(--f4) steps(4, end);
+  .plano__trama::after {
+    content: '';
+    inset: 0;
+    background: radial-gradient(circle, var(--magenta) 26%, transparent 28%) 0 0 / 24px 24px;
+    mask-image: radial-gradient(ellipse 40% 46% at calc(50% + var(--lado) * 48%) 2%, #000 0%, transparent 70%);
+    opacity: 0.5;
   }
 
-  /* Movimiento reducido: los planos vuelven al flujo normal, uno debajo de otro. */
-  @media (prefers-reduced-motion: reduce) {
-    :global(.con-motor) .plano {
-      height: auto;
-    }
-
-    :global(.con-motor) .plano__escenario,
-    :global(.con-motor) .plano[data-fundido] .plano__escenario {
-      position: relative;
-      inset: auto;
-      min-height: 100svh;
-      opacity: 1;
-      pointer-events: auto;
-      transition: none;
-    }
+  .plano[data-mundo='papel'] .plano__trama {
+    background-image: radial-gradient(circle, var(--cian) 28%, transparent 30%);
+    opacity: 0.4;
   }
 
-  /* Claqueta del plano */
-  .plano__claqueta {
+  /* La ciudad al fondo, que se desliza despacio mientras avanzas. */
+  .plano__ciudad {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: min(38%, 300px);
+    background: var(--ciudad) calc(var(--t, 0) * -1100px + var(--lado) * 180px) 100% / auto 100% repeat-x;
+    mask-image: linear-gradient(to top, #000 55%, transparent);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  /* Donde hay un personaje a la derecha, la ciudad se queda a la izquierda para no asomar a través de él. */
+  .plano[data-ciudad='izquierda'] .plano__ciudad {
+    right: 40%;
+    mask-image: linear-gradient(to top, #000 55%, transparent), linear-gradient(to right, #000 62%, transparent);
+    mask-composite: intersect;
+  }
+
+  /* El rótulo de la escena, como un cartucho de cómic. */
+  .plano__rotulo {
     position: relative;
     z-index: 3;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 14px;
     justify-self: start;
-    padding-right: 12px;
-    border: 1.5px solid var(--linea);
-    background: var(--fondo);
-    color: var(--texto-2);
-    font-size: 0.6875rem;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 4px 12px 3px;
+    border: 2.5px solid #05030c;
+    background: var(--amarillo);
+    color: #05030c;
+    font-size: 0.8125rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
+    box-shadow: 4px 4px 0 #05030c;
+    rotate: -1.6deg;
   }
 
-  .plano__barras {
-    align-self: stretch;
-    width: 44px;
-    min-height: 24px;
-    border-right: 1.5px solid var(--linea);
-    background: repeating-linear-gradient(-58deg, var(--texto) 0 6px, transparent 6px 12px);
+  .plano__rotulo .mono {
+    font-weight: 400;
   }
 
-  /* En pantallas estrechas la claqueta baja para no quedar bajo los controles. */
+  /* En pantallas estrechas el rótulo baja para no quedar bajo los controles. */
   @media (max-width: 640px) {
     .plano__escenario {
       padding-top: 64px;
     }
   }
 
-  /* Composición tipográfica */
+  /* Composición de reserva, para un plano sin puesta en escena propia. */
   .plano__contenido {
     align-self: center;
     display: grid;
@@ -232,21 +233,6 @@ const Pieza = arte ? piezas[arte] : undefined;
     text-wrap: balance;
   }
 
-  /* Fuera de registro: un titular por pantalla y solo en sala. */
-  .plano[data-mundo='sala'] .plano__titular {
-    text-shadow:
-      -0.035em 0 var(--rojo-luz),
-      0.035em 0 var(--azul-luz);
-  }
-
-  .plano__etiqueta {
-    font-size: 0.75rem;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--amarillo);
-  }
-
   .plano__lineas {
     display: grid;
     gap: 6px;
@@ -257,85 +243,133 @@ const Pieza = arte ? piezas[arte] : undefined;
     color: var(--texto-2);
   }
 
-  .plano__lineas--solas {
-    max-width: 32ch;
-    font-size: clamp(1.4rem, 3.6vw, 2.5rem);
-    font-weight: 600;
-    line-height: 1.2;
-    color: var(--texto);
-    text-wrap: balance;
-  }
-
-  .plano__sello {
-    padding: 5px 16px 4px;
-    border: 3px double var(--nota);
-    border-radius: 4px;
-    color: var(--nota);
-    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    transform: rotate(-5deg);
-  }
-
-  .plano__enlaces {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .plano__enlaces a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 8px 18px;
-    border: 1.5px solid var(--texto);
-    background: var(--texto);
-    color: var(--fondo);
-    font-weight: 800;
-    text-decoration: none;
-  }
-
-  .plano__enlaces a:hover {
-    background: var(--amarillo);
-    border-color: var(--amarillo);
-    color: var(--grafito);
-  }
-
-  /* Cada elemento se asienta al entrar el plano; el sello cae con golpe. */
+  /* ——— Con el motor en marcha: cada sección es duración de scroll y su escenario queda fijo ———
+     Con movimiento reducido nada de esto se aplica y las secciones se leen una debajo de otra. */
   @media (prefers-reduced-motion: no-preference) {
-    :global(.con-motor) .plano.es-activo .plano__contenido > * {
-      animation: asentar var(--f8) var(--asentar) both;
+    :global(.con-motor) .plano {
+      --entra: 1;
+      --sale: 0;
+      height: calc(var(--pantallas) * 100svh);
     }
 
-    :global(.con-motor) .plano.es-activo .plano__contenido > :nth-child(2) {
-      animation-delay: var(--f1);
-    }
-
-    :global(.con-motor) .plano.es-activo .plano__contenido > :nth-child(3) {
-      animation-delay: var(--f2);
-    }
-
-    :global(.con-motor) .plano.es-activo .plano__contenido > :nth-child(n + 4) {
-      animation-delay: var(--f4);
-    }
-
-    :global(.con-motor) .plano.es-activo .plano__contenido > .plano__sello {
-      animation: sellar var(--f4) var(--golpe) var(--f4) both;
-    }
-  }
-
-  @keyframes asentar {
-    from {
+    :global(.con-motor) .plano__marco {
+      position: fixed;
+      inset: 0;
       opacity: 0;
-      translate: 0 22px;
+      pointer-events: none;
     }
-  }
 
-  @keyframes sellar {
-    from {
-      opacity: 0;
-      scale: 1.8;
+    :global(.con-motor) .plano__escenario {
+      /* El avance de la entrada, suavizado al principio y al final. */
+      --e: calc(var(--entra) * var(--entra) * (3 - 2 * var(--entra)));
+      position: absolute;
+      inset: 0;
+      min-height: 0;
+    }
+
+    :global(.con-motor) .plano:is(.es-activo, .es-saliente) .plano__marco {
+      opacity: 1;
+    }
+
+    :global(.con-motor) .plano.es-activo .plano__marco {
+      pointer-events: auto;
+    }
+
+    /* La sección que se va se hunde un poco: se apaga y se aleja. */
+    :global(.con-motor) .plano.es-saliente .plano__escenario {
+      scale: calc(1 - 0.05 * var(--sale));
+      filter: brightness(calc(1 - 0.45 * var(--sale))) saturate(calc(1 - 0.4 * var(--sale)));
+    }
+
+    /* El borde de lo que entra lleva las dos tintas fuera de registro. */
+    @media (min-width: 761px) {
+      :global(.con-motor) .plano.en-transicion .plano__marco {
+        filter: drop-shadow(calc(var(--lado) * -0.8vw) 0 0 var(--magenta))
+          drop-shadow(calc(var(--lado) * -0.8vw) 0 0 var(--cian));
+      }
+    }
+
+    /* Tajo: un corte en diagonal que barre la pantalla desde un lado. */
+    :global(.con-motor) .plano[data-transicion='tajo'].en-transicion .plano__escenario {
+      --x: calc((1 - var(--e)) * 136%);
+      clip-path: polygon(var(--x) 0, 100% 0, 100% 100%, calc(var(--x) - 36%) 100%);
+    }
+
+    :global(.con-motor) .plano[data-transicion='tajo'][data-lado='-1'].en-transicion .plano__escenario {
+      clip-path: polygon(0 0, calc(100% - var(--x)) 0, calc(136% - var(--x)) 100%, 0 100%);
+    }
+
+    /* Semitono: los puntos de imprenta crecen hasta juntarse. */
+    :global(.con-motor) .plano[data-transicion='semitono'].en-transicion .plano__escenario {
+      mask-image: radial-gradient(
+        circle at center,
+        #000 calc(var(--e) * 102%),
+        transparent calc(var(--e) * 102% + 1.5px)
+      );
+      mask-size: 4.6vmax 4.6vmax;
+      mask-position: center;
+    }
+
+    /* Glitch: franjas que se desplazan y engordan, como una señal que se recompone. */
+    :global(.con-motor) .plano[data-transicion='glitch'].en-transicion .plano__escenario {
+      mask-image: repeating-linear-gradient(
+        180deg,
+        #000 0 calc(var(--e) * 12.6svh),
+        transparent calc(var(--e) * 12.6svh) 12.5svh
+      );
+      translate: calc((1 - var(--e)) * var(--lado) * 6vw) 0;
+    }
+
+    /* Viñeta: entra de lado, con su calle negra, y empuja a la anterior. */
+    :global(.con-motor) .plano[data-transicion='vineta'].en-transicion .plano__escenario {
+      translate: calc((1 - var(--e)) * var(--lado) * 102vw) 0;
+      box-shadow: calc(var(--lado) * -2.4vw) 0 0 #05030c;
+    }
+
+    :global(.con-motor) .plano.es-saliente[data-sale='vineta'] .plano__escenario {
+      translate: calc(var(--sale) * var(--hacia, 1) * -30vw) 0;
+    }
+
+    /* Estallido: una estrella de cómic que se abre desde el centro. */
+    :global(.con-motor) .plano[data-transicion='estallido'].en-transicion .plano__escenario {
+      --r: calc(var(--e) * 100vmax);
+      clip-path: polygon(
+        calc(50% + var(--r) * 0.000) calc(50% + var(--r) * -1.000),
+        calc(50% + var(--r) * 0.198) calc(50% + var(--r) * -0.545),
+        calc(50% + var(--r) * 0.643) calc(50% + var(--r) * -0.766),
+        calc(50% + var(--r) * 0.502) calc(50% + var(--r) * -0.290),
+        calc(50% + var(--r) * 0.985) calc(50% + var(--r) * -0.174),
+        calc(50% + var(--r) * 0.571) calc(50% + var(--r) * 0.101),
+        calc(50% + var(--r) * 0.866) calc(50% + var(--r) * 0.500),
+        calc(50% + var(--r) * 0.373) calc(50% + var(--r) * 0.444),
+        calc(50% + var(--r) * 0.342) calc(50% + var(--r) * 0.940),
+        calc(50% + var(--r) * 0.000) calc(50% + var(--r) * 0.580),
+        calc(50% + var(--r) * -0.342) calc(50% + var(--r) * 0.940),
+        calc(50% + var(--r) * -0.373) calc(50% + var(--r) * 0.444),
+        calc(50% + var(--r) * -0.866) calc(50% + var(--r) * 0.500),
+        calc(50% + var(--r) * -0.571) calc(50% + var(--r) * 0.101),
+        calc(50% + var(--r) * -0.985) calc(50% + var(--r) * -0.174),
+        calc(50% + var(--r) * -0.502) calc(50% + var(--r) * -0.290),
+        calc(50% + var(--r) * -0.643) calc(50% + var(--r) * -0.766),
+        calc(50% + var(--r) * -0.198) calc(50% + var(--r) * -0.545)
+      );
+    }
+
+    /* Iris: un círculo que se abre. */
+    :global(.con-motor) .plano[data-transicion='iris'].en-transicion .plano__escenario {
+      clip-path: circle(calc(var(--e) * 60vmax) at 50% 50%);
+    }
+
+    /* Zoom: la cámara atraviesa la sección anterior y aterriza en esta. */
+    :global(.con-motor) .plano[data-transicion='zoom'].en-transicion .plano__escenario {
+      opacity: var(--e);
+      scale: calc(1.3 - 0.3 * var(--e));
+    }
+
+    :global(.con-motor) .plano.es-saliente[data-sale='zoom'] .plano__escenario {
+      scale: calc(1 + 0.7 * var(--sale));
+      opacity: calc(1 - var(--sale));
+      filter: none;
     }
   }
 </style>
