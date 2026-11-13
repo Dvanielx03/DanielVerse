@@ -1,0 +1,118 @@
+---
+// E4-P0 · La pared de storyboard, con las tres viñetas de los proyectos iluminadas.
+import { ESCENAS, type Idioma, type Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+// Cada proyecto empieza en su plano de claqueta.
+const proyectos = ESCENAS.flatMap((escena) => escena.planos).filter((p) => p.arte === 'proyecto');
+const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyectos[1], 11: proyectos[2] };
+---
+
+<div class="pared">
+  <div class="pared__texto">
+    <h2 id={idTitulo} class="pared__titular">{plano.titular?.[idioma]}</h2>
+    <p class="pared__linea">{plano.lineas?.[idioma][0]}</p>
+  </div>
+
+  <ul class="pared__vinetas">
+    {
+      Array.from({ length: 12 }, (_, i) => {
+        const proyecto = huecos[i];
+        return proyecto ? (
+          <li>
+            <a href={`#${proyecto.id}`} data-ir={proyecto.id} style={`--acento:${proyecto.acento}`}>
+              <span class="mono">{proyecto.id}</span>
+              <strong>{proyecto.titular?.[idioma]}</strong>
+            </a>
+          </li>
+        ) : (
+          <li class="vacia" aria-hidden="true" />
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style>
+  .pared {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: center;
+    gap: clamp(16px, 4vw, 56px);
+    min-height: 0;
+  }
+
+  .pared__texto {
+    display: grid;
+    gap: clamp(12px, 2vw, 20px);
+  }
+
+  .pared__titular {
+    font-size: clamp(2.4rem, 7.4vw, 5.75rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    text-shadow:
+      -0.035em 0 var(--rojo-luz),
+      0.035em 0 var(--azul-luz);
+  }
+
+  .pared__linea {
+    max-width: 26ch;
+    font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+    color: var(--texto-2);
+  }
+
+  .pared__vinetas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(6px, 1.2vw, 14px);
+    transform: rotate(-2deg);
+  }
+
+  .pared__vinetas li {
+    aspect-ratio: 16 / 10;
+  }
+
+  .vacia {
+    border: 1.5px solid rgb(243 235 221 / 0.16);
+    background:
+      linear-gradient(to top right, transparent calc(50% - 0.5px), rgb(243 235 221 / 0.1) 50%, transparent calc(50% + 0.5px)),
+      linear-gradient(to top left, transparent calc(50% - 0.5px), rgb(243 235 221 / 0.1) 50%, transparent calc(50% + 0.5px));
+  }
+
+  .pared__vinetas a {
+    display: grid;
+    align-content: space-between;
+    height: 100%;
+    padding: clamp(6px, 1vw, 12px);
+    background: var(--acento);
+    color: var(--sala);
+    font-size: clamp(0.8rem, 1.7vw, 1.3rem);
+    line-height: 1.05;
+    text-decoration: none;
+    box-shadow: 0 0 0 3px var(--sala), 0 0 0 5px var(--acento);
+  }
+
+  .pared__vinetas a .mono {
+    font-size: 0.625rem;
+  }
+
+  .pared__vinetas a:hover {
+    background: var(--pantalla);
+  }
+
+  @media (max-width: 760px) {
+    .pared {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+    }
+  }
+</style>
