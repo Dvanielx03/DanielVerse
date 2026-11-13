@@ -1,7 +1,8 @@
 ---
-// E1-P2 · La ruptura. La hoja se agrieta, sus trozos salen despedidos y detrás aparece el lema.
+// E1-P2 · La ruptura. La hoja se agrieta, la cámara se aleja y resulta ser una viñeta más de la
+// pared de storyboard; la pared cae a oscuro y queda el lema.
 // Todo depende de --p, el avance del plano: mismo scroll, mismo fotograma.
-import type { Idioma, Plano } from '../../datos/pelicula';
+import { ESCENAS, type Arte, type Idioma, type Plano } from '../../datos/pelicula';
 
 interface Props {
   plano: Plano;
@@ -52,6 +53,50 @@ const trozos = borde.map((a, i) => {
     giro: (i % 2 === 0 ? -1 : 1) * (16 + i * 5),
   };
 });
+
+// La pared: una hoja por plano de la película, cada una con su garabato de storyboard.
+const garabatos = {
+  claqueta:
+    'M200 320 H1400 V720 H200 Z M200 320 L260 200 H1400 L1340 320 M470 200 L410 320 M700 200 L640 320 M930 200 L870 320 M1160 200 L1100 320',
+  estallido:
+    'M800 450 L300 150 M800 450 L1350 200 M800 450 L1250 760 M800 450 L420 780 M800 450 L800 110 M800 450 L1500 480 M800 450 L130 470',
+  retrato:
+    'M1040 330 a110 110 0 1 0 220 0 a110 110 0 1 0 -220 0 M940 760 C960 560 1340 560 1360 760 M200 300 H760 M200 400 H680 M200 500 H720',
+  esquema: 'M880 250 H1400 V650 H880 Z M980 650 V720 M1300 650 V720 M200 300 H700 M200 400 H560 M200 500 H620',
+  reja: 'M220 220 H580 V420 H220 Z M620 220 H980 V420 H620 Z M1020 220 H1380 V420 H1020 Z M220 480 H580 V680 H220 Z M620 480 H980 V680 H620 Z M1020 480 H1380 V680 H1020 Z',
+  diptico: 'M180 240 H720 V660 H180 Z M880 240 H1420 V660 H880 Z M740 450 H860 M830 420 L860 450 L830 480',
+  capas: 'M240 240 H1100 V340 H240 Z M340 390 H1200 V490 H340 Z M440 540 H1300 V640 H440 Z',
+  tiempo: 'M180 330 H1420 V430 H180 Z M180 480 H1420 V580 H180 Z M520 330 V430 M900 330 V430 M1040 260 V650',
+  creditos: 'M560 220 H1040 M620 330 H980 M660 420 H940 M620 510 H980 M660 600 H940 M580 690 H1020',
+};
+const garabatoDe: Record<Arte, keyof typeof garabatos> = {
+  claqueta: 'claqueta',
+  convencional: 'reja',
+  ruptura: 'estallido',
+  'avatar-boceto': 'retrato',
+  'avatar-tinta': 'retrato',
+  'avatar-final': 'retrato',
+  reto: 'esquema',
+  pared: 'reja',
+  proyecto: 'claqueta',
+  diptico: 'diptico',
+  inspeccion: 'capas',
+  truco: 'tiempo',
+  herramientas: 'diptico',
+  pixel: 'esquema',
+  creditos: 'creditos',
+  contacto: 'retrato',
+};
+const planos = ESCENAS.flatMap((escena) => escena.planos);
+// La hoja que se rompe es la del plano anterior: el portafolio de siempre.
+const propia = planos.findIndex((p) => p.id === plano.id) - 1;
+const hojas = planos.map((p, i) => ({
+  id: p.id,
+  indice: i,
+  garabato: garabatos[garabatoDe[p.arte ?? 'pared']],
+  retraso: (((i * 7) % 11) / 11) * 0.4,
+  giro: (i % 2 === 0 ? -1 : 1) * (5 + ((i * 5) % 13)),
+}));
 ---
 
 <div class="rup">
@@ -91,23 +136,36 @@ const trozos = borde.map((a, i) => {
     </defs>
 
     <g class="camara">
-      <rect class="base" width="1600" height="900" fill="#f6f8f6"></rect>
       {
-        trozos.map((trozo, i) => (
-          <g
-            class="trozo"
-            clip-path={`url(#rup-recorte-${i})`}
-            style={`--dx:${trozo.dx}px;--dy:${trozo.dy}px;--giro:${trozo.giro}deg;transform-origin:${trozo.cx}px ${trozo.cy}px`}
-          >
-            <use href="#rup-hoja" />
-          </g>
-        ))
+        hojas
+          .filter((hoja) => hoja.indice !== propia)
+          .map((hoja) => (
+            <g class="hoja" style={`--i:${hoja.indice};--retraso:${hoja.retraso.toFixed(2)};--giro:${hoja.giro}deg`}>
+              <rect width="1600" height="900" rx="12" />
+              <path d={hoja.garabato} />
+              <text x="96" y="168">{hoja.id}</text>
+            </g>
+          ))
       }
-      <g class="grietas">
-        {grietas.map((d) => <path pathLength="1" d={d} />)}
+      <g class="propia" style={`--i:${propia}`}>
+        <rect class="base" width="1600" height="900" fill="#f6f8f6"></rect>
+        {
+          trozos.map((trozo, i) => (
+            <g
+              class="trozo"
+              clip-path={`url(#rup-recorte-${i})`}
+              style={`--dx:${trozo.dx}px;--dy:${trozo.dy}px;--giro:${trozo.giro}deg;transform-origin:${trozo.cx}px ${trozo.cy}px`}
+            >
+              <use href="#rup-hoja" />
+            </g>
+          ))
+        }
+        <g class="grietas">
+          {grietas.map((d) => <path pathLength="1" d={d} />)}
+        </g>
+        <ellipse class="cerco" cx="800" cy="450" rx="640" ry="350" pathLength="1" transform="rotate(-4 800 450)"
+        ></ellipse>
       </g>
-      <ellipse class="cerco" cx="800" cy="450" rx="640" ry="350" pathLength="1" transform="rotate(-4 800 450)"
-      ></ellipse>
     </g>
   </svg>
 </div>
@@ -118,6 +176,7 @@ const trozos = borde.map((a, i) => {
     --cerco: 1;
     --grieta: 1;
     --avance: 1;
+    --luz: 1;
     display: grid;
     align-items: center;
     min-height: 0;
@@ -129,13 +188,16 @@ const trozos = borde.map((a, i) => {
 
   @media (prefers-reduced-motion: no-preference) {
     :global(.con-motor) .rup {
-      /* Tres tiempos: el cerco rojo, las grietas y el vuelo de los trozos. */
-      --cerco: clamp(0, calc(var(--p, 0) / 0.2), 1);
-      --grieta: clamp(0, calc((var(--p, 0) - 0.16) / 0.2), 1);
-      --vuelo: clamp(0, calc((var(--p, 0) - 0.34) / 0.5), 1);
-      /* El vuelo va a saltos, como animación dibujada, y acelera. */
-      --paso: round(nearest, var(--vuelo), 0.04);
+      /* Cuatro tiempos: el cerco rojo, las grietas, el alejamiento a la pared y la caída. */
+      --cerco: clamp(0, calc(var(--p, 0) / 0.16), 1);
+      --grieta: clamp(0, calc((var(--p, 0) - 0.14) / 0.16), 1);
+      /* La cámara se aleja a saltos de un fotograma, como animación dibujada. */
+      --lejos: round(nearest, clamp(0, calc((var(--p, 0) - 0.3) / 0.26), 1), 0.0833);
+      --vuelo: clamp(0, calc((var(--p, 0) - 0.56) / 0.3), 1);
+      --paso: round(nearest, var(--vuelo), 0.05);
+      /* La caída acelera. */
       --avance: calc(var(--paso) * var(--paso));
+      --luz: clamp(0, calc(var(--paso) * 2.5), 1);
     }
 
     :global(.con-motor) .papel {
@@ -143,7 +205,13 @@ const trozos = borde.map((a, i) => {
     }
   }
 
+  /* La pared se reparte según la forma de la pantalla. --sf es la escala a la que cabe entera;
+     --tfx y --tfy la centran en la parte visible del encuadre. */
   .papel {
+    --cols: 7;
+    --sf: 0.108;
+    --tfx: 143px;
+    --tfy: 239px;
     position: absolute;
     inset: 0;
     z-index: 4;
@@ -152,10 +220,85 @@ const trozos = borde.map((a, i) => {
     pointer-events: none;
   }
 
-  /* La cámara se aleja un poco mientras se dibuja el cerco. */
+  @media (max-aspect-ratio: 3/2) {
+    .papel {
+      --cols: 5;
+      --sf: 0.1;
+      --tfx: 368px;
+      --tfy: 205px;
+    }
+  }
+
+  @media (max-aspect-ratio: 1/1) {
+    .papel {
+      --cols: 3;
+      --sf: 0.1;
+      --tfx: 544px;
+      --tfy: 5px;
+    }
+  }
+
+  @media (max-aspect-ratio: 3/5) {
+    .papel {
+      --cols: 2;
+      --sf: 0.115;
+      --tfx: 607px;
+      --tfy: 30px;
+    }
+  }
+
+  /* Cámara: empieza llenando el encuadre con la hoja propia y se aleja hasta la pared entera;
+     al caer la pared vuelve a avanzar, hacia el oscuro. */
   .camara {
-    transform-origin: 800px 450px;
-    transform: scale(calc(1.1 - 0.1 * var(--cerco)));
+    --s: calc(pow(var(--sf), var(--lejos, 0)) * (1.1 - 0.1 * var(--cerco)) * (1 + 1.2 * var(--avance)));
+    --u: calc((var(--s) - var(--sf)) / (1 - var(--sf)));
+    transform: translate(
+        calc(var(--tfx) + (-1760px - var(--tfx)) * var(--u)),
+        calc(var(--tfy) - var(--tfy) * var(--u))
+      )
+      scale(var(--s));
+  }
+
+  /* Cada hoja ocupa su hueco de la pared: columna y fila salen de su número de plano. */
+  .hoja,
+  .propia {
+    --col: mod(var(--i), var(--cols));
+    --fila: round(down, calc(var(--i) / var(--cols)), 1);
+  }
+
+  .propia {
+    transform: translate(calc(var(--col) * 1760px), calc(var(--fila) * 1000px));
+  }
+
+  /* Las demás hojas se sueltan una tras otra y caen girando. */
+  .hoja {
+    --c: clamp(0, calc((var(--paso, 0) - var(--retraso)) / 0.6), 1);
+    transform: translate(
+        calc(var(--col) * 1760px),
+        calc(var(--fila) * 1000px + var(--c) * var(--c) * 1300px / var(--sf))
+      )
+      translate(800px, 450px) rotate(calc(var(--giro) * var(--c))) translate(-800px, -450px);
+  }
+
+  .hoja rect {
+    fill: #dfe5e1;
+  }
+
+  .hoja path {
+    fill: none;
+    stroke: #3f7fd9;
+    stroke-width: 1.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hoja text {
+    fill: #2456a6;
+    font-family: var(--fuente);
+    font-size: 104px;
+    font-variation-settings: 'MONO' 1;
+    letter-spacing: 0.06em;
   }
 
   /* Tapa las juntas entre trozos hasta que empiezan a volar. */
@@ -164,31 +307,33 @@ const trozos = borde.map((a, i) => {
   }
 
   .trozo {
-    transform: translate(calc(var(--dx) * var(--avance)), calc(var(--dy) * var(--avance)))
+    transform: translate(calc(var(--dx) * var(--avance) / var(--sf)), calc(var(--dy) * var(--avance) / var(--sf)))
       rotate(calc(var(--giro) * var(--avance)));
   }
 
   .grietas path {
     fill: none;
     stroke: #1f2327;
-    stroke-width: 3;
+    /* El grosor se compensa con la escala de la cámara para que no adelgace al alejarse. */
+    stroke-width: calc(2.5px / var(--s));
     stroke-linecap: round;
     stroke-dasharray: 1;
     stroke-dashoffset: calc(1 - var(--grieta));
     opacity: calc(1 - var(--avance) * 30);
   }
 
+  /* El cerco rojo sigue marcando la hoja en la pared hasta que estalla. */
   .cerco {
     fill: none;
     stroke: #d8334a;
-    stroke-width: 7;
+    stroke-width: calc(5px / var(--s));
     stroke-linecap: round;
     stroke-dasharray: 1;
     stroke-dashoffset: calc(1 - var(--cerco));
-    opacity: calc(1 - var(--grieta));
+    opacity: calc(1 - var(--avance) * 30);
   }
 
-  /* El lema pasa de letra de boceto a letra exacta y gana su fuera de registro. */
+  /* El lema nace en el oscuro: pasa de letra de boceto a letra exacta y gana su fuera de registro. */
   .lema {
     max-width: 13ch;
     font-size: clamp(2.75rem, 11.5vw, 10rem);
@@ -204,6 +349,7 @@ const trozos = borde.map((a, i) => {
     text-shadow:
       calc(-0.04em * var(--avance)) 0 var(--rojo-luz),
       calc(0.04em * var(--avance)) 0 var(--azul-luz);
+    opacity: var(--luz);
     transform: scale(calc(0.88 + 0.12 * var(--avance)));
     transform-origin: left center;
   }
