@@ -1,5 +1,6 @@
 ---
-// E4 · Díptico: a la izquierda la solución de plantilla, a lápiz; a la derecha, la de Daniel.
+// E4 · Díptico. La pantalla se parte en dos mundos: a la izquierda, en papel, la solución de
+// plantilla; a la derecha, en sala, la de Daniel. La cámara viaja de una mitad a la otra.
 import type { Idioma, Plano } from '../../datos/pelicula';
 
 interface Props {
@@ -11,74 +12,182 @@ interface Props {
 const { plano, idioma, idTitulo } = Astro.props;
 const convencional = plano.pasos?.convencional[idioma] ?? [];
 const propio = plano.pasos?.propio[idioma] ?? [];
+const [proyecto] = plano.nombre[idioma].split(' · ');
 ---
 
-<div class="dip" style={`--acento:${plano.acento}`}>
-  <div class="dip__lado dip__lado--conv folio">
-    <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
-    <p class="dip__rotulo mono">{plano.lineas?.[idioma][0]}</p>
-    <ol class="dip__pasos dip__pasos--lapiz">
-      {convencional.map((paso) => <li class="trazo a-mano">{paso}</li>)}
-    </ol>
-    <svg class="dip__tacha" viewBox="0 0 200 120" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M8 14 C60 40 130 76 192 108 M190 12 C140 44 70 78 10 106" />
-    </svg>
+<div class="dip" style={`--acento:${plano.acento};--pasos:${propio.length}`}>
+  <div class="dip__papel" data-mundo="papel">
+    <div class="dip__hoja">
+      <p class="dip__rotulo mono">{plano.lineas?.[idioma][0]}</p>
+      <div class="dip__conv">
+        <ol class="dip__lapiz">
+          {convencional.map((paso) => <li class="trazo a-mano">{paso}</li>)}
+        </ol>
+        <svg class="dip__tacha" viewBox="0 0 200 120" preserveAspectRatio="none" aria-hidden="true">
+          <path pathLength="1" d="M8 14 C60 40 130 76 192 108"></path>
+          <path pathLength="1" d="M190 12 C140 44 70 78 10 106"></path>
+        </svg>
+      </div>
+    </div>
   </div>
 
-  <div class="dip__lado dip__lado--mio">
+  <div class="dip__mio">
+    <p class="dip__proyecto mono">{proyecto}</p>
     <h2 id={idTitulo} class="dip__frase">{plano.titular?.[idioma]}</h2>
-    <ol class="dip__pasos">
-      {propio.map((paso) => <li>{paso}</li>)}
+    <ol class="dip__cadena">
+      {
+        propio.map((paso, i) => (
+          <li style={`--i:${i}`}>
+            <span class="mono">{i + 1}</span>
+            {paso}
+          </li>
+        ))
+      }
     </ol>
   </div>
 </div>
 
 <style>
-  /* Sin motor: los dos lados a la vista. */
+  /* Sin motor: la cámara ya ha llegado al lado propio y lo convencional está tachado. */
   .dip {
     --viaje: 1;
+    --tacha: 1;
+    /* Dónde corta el papel, medido desde el borde izquierdo de la pantalla. */
+    --corte: calc(56vw - 20vw * var(--viaje));
+    --sesgo: 7vw;
     display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     align-items: center;
-    gap: clamp(16px, 4vw, 56px);
     min-height: 0;
   }
 
-  /* La cámara viaja de un lado al otro: el convencional se apaga y el propio se enciende. */
+  /* Travelling: el papel cede sitio, la tacha se dibuja y la cadena propia se va encendiendo. */
   @media (prefers-reduced-motion: no-preference) {
     :global(.con-motor) .dip {
-      --viaje: clamp(0, calc((var(--p, 0) - 0.1) / 0.5), 1);
+      --viaje: clamp(0, calc((var(--p, 0) - 0.12) / 0.5), 1);
+      --tacha: clamp(0, calc((var(--p, 0) - 0.3) / 0.22), 1);
     }
   }
 
-  .dip__lado {
+  /* La mitad de papel sangra hasta los bordes de la pantalla y termina en un corte en diagonal. */
+  .dip__papel {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 1;
+    width: var(--corte);
+    filter: drop-shadow(10px 0 0 rgb(4 6 12 / 0.55));
+  }
+
+  .dip__hoja {
     display: grid;
-    gap: clamp(12px, 2vw, 20px);
-    min-width: 0;
+    align-content: center;
+    justify-items: start;
+    gap: clamp(14px, 2.4vw, 28px);
+    height: 100%;
+    padding: 84px calc(var(--sesgo) + 2vw) 96px max(16px, 4vw);
+    background:
+      var(--grano-papel),
+      radial-gradient(ellipse 90% 90% at 40% 55%, #fbfcfb 0%, var(--papel) 60%, #cdd5d0 100%);
+    color: var(--texto);
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--sesgo)) 100%, 0 100%);
   }
 
-  .dip__lado--conv {
-    padding: clamp(30px, 4vw, 42px) clamp(14px, 2.4vw, 28px) clamp(18px, 3vw, 30px);
-    rotate: -1.6deg;
-    opacity: calc(1 - 0.45 * var(--viaje));
-  }
-
-  .dip__lado--mio {
-    opacity: calc(0.25 + 0.75 * var(--viaje));
-    translate: calc((1 - var(--viaje)) * 28px) 0;
+  /* El contenido mide lo que medirá al final del viaje: así no se recoloca mientras el papel cede. */
+  .dip__hoja > * {
+    max-width: calc(36vw - max(16px, 4vw) - var(--sesgo));
   }
 
   .dip__rotulo {
-    font-size: 0.75rem;
+    max-width: 30ch;
+    font-size: clamp(0.75rem, 1.15vw, 0.9375rem);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--tinta-azul);
   }
 
+  .dip__conv {
+    position: relative;
+    rotate: -1.6deg;
+  }
+
+  /* Lo convencional: dos cajas a lápiz, una debajo de otra. */
+  .dip__lapiz {
+    display: grid;
+    justify-items: start;
+    gap: clamp(22px, 3vw, 34px);
+  }
+
+  .dip__lapiz li {
+    position: relative;
+    padding: 8px 18px;
+    font-size: clamp(1.05rem, 2.2vw, 1.7rem);
+    line-height: 1.15;
+  }
+
+  .dip__lapiz li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 28px;
+    width: 12px;
+    height: clamp(12px, 2vw, 22px);
+    background: var(--lapiz-azul);
+    clip-path: polygon(35% 0, 65% 0, 65% 60%, 100% 60%, 50% 100%, 0 60%, 35% 60%);
+  }
+
+  /* La tacha: dos trazos de carmín que se dibujan uno tras otro. */
+  .dip__tacha {
+    position: absolute;
+    inset: -12% -8%;
+    width: 116%;
+    height: 124%;
+    fill: none;
+    stroke: var(--carmin);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  .dip__tacha path {
+    --trazo: clamp(0, var(--tacha) * 2, 1);
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--trazo));
+    /* Sin esto, la punta redonda del trazo deja un punto antes de empezar a dibujarse. */
+    opacity: clamp(0, var(--trazo) * 50, 1);
+  }
+
+  .dip__tacha path + path {
+    --trazo: clamp(0, var(--tacha) * 2 - 1, 1);
+  }
+
+
+  /* La mitad propia ocupa lo que deja el papel. */
+  .dip__mio {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: start;
+    gap: clamp(12px, 2.2vw, 26px);
+    min-width: 0;
+    /* Ocupa ya su sitio final: el papel lo tapa en parte y lo va descubriendo. */
+    margin-left: calc(36vw - max(16px, 4vw) + 3vw);
+    opacity: calc(0.3 + 0.7 * var(--viaje));
+  }
+
+  .dip__proyecto {
+    padding: 4px 12px;
+    background: var(--acento);
+    color: var(--sala);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
   .dip__frase {
-    font-size: clamp(1.9rem, 5.4vw, 4.25rem);
+    max-width: 16ch;
+    font-size: clamp(2rem, 5.6vw, 4.75rem);
     font-weight: 900;
-    line-height: 0.96;
+    line-height: 0.94;
     letter-spacing: -0.015em;
     text-wrap: balance;
     text-shadow:
@@ -86,88 +195,105 @@ const propio = plano.pasos?.propio[idioma] ?? [];
       0.035em 0 var(--azul-luz);
   }
 
-  /* Los pasos, encadenados con flechas. */
-  .dip__pasos {
+  /* La cadena propia: cada paso se enciende cuando la cámara llega a él. */
+  .dip__cadena {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 0;
+    align-items: stretch;
+    gap: 12px 0;
   }
 
-  .dip__pasos li {
+  .dip__cadena li {
+    --luz: clamp(0, calc((var(--viaje) * (var(--pasos) + 0.5) - var(--i)) * 3), 1);
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-right: 34px;
-    padding: 8px 14px;
+    padding: 10px 16px 10px 10px;
     border: 2px solid var(--acento);
-    font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+    background: color-mix(in srgb, var(--acento) calc(var(--luz) * 14%), transparent);
+    font-size: clamp(0.9rem, 1.55vw, 1.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    opacity: calc(0.35 + 0.65 * var(--luz));
+  }
+
+  .dip__cadena li .mono {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.75em;
+    height: 1.75em;
+    background: var(--acento);
+    color: var(--sala);
+    font-size: 0.8125rem;
     font-weight: 700;
   }
 
-  .dip__pasos li:last-child {
+  .dip__cadena li:last-child {
     margin-right: 0;
     background: var(--acento);
     color: var(--sala);
   }
 
-  .dip__pasos li:not(:last-child)::after {
+  .dip__cadena li:last-child .mono {
+    background: var(--sala);
+    color: var(--acento);
+  }
+
+  .dip__cadena li:not(:last-child)::after {
     content: '';
     position: absolute;
     top: 50%;
-    left: calc(100% + 8px);
+    left: calc(100% + 9px);
     width: 16px;
-    height: 10px;
+    height: 12px;
     background: var(--acento);
     clip-path: polygon(0 35%, 60% 35%, 60% 0, 100% 50%, 60% 100%, 60% 65%, 0 65%);
     translate: 0 -50%;
   }
 
-  .dip__pasos--lapiz {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dip__pasos--lapiz li,
-  .dip__pasos--lapiz li:last-child {
-    margin: 0 0 18px;
-    border-color: var(--lapiz-azul);
-    background: none;
-    color: var(--grafito);
-    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
-    font-weight: 400;
-  }
-
-  .dip__pasos--lapiz li:last-child {
-    margin-bottom: 0;
-  }
-
-  .dip__pasos--lapiz li:not(:last-child)::after {
-    top: calc(100% + 4px);
-    left: 24px;
-    width: 10px;
-    height: 12px;
-    background: var(--lapiz-azul);
-    clip-path: polygon(35% 0, 65% 0, 65% 60%, 100% 60%, 50% 100%, 0 60%, 35% 60%);
-    translate: none;
-  }
-
-  /* La tacha en rojo aparece cuando la cámara ya se ha ido al otro lado. */
-  .dip__tacha {
-    position: absolute;
-    inset: 22% 8% 10%;
-    width: 84%;
-    height: 68%;
-    fill: none;
-    stroke: var(--carmin);
-    stroke-width: 3;
-    stroke-linecap: round;
-    opacity: round(down, var(--viaje), 1);
-    pointer-events: none;
-  }
-
+  /* En vertical el corte es horizontal: papel arriba, lo propio debajo. */
   @media (max-width: 760px) {
     .dip {
-      grid-template-columns: minmax(0, 1fr);
-      align-content: center;
+      --alto: calc(44svh - 12svh * var(--viaje));
+      align-items: end;
+    }
+
+    .dip__papel {
+      inset: 0 0 auto 0;
+      width: auto;
+      height: var(--alto);
+      filter: drop-shadow(0 8px 0 rgb(4 6 12 / 0.55));
+    }
+
+    .dip__hoja {
+      padding: 104px max(16px, 4vw) 34px;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 0 100%);
+    }
+
+    .dip__hoja > * {
+      max-width: none;
+    }
+
+    .dip__lapiz {
+      gap: 18px;
+    }
+
+    .dip__lapiz li {
+      padding: 5px 12px;
+    }
+
+    .dip__mio {
+      align-self: end;
+      margin: calc(32svh + 8px) 0 0;
+      padding-top: 8px;
+    }
+
+    .dip__cadena li {
+      margin-right: 28px;
+      padding: 7px 10px 7px 7px;
     }
   }
 </style>
