@@ -114,7 +114,8 @@ const capitulos = plano.capitulos ?? [];
     video.addEventListener('play', () => boton.setAttribute('aria-pressed', 'false'));
     video.addEventListener('pause', () => boton.setAttribute('aria-pressed', 'true'));
 
-    // La barra y el mundo encendido siguen al video.
+    // La barra y el mundo encendido siguen al video: a cada fotograma mientras se ve y,
+    // por si el navegador frena los fotogramas, también con el reloj del propio video.
     const pintar = () => {
       const t = video.currentTime;
       caja.style.setProperty('--avance-reel', video.duration ? String(t / video.duration) : '0');
@@ -122,9 +123,16 @@ const capitulos = plano.capitulos ?? [];
         const dentro = t >= Number(mundo.dataset.desde) && t < Number(mundo.dataset.hasta);
         mundo.classList.toggle('suena', dentro);
       }
-      if (!video.paused) requestAnimationFrame(pintar);
     };
-    video.addEventListener('play', () => requestAnimationFrame(pintar));
+    let cuadro: number | undefined;
+    const seguir = () => {
+      pintar();
+      cuadro = video.paused ? undefined : requestAnimationFrame(seguir);
+    };
+    video.addEventListener('play', () => {
+      if (cuadro === undefined) cuadro = requestAnimationFrame(seguir);
+    });
+    video.addEventListener('timeupdate', pintar);
     video.addEventListener('seeked', pintar);
   }
 </script>
