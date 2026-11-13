@@ -63,8 +63,8 @@ const [proyecto] = plano.nombre[idioma].split(' · ');
   /* Travelling: el papel cede sitio, la tacha se dibuja y la cadena propia se va encendiendo. */
   @media (prefers-reduced-motion: no-preference) {
     :global(.con-motor) .dip {
-      --viaje: clamp(0, calc((var(--p, 0) - 0.12) / 0.5), 1);
-      --tacha: clamp(0, calc((var(--p, 0) - 0.3) / 0.22), 1);
+      --viaje: clamp(0, calc((var(--p, 0) - 0.3) / 0.42), 1);
+      --tacha: clamp(0, calc((var(--p, 0) - 0.46) / 0.2), 1);
     }
   }
 
@@ -192,8 +192,8 @@ const [proyecto] = plano.nombre[idioma].split(' · ');
     letter-spacing: -0.015em;
     text-wrap: balance;
     text-shadow:
-      -0.035em 0 var(--rojo-luz),
-      0.035em 0 var(--azul-luz);
+      calc(var(--registro) * -1) 0 var(--rojo-luz),
+      var(--registro) 0 var(--azul-luz);
   }
 
   /* La cadena propia: cada paso se enciende cuando la cámara llega a él. */

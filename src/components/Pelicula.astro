@@ -47,6 +47,10 @@ const indice = construirIndice(ESCENAS);
       </a>
       <a href="#hoja">{textos.hoja}</a>
     </header>
+    <div class="ambiente" aria-hidden="true">
+      <span class="ambiente__foco"></span>
+      <span class="ambiente__lineas"></span>
+    </div>
     <main>
       {indice.entradas.map((entrada) => <Plano entrada={entrada} idioma={idioma} />)}
     </main>
@@ -164,4 +168,61 @@ const indice = construirIndice(ESCENAS);
     }
   }
 
+  /* El ambiente vive por encima de las secciones y no estorba: no recibe clics. */
+  .ambiente {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .ambiente {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: block;
+      overflow: hidden;
+      pointer-events: none;
+    }
+  }
+
+  /* La linterna: alrededor del cursor aparece la trama de puntos, como si la luz revelara la tinta. */
+  .ambiente__foco {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, var(--magenta) 24%, transparent 26%) 0 0 / 12px 12px;
+    mask-image: radial-gradient(
+      circle 16vmax at calc(var(--mx, 0.5) * 100%) calc(var(--my, 0.4) * 100%),
+      #000 0%,
+      transparent 100%
+    );
+    mix-blend-mode: screen;
+    opacity: 0.32;
+  }
+
+  :global([data-mundo='papel']) .ambiente__foco {
+    background-image: radial-gradient(circle, var(--tinta-azul) 24%, transparent 26%);
+    mix-blend-mode: multiply;
+    opacity: 0.22;
+  }
+
+  /* Líneas de velocidad en los bordes: solo se ven mientras deslizas, y más cuanto más rápido. */
+  .ambiente__lineas {
+    position: absolute;
+    inset: -20% 0;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 37px, var(--pantalla) 37px 39px, transparent 39px 113px),
+      repeating-linear-gradient(90deg, transparent 0 71px, var(--cian) 71px 72px, transparent 72px 157px);
+    mask-image: linear-gradient(90deg, #000 0%, transparent 16%, transparent 84%, #000 100%);
+    opacity: calc(var(--va, 0) * 0.5);
+    translate: 0 calc(var(--v, 0) * -8%);
+  }
+
+  :global([data-mundo='papel']) .ambiente__lineas {
+    filter: invert(1);
+  }
+
+  @media (pointer: coarse) {
+    .ambiente__foco {
+      display: none;
+    }
+  }
 </style>

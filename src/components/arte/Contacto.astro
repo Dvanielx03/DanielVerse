@@ -30,7 +30,7 @@ const textos = INTERFAZ[idioma];
     </ul>
   </div>
 
-  <figure class="cont__figura">
+  <figure class="cont__figura flota">
     <Picture
       src={final}
       formats={['avif', 'webp']}
@@ -77,8 +77,8 @@ const textos = INTERFAZ[idioma];
     letter-spacing: -0.015em;
     text-wrap: balance;
     text-shadow:
-      -0.035em 0 var(--rojo-luz),
-      0.035em 0 var(--azul-luz);
+      calc(var(--registro) * -1) 0 var(--rojo-luz),
+      var(--registro) 0 var(--azul-luz);
   }
 
   .cont__enlaces {

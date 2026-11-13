@@ -170,7 +170,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P1',
         arte: 'reto',
-        reposo: 0.55,
+        reposo: 0.66,
         dibujo: 'robot',
         fecha: '2024–25',
         nombre: { es: 'Robótica', en: 'Robotics' },
@@ -185,7 +185,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P2',
         arte: 'reto',
-        reposo: 0.55,
+        reposo: 0.66,
         dibujo: 'campus',
         fecha: '2026',
         nombre: { es: 'El campus bajo presión', en: 'El campus bajo presión' },
@@ -206,7 +206,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P3',
         arte: 'reto',
-        reposo: 0.55,
+        reposo: 0.66,
         dibujo: 'vision',
         fecha: '2026',
         nombre: { es: 'Visual Agents', en: 'Visual Agents' },
@@ -221,7 +221,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P4',
         arte: 'reto',
-        reposo: 0.55,
+        reposo: 0.66,
         dibujo: 'acceso',
         fecha: '2026',
         nombre: { es: 'Access Hub', en: 'Access Hub' },
@@ -431,7 +431,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E5-P2',
         arte: 'herramientas',
-        reposo: 0.4,
+        reposo: 0.6,
         nombre: { es: 'Las herramientas', en: 'The tools' },
         pantallas: 1,
         mundo: 'sala',
@@ -477,13 +477,13 @@ export const ESCENAS: Escena[] = [
           es: [
             'Reparto: Java, Spring Boot, Python, FastAPI, PostgreSQL, LangChain y Docker',
             'Avatar generado con IA a partir de una foto real',
-            'Sonido: síntesis original en Web Audio',
+            'Sonido: efectos sintetizados con Web Audio',
             'Tipografías: Recursive y Shantell Sans',
           ],
           en: [
             'Cast: Java, Spring Boot, Python, FastAPI, PostgreSQL, LangChain and Docker',
             'Avatar generated with AI from a real photo',
-            'Sound: original Web Audio synthesis',
+            'Sound: effects synthesised with Web Audio',
             'Typefaces: Recursive and Shantell Sans',
           ],
         },

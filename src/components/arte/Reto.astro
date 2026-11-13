@@ -33,7 +33,7 @@ const salas = [0, 1, 2].flatMap((fila) => [0, 1, 2, 3].map((col) => ({ n: fila *
     }
   </div>
 
-  <svg class="reto__dibujo" viewBox="0 0 400 300" aria-hidden="true">
+  <svg class="reto__dibujo flota" viewBox="0 0 400 300" aria-hidden="true">
     {
       dibujo === 'robot' && (
         <g>
@@ -114,8 +114,6 @@ const salas = [0, 1, 2].flatMap((fila) => [0, 1, 2, 3].map((col) => ({ n: fila *
 <style>
   /* Sin motor: el plano quieto en su sitio, con el esquema ya dibujado. */
   .reto {
-    --entra: 1;
-    --sale: 0;
     --traza: 1;
     position: relative;
     display: grid;
@@ -129,17 +127,8 @@ const salas = [0, 1, 2].flatMap((fila) => [0, 1, 2, 3].map((col) => ({ n: fila *
      Entre medias, el esquema se traza. */
   @media (prefers-reduced-motion: no-preference) {
     :global(.con-motor) .reto {
-      --entra: round(up, clamp(0, calc(var(--p, 0) / 0.14), 1), 0.2);
-      --sale: round(down, clamp(0, calc((var(--p, 0) - 0.86) / 0.14), 1), 0.2);
-      --traza: round(nearest, clamp(0, calc((var(--p, 0) - 0.1) / 0.4), 1), 0.0833);
+      --traza: clamp(0, calc((var(--p, 0) - 0.24) / 0.36), 1);
     }
-  }
-
-  .reto__texto,
-  .reto__dibujo {
-    transform: translateX(calc((1 - var(--entra)) * 70vw - var(--sale) * 70vw))
-      skewX(calc(((1 - var(--entra)) + var(--sale)) * -14deg));
-    opacity: calc(var(--entra) - var(--sale));
   }
 
   /* La fecha, enorme y en contorno, asoma por abajo y se desliza más despacio que el resto. */
@@ -172,8 +161,8 @@ const salas = [0, 1, 2].flatMap((fila) => [0, 1, 2, 3].map((col) => ({ n: fila *
     letter-spacing: -0.015em;
     text-wrap: balance;
     text-shadow:
-      -0.035em 0 var(--rojo-luz),
-      0.035em 0 var(--azul-luz);
+      calc(var(--registro) * -1) 0 var(--rojo-luz),
+      var(--registro) 0 var(--azul-luz);
   }
 
   .reto__lineas {

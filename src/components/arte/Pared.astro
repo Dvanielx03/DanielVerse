@@ -20,7 +20,7 @@ const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyecto
     <p class="pared__linea">{plano.lineas?.[idioma][0]}</p>
   </div>
 
-  <ul class="pared__vinetas">
+  <ul class="pared__vinetas flota">
     {
       Array.from({ length: 12 }, (_, i) => {
         const proyecto = huecos[i];
@@ -60,8 +60,8 @@ const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyecto
     letter-spacing: -0.015em;
     text-wrap: balance;
     text-shadow:
-      -0.035em 0 var(--rojo-luz),
-      0.035em 0 var(--azul-luz);
+      calc(var(--registro) * -1) 0 var(--rojo-luz),
+      var(--registro) 0 var(--azul-luz);
   }
 
   .pared__linea {

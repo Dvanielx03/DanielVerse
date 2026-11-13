@@ -73,6 +73,6 @@ function pos(t: number): [string, number] {
 test('los saltos caen en el reposo del plano, o en su inicio si no tiene', () => {
   assert.equal(reposoDe(indice, 'E0-P1'), 0);
   assert.equal(reposoDe(indice, 'E1-P2'), 2.25);
-  assert.equal(reposoDe(indice, 'E3-P1'), 6.745);
+  assert.equal(reposoDe(indice, 'E3-P1'), 6.844);
   assert.equal(reposoDe(indice, 'no-existe'), undefined);
 });

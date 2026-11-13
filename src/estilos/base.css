@@ -178,3 +178,10 @@ a {
   height: 12px;
   border-radius: 50%;
 }
+
+/* Lo que flota: se desplaza un poco en contra del cursor, como si estuviera a otra profundidad. */
+@media (prefers-reduced-motion: no-preference) {
+  .con-motor .flota {
+    translate: calc((var(--mx, 0.5) - 0.5) * var(--fondo-x, -22px)) calc((var(--my, 0.5) - 0.5) * var(--fondo-y, -14px));
+  }
+}

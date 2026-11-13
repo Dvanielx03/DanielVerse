@@ -48,7 +48,7 @@ const descripciones = [textos.herramientas.motion, textos.herramientas.flow];
   /* Cada claqueta entra desde su lado, a saltos, una detrás de otra. */
   @media (prefers-reduced-motion: no-preference) {
     :global(.con-motor) .herr {
-      --llega: clamp(0, calc(var(--p, 0) / 0.3), 1);
+      --llega: clamp(0, calc((var(--p, 0) - 0.22) / 0.3), 1);
     }
   }
 
@@ -61,7 +61,7 @@ const descripciones = [textos.herramientas.motion, textos.herramientas.flow];
   }
 
   .herr__tarjeta {
-    --mia: round(up, clamp(0, calc(var(--llega) * 1.5 - var(--i) * 0.5), 1), 0.2);
+    --mia: clamp(0, calc(var(--llega) * 1.5 - var(--i) * 0.5), 1);
     translate: calc((1 - var(--mia)) * (var(--i) * 2 - 1) * 60vw) 0;
     opacity: var(--mia);
   }

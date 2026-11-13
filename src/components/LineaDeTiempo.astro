@@ -1,5 +1,5 @@
 ---
-// La línea de tiempo: un marcador por escena, el cabezal y el código de tiempo.
+// La barra de escenas: un marcador por escena y un cabezal que dice por dónde vas.
 import { INTERFAZ } from '../datos/interfaz';
 import { ESCENAS, type Escena, type Idioma } from '../datos/pelicula';
 
@@ -21,7 +21,9 @@ const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, plano) => su
           return (
             <li style={`flex-grow:${pantallasDe(escena)}`}>
               <a href={`#${primero}`} data-ir={primero} data-escena-marcador={escena.id}>
-                <span class="mono" aria-hidden="true">{numero}</span>
+                <span class="mono" aria-hidden="true">
+                  {numero}
+                </span>
                 <span class="linea__nombre">{escena.nombre[idioma]}</span>
               </a>
             </li>
@@ -31,10 +33,6 @@ const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, plano) => su
     </ol>
     <span class="linea__cabezal" aria-hidden="true"></span>
   </div>
-  <p class="linea__codigo mono">
-    <span class="solo-lectores">{textos.codigoDeTiempo}: </span>
-    <span data-codigo>00:00:00</span>
-  </p>
 </nav>
 
 <style>
@@ -42,15 +40,12 @@ const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, plano) => su
     position: fixed;
     inset: auto 0 0;
     z-index: 3;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 12px;
     padding: 8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px))
       max(12px, env(safe-area-inset-left, 0px));
-    border-top: 1.5px solid var(--texto);
-    background: var(--fondo);
-    color: var(--texto);
+    border-top: 2.5px solid #05030c;
+    background: color-mix(in srgb, #05030c 86%, transparent);
+    color: var(--pantalla);
+    backdrop-filter: blur(6px);
     transition:
       opacity var(--f4) linear,
       transform var(--f4) var(--asentar);
@@ -70,7 +65,7 @@ const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, plano) => su
 
   .linea__escenas {
     display: flex;
-    gap: 3px;
+    gap: 4px;
   }
 
   .linea__escenas li {
@@ -85,18 +80,37 @@ const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, plano) => su
     height: 32px;
     padding: 0 8px;
     overflow: hidden;
-    border: 1.5px solid var(--linea);
-    color: var(--texto);
+    border: 1.5px solid rgb(246 239 228 / 0.22);
+    color: var(--pantalla);
     font-size: 0.75rem;
+    font-weight: 700;
     text-decoration: none;
     white-space: nowrap;
+    transition:
+      translate var(--f2) var(--golpe),
+      border-color var(--f2) linear;
   }
 
+  .linea__escenas a .mono {
+    color: var(--cian);
+  }
+
+  .linea__escenas a:hover {
+    border-color: var(--cian);
+    translate: 0 -3px;
+  }
+
+  /* La escena en la que estás: un cartucho amarillo con su sombra de tinta. */
   .linea__escenas a[aria-current] {
-    border-color: var(--grafito);
+    border-color: #05030c;
     background: var(--amarillo);
-    color: var(--grafito);
+    color: #05030c;
     font-weight: 800;
+    box-shadow: 3px 3px 0 var(--magenta);
+  }
+
+  .linea__escenas a[aria-current] .mono {
+    color: #05030c;
   }
 
   .linea__nombre {
@@ -104,17 +118,15 @@ const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, plano) => su
     text-overflow: ellipsis;
   }
 
+  /* El cabezal: una línea magenta con su eco cian, que se separa cuando vas rápido. */
   .linea__cabezal {
     position: absolute;
-    top: -5px;
-    bottom: -5px;
+    top: -6px;
+    bottom: -6px;
     left: calc(var(--t, 0) * 100%);
-    width: 2px;
-    background: var(--nota);
-  }
-
-  .linea__codigo {
-    font-size: 0.8125rem;
+    width: 3px;
+    background: var(--magenta);
+    box-shadow: calc(var(--v, 0) * -14px - 3px) 0 0 var(--cian);
   }
 
   @media (pointer: coarse) {
@@ -139,7 +151,8 @@ const pantallasDe = (escena: Escena) => escena.planos.reduce((suma, plano) => su
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .linea {
+    .linea,
+    .linea__escenas a {
       transition: none;
     }
   }
