@@ -5,10 +5,11 @@
 import type { Golpe, Mezcla } from './mezcla.ts';
 
 /** Las tres pistas de música. Si alguna falta, esa capa queda en silencio y lo demás sigue sonando. */
+const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const PISTAS = {
-  tension: '/sonido/tension.mp3',
-  descarga: '/sonido/descarga.mp3',
-  resolucion: '/sonido/resolucion.mp3',
+  tension: `${BASE}sonido/tension.mp3`,
+  descarga: `${BASE}sonido/descarga.mp3`,
+  resolucion: `${BASE}sonido/resolucion.mp3`,
 } as const;
 type NombrePista = keyof typeof PISTAS;
 

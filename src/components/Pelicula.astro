@@ -22,6 +22,13 @@ const { idioma } = Astro.props;
 const textos = INTERFAZ[idioma];
 const otroIdioma: Idioma = idioma === 'es' ? 'en' : 'es';
 const indice = construirIndice(ESCENAS);
+
+// Rutas públicas: todo cuelga de la ruta base del sitio.
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const sitio = Astro.site ?? new URL('https://dvanielx03.github.io');
+const canonica = new URL(Astro.url.pathname, sitio).href;
+const alterna = (lengua: Idioma) => new URL(getRelativeLocaleUrl(lengua, ''), sitio).href;
+const imagenSocial = new URL(`${base}og.jpg`, sitio).href;
 ---
 
 <!doctype html>
@@ -31,7 +38,22 @@ const indice = construirIndice(ESCENAS);
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={textos.descripcion} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0c0a1d" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="canonical" href={canonica} />
+    <link rel="alternate" hreflang="es" href={alterna('es')} />
+    <link rel="alternate" hreflang="en" href={alterna('en')} />
+    <link rel="alternate" hreflang="x-default" href={alterna('es')} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={textos.titulo} />
+    <meta property="og:description" content={textos.descripcion} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:image" content={imagenSocial} />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:locale" content={idioma === 'es' ? 'es_CO' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={imagenSocial} />
     <title>{textos.titulo}</title>
   </head>
   <body>

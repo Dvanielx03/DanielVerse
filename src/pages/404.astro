@@ -1,0 +1,101 @@
+---
+// Para cualquier dirección que no existe: una viñeta perdida, con el camino de vuelta.
+import '@fontsource-variable/recursive';
+import '../estilos/tokens.css';
+import '../estilos/base.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+
+<!doctype html>
+<html lang="es" data-mundo="sala">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0c0a1d" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <title>404 · Daniel Mayorga · f(t)</title>
+  </head>
+  <body>
+    <main class="perdido">
+      <p class="perdido__rotulo"><span class="mono">404</span> Escena no encontrada · Scene not found</p>
+      <h1 class="perdido__titular">Esta viñeta no está en la película.</h1>
+      <p class="perdido__ingles" lang="en">This panel is not in the film.</p>
+      <nav class="perdido__salidas">
+        <a href={base}>Volver al inicio</a>
+        <a href={`${base}en/`} lang="en">Back to the start</a>
+      </nav>
+    </main>
+  </body>
+</html>
+
+<style>
+  .perdido {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: clamp(14px, 3vw, 26px);
+    min-height: 100svh;
+    padding: 32px max(16px, 6vw);
+    background:
+      radial-gradient(circle, var(--magenta) 26%, transparent 28%) 0 0 / 22px 22px,
+      linear-gradient(180deg, #090716 0%, #110b29 52%, #1d0f3c 100%);
+    background-blend-mode: soft-light, normal;
+    color: var(--pantalla);
+  }
+
+  .perdido__rotulo {
+    display: flex;
+    gap: 10px;
+    padding: 4px 12px 3px;
+    border: 2.5px solid #05030c;
+    background: var(--amarillo);
+    color: #05030c;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    box-shadow: 4px 4px 0 #05030c;
+    rotate: -1.6deg;
+  }
+
+  .perdido__titular {
+    max-width: 14ch;
+    font-size: clamp(2.4rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 0.94;
+    letter-spacing: -0.015em;
+    text-shadow:
+      -0.04em 0 var(--magenta),
+      0.04em 0 var(--cian);
+  }
+
+  .perdido__ingles {
+    color: var(--gris-sala);
+    font-size: clamp(1rem, 2.4vw, 1.4rem);
+  }
+
+  .perdido__salidas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .perdido__salidas a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 8px 18px;
+    border: 2.5px solid #05030c;
+    background: var(--amarillo);
+    color: #05030c;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 5px 5px 0 #05030c;
+  }
+
+  .perdido__salidas a + a {
+    background: var(--pantalla);
+  }
+</style>

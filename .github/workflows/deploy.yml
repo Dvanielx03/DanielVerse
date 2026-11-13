@@ -1,0 +1,49 @@
+# Publica el sitio en GitHub Pages cada vez que cambia main.
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Una sola publicación a la vez; la más nueva gana.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v4
+
+      - name: Pruebas
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+      - name: Construir el sitio
+        uses: withastro/action@v4
+        with:
+          node-version: 24
+          package-manager: npm
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacion.outputs.page_url }}
+    steps:
+      - name: Publicar
+        id: publicacion
+        uses: actions/deploy-pages@v4
