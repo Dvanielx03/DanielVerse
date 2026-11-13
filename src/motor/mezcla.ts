@@ -48,9 +48,11 @@ export function mezclaDe(plano: Plano, p: number): Mezcla {
 
   switch (plano.arte) {
     case 'claqueta':
-    case 'convencional':
       // Casi silencio: lápiz y papel.
       return { ...base, papel: 1 };
+    case 'convencional':
+      // El tema empieza a oírse, lejos, como a través de una pared.
+      return { ...base, papel: 1, tension: 0.4 };
     case 'ruptura':
       // Subida de ruido, rasgado, golpe grave y entra la primera descarga.
       return avance < CAIDA_DE_LA_PARED
@@ -77,8 +79,8 @@ export function mezclaDe(plano: Plano, p: number): Mezcla {
       return { ...base, tension: 0.5, descarga: 1 };
     case 'creditos':
     case 'contacto':
-      // Resolución: sin batería, el final cálido.
-      return { ...base, tension: 0.15, resolucion: 1 };
+      // Resolución: sin batería. Si no hay pista de resolución, el tema se queda lejos, como unos créditos.
+      return { ...base, tension: 0.7, resolucion: 1 };
     default:
       return { ...base, tension: 0.6 };
   }

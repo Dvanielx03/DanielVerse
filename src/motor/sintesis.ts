@@ -4,14 +4,14 @@
 
 import type { Golpe, Mezcla } from './mezcla.ts';
 
-/** Las tres pistas de música. Si alguna falta, esa capa queda en silencio y lo demás sigue sonando. */
+/** Las capas de música. Una capa sin pista queda en silencio y lo demás sigue sonando. */
+type NombrePista = 'tension' | 'descarga' | 'resolucion';
 const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/');
-const PISTAS = {
+// La resolución aún no tiene pista: cuando exista, basta con añadir `${BASE}sonido/resolucion.mp3`.
+const PISTAS: Partial<Record<NombrePista, string>> = {
   tension: `${BASE}sonido/tension.mp3`,
   descarga: `${BASE}sonido/descarga.mp3`,
-  resolucion: `${BASE}sonido/resolucion.mp3`,
-} as const;
-type NombrePista = keyof typeof PISTAS;
+};
 
 /** Segundos que se solapan el final y el principio de una pista al repetirse. */
 const SOLAPE = 2.4;
@@ -299,8 +299,9 @@ export function crearMotor(ctx: AudioContext): Motor {
 
       llevar(busSala.gain, mezcla.sala, 0.3, enSeguida);
       llevar(busPapel.gain, mezcla.papel, 0.2, enSeguida);
-      // La tensión cede cuando entra la descarga, para que no se pisen.
-      llevar(busMusica.tension.gain, mezcla.tension * (1 - 0.85 * mezcla.descarga) * 0.75, 0.6, enSeguida);
+      // La tensión cede cuando entra la descarga, y ante la resolución si esa pista existe, para que no se pisen.
+      const cedeResolucion = grabaciones.resolucion ? 1 - 0.85 * mezcla.resolucion : 1;
+      llevar(busMusica.tension.gain, mezcla.tension * (1 - 0.85 * mezcla.descarga) * cedeResolucion, 0.6, enSeguida);
       llevar(busMusica.descarga.gain, mezcla.descarga, mezcla.descarga > 0.5 ? 0.05 : 0.5, enSeguida);
       llevar(busMusica.resolucion.gain, mezcla.resolucion * 0.85, 0.8, enSeguida);
       llevar(retorno.gain, mezcla.reverb * 0.5, 0.3, enSeguida);

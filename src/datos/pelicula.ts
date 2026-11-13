@@ -490,13 +490,13 @@ export const ESCENAS: Escena[] = [
           es: [
             'Reparto: Java, Spring Boot, Python, FastAPI, PostgreSQL, LangChain y Docker',
             'Avatar generado con IA a partir de una foto real',
-            'Sonido: efectos sintetizados con Web Audio',
+            'Música original generada con ElevenLabs; efectos con Web Audio',
             'Tipografías: Recursive y Shantell Sans',
           ],
           en: [
             'Cast: Java, Spring Boot, Python, FastAPI, PostgreSQL, LangChain and Docker',
             'Avatar generated with AI from a real photo',
-            'Sound: effects synthesised with Web Audio',
+            'Original music generated with ElevenLabs; effects with Web Audio',
             'Typefaces: Recursive and Shantell Sans',
           ],
         },
