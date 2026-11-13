@@ -463,7 +463,39 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
       grid-column: 1 / -1;
       grid-row: 3;
       min-height: 0;
-      padding-top: 38px;
+      padding: 38px 10px 12px;
+    }
+
+    /* En pantallas pequeñas las placas se aprietan para caber enteras. */
+    .insp__pila {
+      gap: calc(5px + var(--abre) * 4px);
+    }
+
+    .insp__pila li {
+      margin-left: calc(var(--n) * (4px + var(--abre) * 8px));
+      box-shadow: 4px 4px 0 color-mix(in srgb, var(--acento) 38%, transparent);
+    }
+
+    .insp__pila li:not(:first-child)::before {
+      display: none;
+    }
+
+    .insp__capa {
+      gap: 0;
+      padding: 5px 10px;
+    }
+
+    .insp__capa strong {
+      font-size: 0.9375rem;
+    }
+
+    .insp__capa span {
+      font-size: 0.8125rem;
+      line-height: 1.25;
+    }
+
+    .insp__hechos {
+      font-size: 1.05rem;
     }
 
     .insp__hoja {
