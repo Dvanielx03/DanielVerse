@@ -1,0 +1,173 @@
+---
+// E4 · Díptico: a la izquierda la solución de plantilla, a lápiz; a la derecha, la de Daniel.
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const convencional = plano.pasos?.convencional[idioma] ?? [];
+const propio = plano.pasos?.propio[idioma] ?? [];
+---
+
+<div class="dip" style={`--acento:${plano.acento}`}>
+  <div class="dip__lado dip__lado--conv folio">
+    <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
+    <p class="dip__rotulo mono">{plano.lineas?.[idioma][0]}</p>
+    <ol class="dip__pasos dip__pasos--lapiz">
+      {convencional.map((paso) => <li class="trazo a-mano">{paso}</li>)}
+    </ol>
+    <svg class="dip__tacha" viewBox="0 0 200 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M8 14 C60 40 130 76 192 108 M190 12 C140 44 70 78 10 106" />
+    </svg>
+  </div>
+
+  <div class="dip__lado dip__lado--mio">
+    <h2 id={idTitulo} class="dip__frase">{plano.titular?.[idioma]}</h2>
+    <ol class="dip__pasos">
+      {propio.map((paso) => <li>{paso}</li>)}
+    </ol>
+  </div>
+</div>
+
+<style>
+  /* Sin motor: los dos lados a la vista. */
+  .dip {
+    --viaje: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: center;
+    gap: clamp(16px, 4vw, 56px);
+    min-height: 0;
+  }
+
+  /* La cámara viaja de un lado al otro: el convencional se apaga y el propio se enciende. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .dip {
+      --viaje: clamp(0, calc((var(--p, 0) - 0.1) / 0.5), 1);
+    }
+  }
+
+  .dip__lado {
+    display: grid;
+    gap: clamp(12px, 2vw, 20px);
+    min-width: 0;
+  }
+
+  .dip__lado--conv {
+    padding: clamp(30px, 4vw, 42px) clamp(14px, 2.4vw, 28px) clamp(18px, 3vw, 30px);
+    rotate: -1.6deg;
+    opacity: calc(1 - 0.45 * var(--viaje));
+  }
+
+  .dip__lado--mio {
+    opacity: calc(0.25 + 0.75 * var(--viaje));
+    translate: calc((1 - var(--viaje)) * 28px) 0;
+  }
+
+  .dip__rotulo {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tinta-azul);
+  }
+
+  .dip__frase {
+    font-size: clamp(1.9rem, 5.4vw, 4.25rem);
+    font-weight: 900;
+    line-height: 0.96;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    text-shadow:
+      -0.035em 0 var(--rojo-luz),
+      0.035em 0 var(--azul-luz);
+  }
+
+  /* Los pasos, encadenados con flechas. */
+  .dip__pasos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 0;
+  }
+
+  .dip__pasos li {
+    position: relative;
+    margin-right: 34px;
+    padding: 8px 14px;
+    border: 2px solid var(--acento);
+    font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+    font-weight: 700;
+  }
+
+  .dip__pasos li:last-child {
+    margin-right: 0;
+    background: var(--acento);
+    color: var(--sala);
+  }
+
+  .dip__pasos li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    width: 16px;
+    height: 10px;
+    background: var(--acento);
+    clip-path: polygon(0 35%, 60% 35%, 60% 0, 100% 50%, 60% 100%, 60% 65%, 0 65%);
+    translate: 0 -50%;
+  }
+
+  .dip__pasos--lapiz {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dip__pasos--lapiz li,
+  .dip__pasos--lapiz li:last-child {
+    margin: 0 0 18px;
+    border-color: var(--lapiz-azul);
+    background: none;
+    color: var(--grafito);
+    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+    font-weight: 400;
+  }
+
+  .dip__pasos--lapiz li:last-child {
+    margin-bottom: 0;
+  }
+
+  .dip__pasos--lapiz li:not(:last-child)::after {
+    top: calc(100% + 4px);
+    left: 24px;
+    width: 10px;
+    height: 12px;
+    background: var(--lapiz-azul);
+    clip-path: polygon(35% 0, 65% 0, 65% 60%, 100% 60%, 50% 100%, 0 60%, 35% 60%);
+    translate: none;
+  }
+
+  /* La tacha en rojo aparece cuando la cámara ya se ha ido al otro lado. */
+  .dip__tacha {
+    position: absolute;
+    inset: 22% 8% 10%;
+    width: 84%;
+    height: 68%;
+    fill: none;
+    stroke: var(--carmin);
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: round(down, var(--viaje), 1);
+    pointer-events: none;
+  }
+
+  @media (max-width: 760px) {
+    .dip {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+    }
+  }
+</style>
