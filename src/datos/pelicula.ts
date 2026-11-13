@@ -73,6 +73,16 @@ const repositorio = (ruta: string): Enlace => ({
   url: `${GITHUB}/${ruta}`,
 });
 
+/** Acceso directo a todos los repositorios, para la hoja de contacto. */
+export const REPOSITORIOS: { nombre: string; que: Bilingue; url: string }[] = [
+  { nombre: 'XEON', que: { es: 'Agente de cotizaciones', en: 'Quote agent' }, url: `${GITHUB}/Xeon-agente-cotizaciones` },
+  { nombre: 'Tool Rental', que: { es: 'Alquiler de herramientas', en: 'Tool rental' }, url: `${GITHUB}/Tool-rental-platform` },
+  { nombre: 'ResumeLens', que: { es: 'Evaluación de CV', en: 'CV evaluation' }, url: `${GITHUB}/ResumeLens-cv` },
+  { nombre: 'Motion Studio', que: { es: 'Videos con HTML', en: 'Videos with HTML' }, url: `${GITHUB}/motion-studio-design` },
+  { nombre: 'GoogleFlow Studio', que: { es: 'Producción audiovisual', en: 'Video production' }, url: `${GITHUB}/googleflow-studio` },
+  { nombre: 'DanielVerse', que: { es: 'Este sitio', en: 'This site' }, url: `${GITHUB}/DanielVerse` },
+];
+
 export const ESCENAS: Escena[] = [
   {
     id: 'E0',
@@ -255,6 +265,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E4-X1',
         arte: 'proyecto',
+        enlaces: [repositorio('Xeon-agente-cotizaciones')],
         acento: '#00D9A3',
         nombre: { es: 'XEON · Claqueta', en: 'XEON · Slate' },
         pantallas: 1,
@@ -309,6 +320,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E4-T1',
         arte: 'proyecto',
+        enlaces: [repositorio('Tool-rental-platform')],
         acento: '#6EA2FF',
         nombre: { es: 'Tool Rental · Claqueta', en: 'Tool Rental · Slate' },
         pantallas: 1,
@@ -360,6 +372,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E4-R1',
         arte: 'proyecto',
+        enlaces: [repositorio('ResumeLens-cv')],
         acento: '#FF5A47',
         nombre: { es: 'ResumeLens · Claqueta', en: 'ResumeLens · Slate' },
         pantallas: 1,

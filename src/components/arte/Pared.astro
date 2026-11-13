@@ -25,11 +25,16 @@ const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyecto
       Array.from({ length: 12 }, (_, i) => {
         const proyecto = huecos[i];
         return proyecto ? (
-          <li>
-            <a href={`#${proyecto.id}`} data-ir={proyecto.id} style={`--acento:${proyecto.acento}`}>
+          <li class="viva" style={`--acento:${proyecto.acento}`}>
+            <a href={`#${proyecto.id}`} data-ir={proyecto.id}>
               <span class="mono">{proyecto.id}</span>
               <strong>{proyecto.titular?.[idioma]}</strong>
             </a>
+            {proyecto.enlaces?.[0] && (
+              <a class="pared__repo mono" href={proyecto.enlaces[0].url} aria-label={`${proyecto.titular?.[idioma]} · GitHub`}>
+                GitHub ↗
+              </a>
+            )}
           </li>
         ) : (
           <li class="vacia" aria-hidden="true" />
@@ -81,6 +86,31 @@ const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyecto
     aspect-ratio: 16 / 10;
   }
 
+  .pared__vinetas .viva {
+    position: relative;
+  }
+
+  /* El acceso a GitHub, pegado a la esquina de la viñeta. */
+  .pared__repo {
+    position: absolute;
+    right: -6px;
+    bottom: -12px;
+    z-index: 1;
+    padding: 4px 8px;
+    border: 2px solid #05030c;
+    background: var(--amarillo);
+    color: #05030c;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 3px 3px 0 #05030c;
+    rotate: -3deg;
+  }
+
+  .pared__repo:hover {
+    background: var(--pantalla);
+  }
+
   .vacia {
     border: 1.5px solid rgb(243 235 221 / 0.16);
     background:
@@ -88,7 +118,7 @@ const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyecto
       linear-gradient(to top left, transparent calc(50% - 0.5px), rgb(243 235 221 / 0.1) 50%, transparent calc(50% + 0.5px));
   }
 
-  .pared__vinetas a {
+  .pared__vinetas a:not(.pared__repo) {
     display: grid;
     align-content: space-between;
     height: 100%;
@@ -101,11 +131,11 @@ const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyecto
     box-shadow: 0 0 0 3px var(--sala), 0 0 0 5px var(--acento);
   }
 
-  .pared__vinetas a .mono {
+  .pared__vinetas a:not(.pared__repo) .mono {
     font-size: 0.625rem;
   }
 
-  .pared__vinetas a:hover {
+  .pared__vinetas a:not(.pared__repo):hover {
     background: var(--pantalla);
   }
 

@@ -1,7 +1,7 @@
 ---
 // La hoja de contacto: todos los planos a la vista. Índice, vía rápida y versión sin movimiento.
 import { INTERFAZ } from '../datos/interfaz';
-import { ESCENAS, type Idioma } from '../datos/pelicula';
+import { ESCENAS, REPOSITORIOS, type Idioma } from '../datos/pelicula';
 
 interface Props {
   idioma: Idioma;
@@ -14,6 +14,25 @@ const textos = INTERFAZ[idioma];
 <section id="hoja" class="hoja" data-mundo="papel" aria-labelledby="hoja-titulo">
   <h2 id="hoja-titulo" class="hoja__titulo">{textos.hojaTitulo}</h2>
   <p class="hoja__intro">{textos.hojaIntro}</p>
+
+  <section class="hoja__repos" aria-labelledby="hoja-repos">
+    <h3 id="hoja-repos">{textos.repositorios}</h3>
+    <ul>
+      {
+        REPOSITORIOS.map((repo) => (
+          <li>
+            <a href={repo.url}>
+              <strong>{repo.nombre}</strong>
+              <span>{repo.que[idioma]}</span>
+              <span class="mono" aria-hidden="true">
+                GitHub ↗
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
   <ol class="hoja__escenas">
     {
       ESCENAS.map((escena, numero) => (
@@ -70,6 +89,56 @@ const textos = INTERFAZ[idioma];
   .hoja__escenas {
     display: grid;
     gap: 28px;
+  }
+
+  /* Los repositorios: tarjetas en negro con su acceso directo a GitHub. */
+  .hoja__repos {
+    display: grid;
+    gap: 10px;
+  }
+
+  .hoja__repos h3 {
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .hoja__repos ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    gap: 12px;
+  }
+
+  .hoja__repos a {
+    display: grid;
+    gap: 2px;
+    padding: 12px 14px;
+    border: 2.5px solid #05030c;
+    background: #05030c;
+    color: var(--pantalla);
+    text-decoration: none;
+    box-shadow: 4px 4px 0 var(--magenta);
+    transition:
+      translate var(--f2) var(--golpe),
+      box-shadow var(--f2) var(--golpe);
+  }
+
+  .hoja__repos a span:not(.mono) {
+    color: var(--gris-sala);
+    font-size: 0.875rem;
+  }
+
+  .hoja__repos a .mono {
+    justify-self: start;
+    margin-top: 6px;
+    padding: 1px 6px;
+    background: var(--amarillo);
+    color: #05030c;
+    font-size: 0.6875rem;
+  }
+
+  .hoja__repos a:hover {
+    translate: -2px -2px;
+    box-shadow: 7px 7px 0 var(--cian);
   }
 
   .hoja__escena {

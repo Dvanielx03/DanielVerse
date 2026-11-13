@@ -30,6 +30,7 @@ export interface TextosInterfaz {
   capaArquitectura: string;
   capaDatos: string;
   capasAyuda: string;
+  repositorios: string;
   herramientas: { motion: string; flow: string };
 }
 
@@ -66,6 +67,7 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     capaArquitectura: 'Arquitectura',
     capaDatos: 'Datos',
     capasAyuda: 'Capas del plano',
+    repositorios: 'Repositorios',
     herramientas: {
       motion: 'Skill para crear videos con HTML y JavaScript',
       flow: 'Skill de producción audiovisual para Google Flow',
@@ -103,6 +105,7 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     capaArquitectura: 'Architecture',
     capaDatos: 'Facts',
     capasAyuda: 'Layers of this shot',
+    repositorios: 'Repositories',
     herramientas: {
       motion: 'A skill for making videos with HTML and JavaScript',
       flow: 'A video production skill for Google Flow',

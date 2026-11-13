@@ -220,6 +220,11 @@ function alPulsarTecla(evento: KeyboardEvent): void {
 raiz.classList.add('con-motor');
 raiz.dataset.sonido = 'no';
 
+for (const enlace of document.querySelectorAll<HTMLAnchorElement>('a[href^="http"]')) {
+  enlace.target = '_blank';
+  enlace.rel = 'noopener noreferrer';
+}
+
 for (const boton of botonesDeSonido) boton.addEventListener('click', () => void cambiarSonido());
 
 for (const enlace of document.querySelectorAll<HTMLAnchorElement>('a[data-ir]')) {
