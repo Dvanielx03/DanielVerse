@@ -1,0 +1,61 @@
+/* Tokens del design system de «f(t)». Fuente: docs/design-system.md */
+
+:root {
+  /* Mundo de papel */
+  --papel: #edf0ee;
+  --grafito: #1f2327;
+  --gris-papel: #575c60;
+  --tinta-azul: #2456a6;
+  --carmin-texto: #c22a40;
+  --lapiz-azul: #3f7fd9;
+  --carmin: #d8334a;
+
+  /* Mundo de sala */
+  --sala: #0e1220;
+  --superficie-sala: #171c30;
+  --pantalla: #f3ebdd;
+  --gris-sala: #a9a79f;
+  --amarillo: #ffc93c;
+  --azul-luz: #6ea2ff;
+  --rojo-luz: #ff5a47;
+
+  /* Tipografía */
+  --fuente: 'Recursive Variable', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+  --fuente-mano: 'Shantell Sans Variable', 'Segoe Print', 'Comic Sans MS', cursive;
+  --fuente-codigo: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Reloj: duraciones en fotogramas a 12 fps */
+  --f1: 83ms;
+  --f2: 167ms;
+  --f4: 333ms;
+  --f8: 667ms;
+  --f12: 1000ms;
+
+  /* Curvas */
+  --asentar: cubic-bezier(0.16, 1, 0.3, 1);
+  --arrastre: cubic-bezier(0.65, 0, 0.35, 1);
+  --golpe: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* La capa decide la paleta: cada mundo resuelve los mismos nombres. */
+[data-mundo='papel'] {
+  --fondo: var(--papel);
+  --superficie: #f8f9f7;
+  --texto: var(--grafito);
+  --texto-2: var(--gris-papel);
+  --enlace: var(--tinta-azul);
+  --linea: #c5ccc7;
+  --nota: var(--carmin-texto);
+  color-scheme: light;
+}
+
+[data-mundo='sala'] {
+  --fondo: var(--sala);
+  --superficie: var(--superficie-sala);
+  --texto: var(--pantalla);
+  --texto-2: var(--gris-sala);
+  --enlace: var(--azul-luz);
+  --linea: #2e3654;
+  --nota: var(--rojo-luz);
+  color-scheme: dark;
+}
