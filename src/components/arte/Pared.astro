@@ -111,6 +111,17 @@ const huecos: Record<number, Plano | undefined> = { 1: proyectos[0], 6: proyecto
     background: var(--pantalla);
   }
 
+  /* En el móvil las viñetas son pequeñas: el acceso sube a la esquina libre y se encoge. */
+  @media (max-width: 760px) {
+    .pared__repo {
+      top: -9px;
+      right: -5px;
+      bottom: auto;
+      padding: 2px 5px;
+      font-size: 0.5625rem;
+    }
+  }
+
   .vacia {
     border: 1.5px solid rgb(243 235 221 / 0.16);
     background:
