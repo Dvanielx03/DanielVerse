@@ -1,0 +1,163 @@
+---
+// E4 · Plano de inspección: el visitante cambia de capa. Funciona sin JavaScript, con radios.
+import { INTERFAZ } from '../../datos/interfaz';
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const textos = INTERFAZ[idioma];
+const capas = plano.capas?.[idioma] ?? [];
+const grupo = `capa-${plano.id}`;
+---
+
+<div class="insp" style={`--acento:${plano.acento}`}>
+  <h2 id={idTitulo} class="insp__titulo mono">{plano.nombre[idioma]}</h2>
+
+  <fieldset class="insp__capas">
+    <legend class="solo-lectores">{textos.capasAyuda}</legend>
+
+    <input class="solo-lectores es-arquitectura" type="radio" name={grupo} id={`${grupo}-arquitectura`} checked />
+    <label for={`${grupo}-arquitectura`}>{textos.capaArquitectura}</label>
+    <input class="solo-lectores es-datos" type="radio" name={grupo} id={`${grupo}-datos`} />
+    <label for={`${grupo}-datos`}>{textos.capaDatos}</label>
+
+    <div class="insp__panel insp__panel--arquitectura">
+      <ol class="insp__pila">
+        {capas.map((capa, i) => <li style={`--n:${i}`}>{capa}</li>)}
+      </ol>
+    </div>
+
+    <div class="insp__panel insp__panel--datos">
+      <ul class="insp__hechos">
+        {plano.lineas?.[idioma].map((linea) => <li>{linea}</li>)}
+      </ul>
+      {
+        plano.enlaces?.map((enlace) => (
+          <a class="insp__enlace" href={enlace.url}>
+            {enlace.etiqueta[idioma]}
+          </a>
+        ))
+      }
+    </div>
+  </fieldset>
+</div>
+
+<style>
+  .insp {
+    align-self: center;
+    display: grid;
+    gap: clamp(12px, 2vw, 20px);
+    width: min(940px, 100%);
+    min-height: 0;
+  }
+
+  .insp__titulo {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--acento);
+  }
+
+  .insp__capas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* Pestañas de capa */
+  .insp__capas label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 20px;
+    border: 2px solid var(--acento);
+    border-bottom: 0;
+    color: var(--acento);
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .insp__capas label + input + label {
+    border-left: 0;
+  }
+
+  .insp__capas input:checked + label {
+    background: var(--acento);
+    color: var(--sala);
+  }
+
+  .insp__capas input:focus-visible + label {
+    outline: 3px solid var(--amarillo);
+    outline-offset: 3px;
+  }
+
+  .insp__panel {
+    display: none;
+    flex-basis: 100%;
+    min-height: clamp(220px, 44svh, 380px);
+    padding: clamp(16px, 3vw, 36px);
+    border: 2px solid var(--acento);
+    background: rgb(14 18 32 / 0.72);
+  }
+
+  .es-arquitectura:checked ~ .insp__panel--arquitectura,
+  .es-datos:checked ~ .insp__panel--datos {
+    display: grid;
+    align-content: center;
+    gap: clamp(12px, 2vw, 20px);
+    justify-items: start;
+  }
+
+  /* La arquitectura como capas apiladas, cada una un poco más adentro. */
+  .insp__pila {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .insp__pila li {
+    margin-left: calc(var(--n) * clamp(10px, 3vw, 44px));
+    padding: 10px 16px;
+    border: 2px solid var(--acento);
+    border-left-width: 10px;
+    font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+    font-weight: 600;
+  }
+
+  .insp__hechos {
+    display: grid;
+    gap: 8px;
+    font-size: clamp(1rem, 2.2vw, 1.5rem);
+    font-weight: 600;
+  }
+
+  .insp__hechos li {
+    padding-left: 18px;
+    border-left: 3px solid var(--acento);
+  }
+
+  .insp__enlace {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 18px;
+    background: var(--acento);
+    color: var(--sala);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .insp__enlace:hover {
+    background: var(--pantalla);
+  }
+</style>
