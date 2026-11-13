@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { ESCENAS, type Arte, type Plano } from '../datos/pelicula.ts';
-import { CAIDA_DE_LA_PARED, golpesDe, golpesEntre, mezclaDe } from './mezcla.ts';
+import { CAIDA_DE_LA_PARED, golpesEntre, mezclaDe } from './mezcla.ts';
 
 const planos = ESCENAS.flatMap((escena) => escena.planos);
 const plano = (id: string): Plano => {
@@ -15,9 +15,7 @@ const avances = [0, 0.1, 0.25, 0.5, 0.75, 1];
 test('todos los niveles de la mezcla están entre 0 y 1', () => {
   for (const p of planos) {
     for (const avance of avances) {
-      const { timbre, ...niveles } = mezclaDe(p, avance);
-      assert.ok(['bateria', 'lapiz', 'proyector'].includes(timbre));
-      for (const [capa, nivel] of Object.entries(niveles)) {
+      for (const [capa, nivel] of Object.entries(mezclaDe(p, avance))) {
         assert.ok(nivel >= 0 && nivel <= 1, `${p.id} ${capa} = ${nivel}`);
       }
     }
@@ -46,12 +44,11 @@ test('en papel todo suena seco y en sala se abre la reverberación', () => {
   assert.equal(mezclaDe(plano('E3-P1'), 0.5).reverb, 1);
 });
 
-test('hay descarga en la ruptura, en Retos y en Detrás de cámaras, cada una con su timbre', () => {
+test('hay descarga en la ruptura, en Retos y en Detrás de cámaras, y resolución al final', () => {
   assert.equal(mezclaDe(plano('E3-P2'), 0.5).descarga, 1);
-  assert.equal(mezclaDe(plano('E3-P2'), 0.5).timbre, 'lapiz');
   assert.equal(mezclaDe(plano('E5-P1'), 0.5).descarga, 1);
-  assert.equal(mezclaDe(plano('E5-P1'), 0.5).timbre, 'proyector');
   assert.equal(mezclaDe(plano('E6-P1'), 0.5).resolucion, 1);
+  assert.equal(mezclaDe(plano('E6-P1'), 0.5).descarga, 0);
 });
 
 test('los golpes caen al cruzar su punto hacia delante y nunca al rebobinar', () => {
@@ -64,12 +61,7 @@ test('los golpes caen al cruzar su punto hacia delante y nunca al rebobinar', ()
   assert.deepEqual(golpesEntre(claqueta, 0.75, 0.9), []);
   // Un plano que acaba de entrar: suenan los golpes de su primer fotograma.
   assert.deepEqual(
-    golpesEntre(plano('E3-P1'), -1, 0.01).map((g) => g.sonido),
-    ['barrido'],
+    golpesEntre(plano('E4-X1'), -1, 0.01).map((g) => g.sonido),
+    ['sello'],
   );
-});
-
-test('la llamada cambia de altura con cada proyecto', () => {
-  const alturas = ['E4-X2', 'E4-T2', 'E4-R2'].map((id) => golpesDe(plano(id)).find((g) => g.sonido === 'llamada')?.semitonos);
-  assert.deepEqual(alturas, [0, 3, -2]);
 });

@@ -1,6 +1,7 @@
 // El sonido de la película, visto desde el motor: se enciende, se apaga y sigue al instante t.
 // Está apagado por defecto y la síntesis no se descarga hasta que el visitante la activa.
 
+import { TRANSICION_POR_ARTE } from '../datos/transiciones.ts';
 import { golpesEntre, mezclaDe } from './mezcla.ts';
 import type { Motor } from './sintesis.ts';
 import type { Entrada } from './tiempo.ts';
@@ -32,7 +33,12 @@ export function alInstante(entrada: Entrada, progreso: number): void {
   // Un salto a otra parte de la película no dispara nada, y el audio no se rebobina.
   let desde: number | undefined;
   if (entrada.indice === antes.entrada.indice) desde = antes.progreso;
-  else if (entrada.indice === antes.entrada.indice + 1) desde = -1;
+  else if (entrada.indice === antes.entrada.indice + 1) {
+    desde = -1;
+    // Cada sección que llega con transición trae su soplo de aire.
+    const arte = entrada.plano.arte;
+    if (arte && TRANSICION_POR_ARTE[arte] !== 'corte') motor.golpe({ en: 0, sonido: 'barrido' });
+  }
   if (desde === undefined) return;
   for (const golpe of golpesEntre(entrada.plano, desde, progreso)) motor.golpe(golpe);
 }
