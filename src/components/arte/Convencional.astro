@@ -1,0 +1,243 @@
+---
+// E1-P1 · El portafolio de siempre, bocetado a lápiz. Los datos y los enlaces son reales.
+import { getImage } from 'astro:assets';
+
+import boceto from '../../assets/avatar/boceto.png';
+import { INTERFAZ } from '../../datos/interfaz';
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const textos = INTERFAZ[idioma];
+const retrato = await getImage({ src: boceto, width: 1000, format: 'webp' });
+const [rol, stack] = plano.lineas?.[idioma] ?? [];
+const tecnologias = stack ? stack.split(' · ') : [];
+---
+
+<div class="mesa">
+  <div class="folio hoja">
+    <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
+
+    <div class="web trazo">
+      <div class="web__barra" aria-hidden="true"><i></i><i></i><i></i><b class="trazo"></b></div>
+
+      <div class="web__cuerpo">
+        <div
+          class="web__retrato"
+          role="img"
+          aria-label={textos.altAvatar.boceto}
+          style={`background-image:url(${retrato.src})`}
+        >
+        </div>
+        <div class="web__texto">
+          <h2 id={idTitulo} class="web__nombre">{plano.titular?.[idioma]}</h2>
+          <p class="web__rol">{rol}</p>
+          <ul class="web__stack">
+            {tecnologias.map((tecnologia) => <li class="trazo mono">{tecnologia}</li>)}
+          </ul>
+          <ul class="web__enlaces">
+            {
+              plano.enlaces?.map((enlace) => (
+                <li>
+                  <a class="trazo" href={enlace.url}>
+                    {enlace.etiqueta[idioma]}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <ul class="web__tarjetas" aria-hidden="true">
+        {
+          [1, 2, 3].map((numero) => (
+            <li class="trazo">
+              <span class="mono">
+                {textos.proyecto} {numero}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    {
+      plano.nota && (
+        <p class="nota a-mano">
+          {plano.nota[idioma]}
+          <svg viewBox="0 0 64 30" aria-hidden="true">
+            <path d="M3 20 C18 6 38 6 58 14 M46 5 L59 14 L45 23" />
+          </svg>
+        </p>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .mesa {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+  }
+
+  .hoja {
+    width: min(960px, 100%);
+    padding: clamp(30px, 4vw, 44px) clamp(14px, 3vw, 36px) clamp(34px, 5vw, 52px);
+    transform: rotate(0.8deg);
+  }
+
+  .web {
+    display: grid;
+    gap: clamp(12px, 2vw, 20px);
+    padding: 0 clamp(12px, 2.4vw, 24px) clamp(12px, 2.4vw, 22px);
+    border-width: 2.5px;
+  }
+
+  .web__barra {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-inline: calc(-1 * clamp(12px, 2.4vw, 24px));
+    padding: 8px 14px;
+    border-bottom: 2px solid var(--lapiz-azul);
+  }
+
+  .web__barra i {
+    width: 11px;
+    height: 11px;
+    border: 2px solid var(--lapiz-azul);
+    border-radius: 50%;
+  }
+
+  .web__barra b {
+    flex: 1;
+    max-width: 320px;
+    height: 14px;
+    margin-left: 10px;
+    border-width: 1.5px;
+  }
+
+  .web__cuerpo {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(14px, 3vw, 36px);
+  }
+
+  /* El retrato es el boceto del avatar, encuadrado en la cara. */
+  .web__retrato {
+    width: clamp(96px, 17vw, 176px);
+    aspect-ratio: 1;
+    border: 2.5px solid var(--lapiz-azul);
+    border-radius: 50%;
+    background-color: var(--papel);
+    background-size: 470%;
+    background-position: 89% 9%;
+  }
+
+  .web__texto {
+    display: grid;
+    justify-items: start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .web__nombre {
+    font-size: clamp(1.9rem, 5.6vw, 3.9rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+  }
+
+  .web__rol {
+    font-size: clamp(0.95rem, 1.9vw, 1.2rem);
+    color: var(--gris-papel);
+  }
+
+  .web__stack,
+  .web__enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+  }
+
+  .web__stack li {
+    padding: 2px 10px;
+    border-width: 1.5px;
+    font-size: 0.75rem;
+    color: var(--tinta-azul);
+  }
+
+  .web__enlaces a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 6px 18px;
+    border-color: var(--grafito);
+    color: var(--grafito);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .web__enlaces a:hover {
+    background: var(--amarillo);
+  }
+
+  /* Tarjetas vacías, tachadas en cruz como en un boceto de maqueta. */
+  .web__tarjetas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(8px, 1.6vw, 16px);
+  }
+
+  .web__tarjetas li {
+    display: grid;
+    place-items: end start;
+    aspect-ratio: 16 / 6;
+    padding: 6px 10px;
+    border-width: 1.5px;
+    background:
+      linear-gradient(to top right, transparent calc(50% - 0.6px), rgb(63 127 217 / 0.6) 50%, transparent calc(50% + 0.6px)),
+      linear-gradient(to top left, transparent calc(50% - 0.6px), rgb(63 127 217 / 0.6) 50%, transparent calc(50% + 0.6px));
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--tinta-azul);
+  }
+
+  .nota {
+    position: absolute;
+    right: clamp(12px, 3vw, 36px);
+    bottom: clamp(4px, 1vw, 12px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--carmin-texto);
+    font-size: clamp(1.05rem, 2.3vw, 1.5rem);
+    transform: rotate(-3deg);
+  }
+
+  .nota svg {
+    width: 56px;
+    height: 26px;
+    fill: none;
+    stroke: var(--carmin);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (max-width: 560px) {
+    .web__cuerpo {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: start;
+    }
+  }
+</style>
