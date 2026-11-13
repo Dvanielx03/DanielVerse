@@ -435,6 +435,7 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E5-P2',
         arte: 'herramientas',
+        reposo: 0.4,
         nombre: { es: 'Las herramientas', en: 'The tools' },
         pantallas: 1,
         mundo: 'sala',

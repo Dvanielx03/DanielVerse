@@ -15,11 +15,11 @@ const descripciones = [textos.herramientas.motion, textos.herramientas.flow];
 ---
 
 <div class="herr">
-  <h2 id={idTitulo} class="solo-lectores">{plano.titular?.[idioma]}</h2>
+  <h2 id={idTitulo} class="herr__rotulo mono">{plano.nombre[idioma]}</h2>
   <ul class="herr__lista">
     {
       plano.enlaces?.map((enlace, i) => (
-        <li class="herr__tarjeta">
+        <li class="herr__tarjeta" style={`--i:${i}`}>
           <span class="herr__barras" aria-hidden="true" />
           <div class="herr__cuerpo">
             <h3 class="herr__nombre">{enlace.etiqueta[idioma]}</h3>
@@ -36,9 +36,34 @@ const descripciones = [textos.herramientas.motion, textos.herramientas.flow];
 </div>
 
 <style>
+  /* Sin motor: las dos claquetas en su sitio. */
   .herr {
+    --llega: 1;
     align-self: center;
+    display: grid;
+    gap: clamp(14px, 2.4vw, 28px);
     min-height: 0;
+  }
+
+  /* Cada claqueta entra desde su lado, a saltos, una detrás de otra. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .herr {
+      --llega: clamp(0, calc(var(--p, 0) / 0.3), 1);
+    }
+  }
+
+  .herr__rotulo {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--amarillo);
+  }
+
+  .herr__tarjeta {
+    --mia: round(up, clamp(0, calc(var(--llega) * 1.5 - var(--i) * 0.5), 1), 0.2);
+    translate: calc((1 - var(--mia)) * (var(--i) * 2 - 1) * 60vw) 0;
+    opacity: var(--mia);
   }
 
   .herr__lista {
@@ -103,7 +128,7 @@ const descripciones = [textos.herramientas.motion, textos.herramientas.flow];
 
   .herr__sello {
     position: absolute;
-    top: clamp(10px, 2vw, 22px);
+    bottom: clamp(14px, 2.6vw, 30px);
     right: clamp(10px, 2vw, 22px);
     padding: 4px 12px 3px;
     border: 3px double var(--rojo-luz);
