@@ -1,0 +1,157 @@
+---
+// E2 · Quién. El avatar en una de sus tres pasadas, con la frase de Daniel al lado.
+// Las tres pasadas usan el mismo encuadre para que casen al cambiar de plano.
+import { Picture } from 'astro:assets';
+
+import boceto from '../../assets/avatar/boceto.png';
+import final from '../../assets/avatar/final.png';
+import tinta from '../../assets/avatar/tinta.png';
+import { INTERFAZ } from '../../datos/interfaz';
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const textos = INTERFAZ[idioma];
+const pasadas = { 'avatar-boceto': 'boceto', 'avatar-tinta': 'tinta', 'avatar-final': 'final' } as const;
+const pasada = pasadas[plano.arte as keyof typeof pasadas] ?? 'boceto';
+const fuente = { boceto, tinta, final }[pasada];
+const numero = { boceto: 1, tinta: 2, final: 3 }[pasada];
+const frase = plano.lineas?.[idioma]?.[0];
+---
+
+<div class="quien" data-pasada={pasada}>
+  <div class="quien__texto">
+    <h2 id={idTitulo} class="quien__pasada mono">{`${textos.pasada} ${numero} · ${plano.nombre[idioma]}`}</h2>
+    <p class="quien__frase">{frase}</p>
+    {plano.nota && <p class="adhesiva a-mano">{plano.nota[idioma]}</p>}
+  </div>
+
+  <figure class="quien__figura">
+    <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
+    <Picture
+      src={fuente}
+      formats={['avif', 'webp']}
+      widths={[640, 960, 1344, 1672]}
+      sizes="(max-width: 820px) 180vw, 110vw"
+      alt={textos.altAvatar[pasada]}
+      loading="eager"
+    />
+  </figure>
+</div>
+
+<style>
+  .quien {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(16px, 4vw, 64px);
+    min-height: 0;
+  }
+
+  .quien__texto {
+    display: grid;
+    justify-items: start;
+    gap: clamp(12px, 2vw, 20px);
+    min-width: 0;
+  }
+
+  .quien__pasada {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--amarillo);
+  }
+
+  .quien__frase {
+    max-width: 21ch;
+    font-size: clamp(1.3rem, 3.2vw, 2.6rem);
+    font-weight: 650;
+    line-height: 1.16;
+    text-wrap: balance;
+  }
+
+  /* La hoja iluminada dentro de la sala. */
+  .quien__figura {
+    position: relative;
+    height: min(72svh, 620px);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid #bcc4bf;
+    background: #f6f8f6;
+    transform: rotate(1.4deg);
+  }
+
+  .quien__figura :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 91% 50%;
+  }
+
+  /* En la pasada final la hoja desaparece y el personaje queda fuera del marco. */
+  /* La figura entera se funde con la sala: el fondo oscuro del dibujo desaparece. */
+  [data-pasada='final'] .quien__figura {
+    border-color: transparent;
+    background: none;
+    transform: scale(1.08);
+    mix-blend-mode: lighten;
+  }
+
+  [data-pasada='final'] .folio__clavijas {
+    display: none;
+  }
+
+  [data-pasada='final'] .quien__figura :global(img) {
+    mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor .plano.es-activo) .quien__texto > * {
+      animation: asentar-frase var(--f8) var(--asentar) both;
+    }
+
+    :global(.con-motor .plano.es-activo) .quien__texto > :nth-child(2) {
+      animation-delay: var(--f2);
+    }
+
+    :global(.con-motor .plano.es-activo) .quien__texto > :nth-child(3) {
+      animation-delay: var(--f8);
+    }
+  }
+
+  @keyframes asentar-frase {
+    from {
+      opacity: 0;
+      translate: 0 20px;
+    }
+  }
+
+  @media (max-width: 820px) {
+    .quien {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+      justify-items: center;
+    }
+
+    .quien__figura {
+      order: -1;
+      height: min(44svh, 380px);
+    }
+
+    .quien__texto {
+      justify-self: stretch;
+    }
+
+    .quien__frase {
+      max-width: 28ch;
+      font-size: clamp(1.15rem, 5vw, 1.6rem);
+    }
+  }
+</style>
