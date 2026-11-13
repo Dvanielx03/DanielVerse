@@ -137,7 +137,8 @@ document.addEventListener('focusin', (evento) => {
 });
 
 window.addEventListener('scroll', alDesplazar, { passive: true });
-window.addEventListener('resize', alDesplazar);
+// Al cambiar el tamaño de la ventana cambian las alturas: la película conserva su instante.
+window.addEventListener('resize', () => seek(tPintado));
 window.addEventListener('keydown', alPulsarTecla);
 
 window.seek = seek;
