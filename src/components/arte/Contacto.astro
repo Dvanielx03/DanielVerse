@@ -1,0 +1,155 @@
+---
+// E6-P2 · Contacto. El cierre de la película, con un iris que se cierra sobre el avatar.
+import { Picture } from 'astro:assets';
+
+import final from '../../assets/avatar/final.png';
+import { INTERFAZ } from '../../datos/interfaz';
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const textos = INTERFAZ[idioma];
+---
+
+<div class="cont">
+  <div class="cont__texto">
+    <h2 id={idTitulo} class="cont__titular">{plano.titular?.[idioma]}</h2>
+    <ul class="cont__enlaces">
+      {
+        plano.enlaces?.map((enlace) => (
+          <li>
+            <a href={enlace.url}>{enlace.etiqueta[idioma]}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <figure class="cont__figura">
+    <Picture
+      src={final}
+      formats={['avif', 'webp']}
+      widths={[640, 960, 1344, 1672]}
+      sizes="(max-width: 820px) 180vw, 110vw"
+      alt={textos.altAvatar.final}
+      loading="lazy"
+    />
+  </figure>
+
+  <span class="cont__iris" aria-hidden="true"></span>
+</div>
+
+<style>
+  .cont {
+    --iris: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(16px, 4vw, 64px);
+    min-height: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .cont {
+      --iris: clamp(0, calc((var(--p, 0) - 0.55) / 0.45), 1);
+    }
+  }
+
+  .cont__texto {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: start;
+    gap: clamp(16px, 3vw, 32px);
+    min-width: 0;
+  }
+
+  .cont__titular {
+    max-width: 12ch;
+    font-size: clamp(2.4rem, 7.6vw, 6rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    text-shadow:
+      -0.035em 0 var(--rojo-luz),
+      0.035em 0 var(--azul-luz);
+  }
+
+  .cont__enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .cont__enlaces a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 10px 22px;
+    background: var(--amarillo);
+    color: var(--grafito);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .cont__enlaces a:hover {
+    background: var(--pantalla);
+  }
+
+  .cont__figura {
+    height: min(72svh, 620px);
+    aspect-ratio: 4 / 5;
+    mix-blend-mode: lighten;
+    scale: 1.08;
+  }
+
+  .cont__figura :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 91% 50%;
+    mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+  }
+
+  /* Iris: un círculo de luz que se cierra hacia el avatar sin tapar los enlaces. */
+  .cont__iris {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 74% 46%,
+      transparent calc(140vmax - var(--iris) * 112vmax),
+      rgb(4 6 12 / 0.92) calc(140vmax - var(--iris) * 112vmax + 2px)
+    );
+  }
+
+  @media (max-width: 820px) {
+    .cont {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+      justify-items: center;
+    }
+
+    .cont__figura {
+      order: -1;
+      height: min(40svh, 340px);
+    }
+
+    .cont__texto {
+      justify-self: stretch;
+    }
+
+    .cont__iris {
+      display: none;
+    }
+  }
+</style>

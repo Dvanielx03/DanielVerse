@@ -1,0 +1,91 @@
+---
+// E6-P1 · Créditos que suben con el scroll, como al final de una película.
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+// «Reparto: Java, Python…» se parte en cargo y nombres; una línea sin dos puntos va sola.
+const creditos = (plano.lineas?.[idioma] ?? []).map((linea) => {
+  const corte = linea.indexOf(':');
+  return corte === -1
+    ? { cargo: undefined, nombres: [linea] }
+    : { cargo: linea.slice(0, corte), nombres: linea.slice(corte + 1).split(/,| y | and /).map((n) => n.trim()).filter(Boolean) };
+});
+---
+
+<div class="cred">
+  <div class="cred__rollo">
+    <h2 id={idTitulo} class="cred__titular">{plano.titular?.[idioma]}</h2>
+    {
+      creditos.map((credito) => (
+        <div class="cred__bloque">
+          {credito.cargo && <p class="cred__cargo mono">{credito.cargo}</p>}
+          <ul class="cred__nombres">
+            {credito.nombres.map((nombre) => (
+              <li>{nombre}</li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .cred {
+    --rueda: 0.5;
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .cred {
+      --rueda: var(--p, 0.5);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 84%, transparent 100%);
+    }
+  }
+
+  /* El rollo recorre la pantalla de abajo arriba a lo largo del plano. */
+  .cred__rollo {
+    display: grid;
+    justify-items: center;
+    gap: clamp(20px, 4vw, 40px);
+    text-align: center;
+    translate: 0 calc((0.5 - var(--rueda)) * 70svh);
+  }
+
+  .cred__titular {
+    max-width: 14ch;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .cred__bloque {
+    display: grid;
+    gap: 6px;
+  }
+
+  .cred__cargo {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--amarillo);
+  }
+
+  .cred__nombres {
+    display: grid;
+    gap: 2px;
+    font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+    font-weight: 600;
+  }
+</style>
