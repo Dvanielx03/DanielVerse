@@ -2,15 +2,20 @@
 // los efectos sueltos (golpes, barridos, papel) se sintetizan aquí mismo con Web Audio.
 // Este módulo solo se descarga cuando el visitante activa el sonido.
 
+import descargaUrl from '../assets/sonido/descarga.mp3?url';
+import resolucionUrl from '../assets/sonido/resolucion.mp3?url';
+import tensionUrl from '../assets/sonido/tension.mp3?url';
 import type { Golpe, Mezcla } from './mezcla.ts';
 
 /** Las capas de música. Una capa sin pista queda en silencio y lo demás sigue sonando. */
 type NombrePista = 'tension' | 'descarga' | 'resolucion';
-const BASE = import.meta.env.BASE_URL.replace(/\/?$/, '/');
-// La resolución aún no tiene pista: cuando exista, basta con añadir `${BASE}sonido/resolucion.mp3`.
+// Tensión: suspenso con silencios y golpes graves. Descarga: el tema completo.
+// Resolución: el mismo tema, lento y lejano, para cerrar.
+// Se importan como archivos con huella: si cambia una pista, cambia su nombre y nadie oye la vieja.
 const PISTAS: Partial<Record<NombrePista, string>> = {
-  tension: `${BASE}sonido/tension.mp3`,
-  descarga: `${BASE}sonido/descarga.mp3`,
+  tension: tensionUrl,
+  descarga: descargaUrl,
+  resolucion: resolucionUrl,
 };
 
 /** Segundos que se solapan el final y el principio de una pista al repetirse. */

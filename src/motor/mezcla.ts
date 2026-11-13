@@ -79,7 +79,7 @@ export function mezclaDe(plano: Plano, p: number): Mezcla {
       return { ...base, tension: 0.5, descarga: 1 };
     case 'creditos':
     case 'contacto':
-      // Resolución: sin batería. Si no hay pista de resolución, el tema se queda lejos, como unos créditos.
+      // Resolución: el tema vuelve lento y lejano, como unos créditos, con el suspenso debajo.
       return { ...base, tension: 0.7, resolucion: 1 };
     default:
       return { ...base, tension: 0.6 };
