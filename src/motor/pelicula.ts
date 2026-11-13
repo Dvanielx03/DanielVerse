@@ -275,8 +275,12 @@ window.pelicula = {
 };
 
 const inicial = reposoDe(indice, decodeURIComponent(location.hash.slice(1)));
+// El navegador no debe recolocar el scroll por su cuenta: la posición la decide la experiencia.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 if (inicial !== undefined) {
   seek(inicial);
+  // Al terminar de cargar, el navegador salta al ancla del enlace; se vuelve al punto de reposo.
+  window.addEventListener('load', () => seek(inicial), { once: true });
 } else {
   tObjetivo = tDelScroll();
   pintar(tObjetivo);
