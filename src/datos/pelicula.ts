@@ -44,6 +44,8 @@ export interface Plano {
   arte?: Arte;
   /** El plano entra con un fundido de cuatro fotogramas en vez de corte seco. */
   fundido?: boolean;
+  /** Avance del plano (0 a 1) en el que su composición ya está formada: ahí caen los saltos. */
+  reposo?: number;
   /** Retos: el esquema que acompaña al texto y su fecha. */
   dibujo?: Dibujo;
   fecha?: string;
@@ -168,6 +170,8 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P1',
         arte: 'reto',
+        reposo: 0.55,
+
         dibujo: 'robot',
         fecha: '2024–25',
         nombre: { es: 'Robótica', en: 'Robotics' },
@@ -182,6 +186,8 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P2',
         arte: 'reto',
+        reposo: 0.55,
+
         dibujo: 'campus',
         fecha: '2026',
         nombre: { es: 'El campus bajo presión', en: 'El campus bajo presión' },
@@ -202,6 +208,8 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P3',
         arte: 'reto',
+        reposo: 0.55,
+
         dibujo: 'vision',
         fecha: '2026',
         nombre: { es: 'Visual Agents', en: 'Visual Agents' },
@@ -216,6 +224,8 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E3-P4',
         arte: 'reto',
+        reposo: 0.55,
+
         dibujo: 'acceso',
         fecha: '2026',
         nombre: { es: 'Access Hub', en: 'Access Hub' },

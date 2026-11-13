@@ -2,7 +2,7 @@
 // seek(t) deja la película en el estado exacto de t, venga de donde venga.
 
 import { ESCENAS } from '../datos/pelicula.ts';
-import { codigoDeTiempo, construirIndice, inicioDe, limitar, localizar, type Entrada } from './tiempo.ts';
+import { codigoDeTiempo, construirIndice, inicioDe, limitar, localizar, reposoDe, type Entrada } from './tiempo.ts';
 
 declare global {
   interface Window {
@@ -100,9 +100,10 @@ function alDesplazar(): void {
   });
 }
 
+/** Salta a un plano y cae donde su composición ya está formada, no en su primer fotograma. */
 function irAPlano(id: string): void {
-  const inicio = inicioDe(indice, id);
-  if (inicio !== undefined) seek(inicio);
+  const reposo = reposoDe(indice, id);
+  if (reposo !== undefined) seek(reposo);
 }
 
 function alPulsarTecla(evento: KeyboardEvent): void {
@@ -114,7 +115,7 @@ function alPulsarTecla(evento: KeyboardEvent): void {
   const siguiente = indice.entradas[actual + (evento.key === 'ArrowRight' ? 1 : -1)];
   if (!siguiente) return;
   evento.preventDefault();
-  seek(siguiente.inicio);
+  irAPlano(siguiente.plano.id);
 }
 
 raiz.classList.add('con-motor');
@@ -148,6 +149,7 @@ window.pelicula = {
   t: () => tPintado,
 };
 
-const inicial = inicioDe(indice, decodeURIComponent(location.hash.slice(1)));
+const inicial = reposoDe(indice, decodeURIComponent(location.hash.slice(1)));
+
 if (inicial !== undefined) seek(inicial);
 else pintar(tDelScroll());

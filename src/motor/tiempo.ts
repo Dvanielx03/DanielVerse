@@ -63,6 +63,14 @@ export function inicioDe(indice: Indice, id: string): number | undefined {
   return indice.entradas.find((e) => e.plano.id === id)?.inicio;
 }
 
+/** Dónde caen los saltos a un plano: el instante en que su composición ya está formada. */
+export function reposoDe(indice: Indice, id: string): number | undefined {
+  const entrada = indice.entradas.find((e) => e.plano.id === id);
+  if (!entrada) return undefined;
+  return redondear(entrada.inicio + (entrada.plano.reposo ?? 0) * entrada.plano.pantallas);
+}
+
+
 /** Código de tiempo mm:ss:ff a 12 fps. */
 export function codigoDeTiempo(t: number): string {
   const fotogramas = Math.floor(Math.max(0, t) * SEGUNDOS_POR_PANTALLA * FPS + 1e-6);
