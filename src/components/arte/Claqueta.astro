@@ -1,0 +1,210 @@
+---
+// E0-P1 · Una hoja sobre la mesa de luz con la claqueta dibujada a lápiz azul.
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+import { INTERFAZ } from '../../datos/interfaz';
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+const textos = INTERFAZ[idioma];
+const otroIdioma: Idioma = idioma === 'es' ? 'en' : 'es';
+const rodar = plano.lineas?.[idioma]?.[1];
+---
+
+<div class="mesa">
+  <div class="folio hoja">
+    <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
+
+    <div class="cabecera">
+      <h2 id={idTitulo} class="titulo letra-boceto">{plano.titular?.[idioma]}</h2>
+      <div class="claq" aria-hidden="true">
+        <span class="claq__palo"></span>
+        <span class="claq__base"></span>
+      </div>
+    </div>
+
+    <dl class="campos">
+      <div class="trazo">
+        <dt class="mono">{textos.campoEscena}</dt>
+        <dd class="a-mano">0</dd>
+      </div>
+      <div class="trazo">
+        <dt class="mono">{textos.campoToma}</dt>
+        <dd class="a-mano">1</dd>
+      </div>
+      <div class="trazo">
+        <dt class="mono">{textos.campoDireccion}</dt>
+        <dd class="a-mano">Daniel Mayorga</dd>
+      </div>
+      <div class="trazo">
+        <dt class="mono">{textos.campoIdioma}</dt>
+        <dd class="a-mano">
+          <span class="idioma-actual">{idioma.toUpperCase()}</span>
+          <a data-idioma href={getRelativeLocaleUrl(otroIdioma, '')} lang={otroIdioma} hreflang={otroIdioma}>
+            {otroIdioma.toUpperCase()}
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+    <p class="rodar a-mano">
+      {rodar}
+      <svg viewBox="0 0 28 48" aria-hidden="true">
+        <path d="M14 3 C12 16 16 26 13 42 M5 33 L13 44 L22 32" />
+      </svg>
+    </p>
+  </div>
+</div>
+
+<style>
+  .mesa {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+  }
+
+  .hoja {
+    display: grid;
+    gap: clamp(14px, 2.6vw, 26px);
+    width: min(820px, 100%);
+    padding: clamp(34px, 5vw, 54px) clamp(18px, 4.5vw, 52px) clamp(20px, 3.4vw, 36px);
+    transform: rotate(-1.2deg);
+  }
+
+  .cabecera {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(16px, 4vw, 44px);
+  }
+
+  /* Título rotulado a mano sobre sus líneas guía de lápiz. */
+  .titulo {
+    padding-inline: 6px;
+    background:
+      linear-gradient(rgb(63 127 217 / 0.6) 0 0) 0 84% / 100% 1.5px no-repeat,
+      linear-gradient(rgb(63 127 217 / 0.4) 0 0) 0 24% / 100% 1px no-repeat;
+    font-size: clamp(4.25rem, 15vw, 9.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  /* La claqueta se cierra en cinco fotogramas a medida que avanza el plano. */
+  .claq {
+    --cierre: 1;
+    display: grid;
+    gap: 3px;
+    padding-bottom: clamp(8px, 2vw, 22px);
+  }
+
+  :global(.con-motor) .claq {
+    --cierre: round(down, clamp(0, calc((var(--p, 0) - 0.3) / 0.4), 1), 0.2);
+  }
+
+  .claq__palo,
+  .claq__base {
+    display: block;
+    height: clamp(20px, 3.4vw, 32px);
+    border: 2.5px solid var(--lapiz-azul);
+    border-radius: 3px 7px 4px 6px;
+    background: repeating-linear-gradient(-58deg, var(--lapiz-azul) 0 15px, transparent 15px 32px);
+  }
+
+  .claq__palo {
+    transform-origin: 0 100%;
+    transform: rotate(calc(-13deg * (1 - var(--cierre))));
+  }
+
+  .claq__base {
+    background: repeating-linear-gradient(58deg, var(--lapiz-azul) 0 15px, transparent 15px 32px);
+  }
+
+  .campos {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .campos div {
+    display: grid;
+    gap: 2px;
+    padding: 8px 12px 6px;
+  }
+
+  .campos dt {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--tinta-azul);
+  }
+
+  .campos dd {
+    font-size: clamp(1rem, 2.1vw, 1.4rem);
+    line-height: 1.2;
+  }
+
+  .idioma-actual {
+    padding: 0 6px;
+    background: var(--amarillo);
+  }
+
+  .campos a {
+    padding: 0 6px;
+    color: var(--tinta-azul);
+  }
+
+  .rodar {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--carmin-texto);
+    font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+    transform: rotate(-2deg);
+  }
+
+  .rodar svg {
+    width: 24px;
+    height: 42px;
+    fill: none;
+    stroke: var(--carmin);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rodar svg {
+      animation: bajar 1s steps(4) infinite;
+    }
+  }
+
+  @keyframes bajar {
+    50% {
+      translate: 0 8px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cabecera {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    /* Deja sitio para que el palo abierto no pise el título. */
+    .claq {
+      padding-top: 46px;
+    }
+
+    .campos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
