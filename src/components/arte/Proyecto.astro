@@ -1,0 +1,123 @@
+---
+// E4 · Claqueta de un proyecto: nombre, año, stack y sello de estado, en su color de acento.
+import type { Idioma, Plano } from '../../datos/pelicula';
+
+interface Props {
+  plano: Plano;
+  idioma: Idioma;
+  idTitulo: string;
+}
+
+const { plano, idioma, idTitulo } = Astro.props;
+---
+
+<div class="proy" style={`--acento:${plano.acento}`}>
+  <div class="proy__claq" aria-hidden="true">
+    <span class="proy__palo"></span>
+    <span class="proy__base"></span>
+  </div>
+  <div class="proy__tabla">
+    <h2 id={idTitulo} class="proy__nombre">{plano.titular?.[idioma]}</h2>
+    <ul class="proy__datos mono">
+      {plano.lineas?.[idioma].map((linea) => <li>{linea}</li>)}
+    </ul>
+    {plano.sello && <p class="proy__sello">{plano.sello[idioma]}</p>}
+  </div>
+</div>
+
+<style>
+  .proy {
+    --cierre: 1;
+    align-self: center;
+    justify-self: center;
+    width: min(880px, 100%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor) .proy {
+      --cierre: round(down, clamp(0, calc((var(--p, 0) - 0.08) / 0.3), 1), 0.2);
+    }
+  }
+
+  .proy__claq {
+    display: grid;
+    gap: 4px;
+  }
+
+  .proy__palo,
+  .proy__base {
+    display: block;
+    height: clamp(22px, 4vw, 40px);
+    background: repeating-linear-gradient(-58deg, var(--acento) 0 22px, var(--sala) 22px 44px);
+    box-shadow: inset 0 0 0 3px var(--acento);
+  }
+
+  .proy__palo {
+    transform-origin: 0 100%;
+    transform: rotate(calc(-11deg * (1 - var(--cierre))));
+  }
+
+  .proy__base {
+    background: repeating-linear-gradient(58deg, var(--acento) 0 22px, var(--sala) 22px 44px);
+  }
+
+  .proy__tabla {
+    position: relative;
+    display: grid;
+    gap: clamp(10px, 2vw, 20px);
+    padding: clamp(18px, 4vw, 44px);
+    border: 3px solid var(--acento);
+    border-top: 0;
+    background: rgb(14 18 32 / 0.72);
+  }
+
+  .proy__nombre {
+    font-size: clamp(3rem, 12vw, 9rem);
+    font-weight: 900;
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+    color: var(--acento);
+  }
+
+  .proy__datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-size: clamp(0.85rem, 1.7vw, 1.15rem);
+    color: var(--pantalla);
+  }
+
+  .proy__sello {
+    position: absolute;
+    right: clamp(12px, 3vw, 36px);
+    bottom: clamp(12px, 3vw, 32px);
+    padding: 5px 16px 4px;
+    border: 3px double var(--pantalla);
+    border-radius: 4px;
+    font-size: clamp(0.9rem, 1.8vw, 1.25rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    rotate: -6deg;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.con-motor .plano.es-activo) .proy__sello {
+      animation: sellar-proyecto var(--f4) var(--golpe) var(--f8) both;
+    }
+  }
+
+  @keyframes sellar-proyecto {
+    from {
+      opacity: 0;
+      scale: 1.9;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .proy__sello {
+      position: static;
+      justify-self: start;
+    }
+  }
+</style>
