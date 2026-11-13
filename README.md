@@ -76,10 +76,10 @@ Todo el sitio es una función del tiempo, `f(t)`, donde `t` es cuánto has desli
 |---|---|---|---|
 | 0 | Claqueta | Una hoja sobre la mesa de luz. Eliges idioma y sonido. | Tono de sala y el golpe de la claqueta |
 | 1 | Lo convencional | El portafolio de siempre se agrieta, resulta ser una viñeta de la pared de storyboard y la pared cae. | Lápiz y papel; después, la primera descarga |
-| 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | Suspenso: silencios, oleadas y golpes graves |
+| 2 | Quién | Mi presentación junto al avatar en boceto, tinta y final. | La descarga se mete en mis audífonos: el mismo tema, en lo-fi |
 | 3 | Retos | Cuatro hitos en montaje rápido. | Descarga |
-| 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas (boceto, arquitectura, captura real del producto y datos), con acceso directo al código. | Suspenso, para poder leer |
-| 5 | Detrás de cámaras | Cómo está hecha la película, mis herramientas propias y el showreel «Siete mundos». | Suspenso que sube y cae la segunda descarga cuando arranca el showreel |
+| 4 | Proyectos | [XEON](https://github.com/Dvanielx03/Xeon-agente-cotizaciones), [Tool Rental](https://github.com/Dvanielx03/Tool-rental-platform) y [ResumeLens](https://github.com/Dvanielx03/ResumeLens-cv): claqueta, díptico e inspección por capas (boceto, arquitectura, captura real del producto y datos), con acceso directo al código. | El tema en audífonos: se abre en cada claqueta y se apaga para leer |
+| 5 | Detrás de cámaras | Cómo está hecha la película, mis herramientas propias y el showreel «Siete mundos». | Segunda descarga; suspenso antes del showreel; el tema en 8 bits para Y Si Pixel |
 | 6 | Créditos y contacto | Créditos que suben; el avatar se rebobina y aparece mi foto real, y un iris cierra. | El tema, lento y lejano |
 
 Son 26 planos. Con las flechas <kbd>←</kbd> <kbd>→</kbd> saltas de plano; con <kbd>S</kbd> enciendes o apagas el sonido.
@@ -155,7 +155,7 @@ En producción. Lo que hay y lo que falta, sin adornos:
 
 - **Tipografías:** [Recursive](https://www.recursive.design) y [Shantell Sans](https://shantellsans.com).
 - **Avatar:** generado con IA a partir de una foto real.
-- **Música:** original, generada con ElevenLabs; el suspenso y el cierre se montaron a partir de esa misma grabación. Los efectos se sintetizan con Web Audio, y cada transición suena como se ve: tajo, trama, glitch, viñeta, estallido.
+- **Música:** original, generada con ElevenLabs. Como en el multiverso, cada mundo tiene su versión del mismo tema (en audífonos, en 8 bits, en suspenso, lejana), todas montadas a partir de esa grabación. Los efectos se sintetizan con Web Audio, y cada transición suena como se ve: tajo, trama, glitch, viñeta, estallido.
 - **Lenguaje visual:** el del cómic impreso y el cine de animación que mezcla boceto, tinta, semitonos y color fuera de registro. No se usan personajes, arte ni música de terceros.
 
 Si quieres hablar: [LinkedIn](https://www.linkedin.com/in/daniel-santiago-mayorga-tellez-5bb0463a0/) · [GitHub](https://github.com/Dvanielx03)
