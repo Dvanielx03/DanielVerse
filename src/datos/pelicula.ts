@@ -171,7 +171,6 @@ export const ESCENAS: Escena[] = [
         id: 'E3-P1',
         arte: 'reto',
         reposo: 0.55,
-
         dibujo: 'robot',
         fecha: '2024–25',
         nombre: { es: 'Robótica', en: 'Robotics' },
@@ -187,7 +186,6 @@ export const ESCENAS: Escena[] = [
         id: 'E3-P2',
         arte: 'reto',
         reposo: 0.55,
-
         dibujo: 'campus',
         fecha: '2026',
         nombre: { es: 'El campus bajo presión', en: 'El campus bajo presión' },
@@ -209,7 +207,6 @@ export const ESCENAS: Escena[] = [
         id: 'E3-P3',
         arte: 'reto',
         reposo: 0.55,
-
         dibujo: 'vision',
         fecha: '2026',
         nombre: { es: 'Visual Agents', en: 'Visual Agents' },
@@ -225,7 +222,6 @@ export const ESCENAS: Escena[] = [
         id: 'E3-P4',
         arte: 'reto',
         reposo: 0.55,
-
         dibujo: 'acceso',
         fecha: '2026',
         nombre: { es: 'Access Hub', en: 'Access Hub' },
@@ -481,11 +477,13 @@ export const ESCENAS: Escena[] = [
           es: [
             'Reparto: Java, Spring Boot, Python, FastAPI, PostgreSQL, LangChain y Docker',
             'Avatar generado con IA a partir de una foto real',
+            'Sonido: síntesis original en Web Audio',
             'Tipografías: Recursive y Shantell Sans',
           ],
           en: [
             'Cast: Java, Spring Boot, Python, FastAPI, PostgreSQL, LangChain and Docker',
             'Avatar generated with AI from a real photo',
+            'Sound: original Web Audio synthesis',
             'Typefaces: Recursive and Shantell Sans',
           ],
         },
