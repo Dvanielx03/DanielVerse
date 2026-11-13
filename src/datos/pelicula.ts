@@ -54,6 +54,9 @@ export interface Plano {
   acento?: string;
   pasos?: { convencional: Lista; propio: Lista };
   /** Showreel: en qué segundo del video empieza cada mundo, y dónde termina el último. */
+  /** Inspección: la captura del producto (archivo en src/assets/proyectos) y qué se ve en ella. */
+  captura?: string;
+  capturaNota?: Bilingue;
   capitulos?: { desde: number; nombre: Bilingue }[];
   finCapitulos?: number;
   capas?: Lista;
@@ -307,6 +310,8 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E4-X3',
         arte: 'inspeccion',
+        captura: 'xeon',
+        capturaNota: { es: 'XEON CLI: la terminal del agente, lista para cotizar', en: "XEON CLI: the agent's terminal, ready to quote" },
         acento: '#00D9A3',
         capas: {
           es: ['Entradas: API y terminal', 'Aplicación: casos de uso y puertos', 'Dominio: dinero, producto y cotización', 'Adaptadores: catálogo, inventario, modelo y WhatsApp'],
@@ -359,6 +364,8 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E4-T3',
         arte: 'inspeccion',
+        captura: 'tool-rental',
+        capturaNota: { es: 'Catálogo del MVP local, con datos de prueba', en: 'Local MVP catalog, with test data' },
         acento: '#6EA2FF',
         capas: {
           es: ['Seguridad por roles', 'Aplicación', 'Dominio', 'Adaptadores'],
@@ -416,6 +423,8 @@ export const ESCENAS: Escena[] = [
       {
         id: 'E4-R3',
         arte: 'inspeccion',
+        captura: 'resumelens',
+        capturaNota: { es: 'Captura real con Playwright: el ejemplo ficticio puntúa 89 %', en: 'Real Playwright capture: the fictional example scores 89%' },
         acento: '#FF5A47',
         capas: {
           es: ['Interfaz: Streamlit', 'Servicios: documentos, evaluación e informe', 'Dominio: criterios y fórmula', 'Modelo: Gemini u OpenAI con LangChain'],

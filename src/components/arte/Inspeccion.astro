@@ -1,6 +1,9 @@
 ---
 // E4 · Plano de inspección: una mesa de capas. El visitante elige qué capa del proyecto mira.
 // Funciona sin JavaScript, con radios.
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 import { INTERFAZ } from '../../datos/interfaz';
 import { ESCENAS, type Idioma, type Plano } from '../../datos/pelicula';
 
@@ -39,15 +42,24 @@ const hechos = (plano.lineas?.[idioma] ?? []).map((linea) => {
   return limite ? { texto: linea.slice(limite[0].length), limite: limite[1] } : { texto: linea, limite: undefined };
 });
 
+// La captura del producto, si el plano la tiene.
+const archivos = import.meta.glob<{ default: ImageMetadata }>('../../assets/proyectos/*.jpg', { eager: true });
+const captura = plano.captura ? archivos[`../../assets/proyectos/${plano.captura}.jpg`]?.default : undefined;
+
+// Las capas, en el orden del oficio: la idea, el plano, el producto y los hechos.
 const pestanas = [
   { clave: 'boceto', nombre: textos.capaBoceto },
   { clave: 'arquitectura', nombre: textos.capaArquitectura },
+  ...(captura ? [{ clave: 'final', nombre: textos.capaFinal }] : []),
   { clave: 'datos', nombre: textos.capaDatos },
 ];
+// Se abre en el producto terminado si lo hay; si no, en la arquitectura.
+const inicial = captura ? 'final' : 'arquitectura';
+const numeroDe = (clave: string) => pestanas.findIndex((p) => p.clave === clave) + 1;
 const dosCifras = (n: number) => String(n).padStart(2, '0');
 ---
 
-<div class="insp" style={`--acento:${plano.acento}`}>
+<div class="insp" style={`--acento:${plano.acento};--capas:${pestanas.length}`}>
   <div class="insp__mesa" role="radiogroup" aria-label={textos.capasAyuda}>
     <h2 id={idTitulo} class="insp__cabecera">
       <span class="insp__proyecto">{proyecto}</span>
@@ -62,7 +74,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
             type="radio"
             name={grupo}
             id={`${grupo}-${pestana.clave}`}
-            checked={pestana.clave === 'arquitectura'}
+            checked={pestana.clave === inicial}
           />
           <label for={`${grupo}-${pestana.clave}`} style={`--fila:${i}`}>
             <span class="mono">{dosCifras(i + 1)}</span>
@@ -73,7 +85,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
     }
 
     <div class="insp__panel insp__panel--boceto">
-      <p class="insp__marca mono">{dosCifras(1)} · {textos.capaBoceto}</p>
+      <p class="insp__marca mono">{dosCifras(numeroDe('boceto'))} · {textos.capaBoceto}</p>
       <div class="insp__hoja folio">
         <span class="folio__clavijas" aria-hidden="true"><i></i><i></i><i></i></span>
         <p class="insp__idea a-mano">{frase}</p>
@@ -85,7 +97,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
     </div>
 
     <div class="insp__panel insp__panel--arquitectura">
-      <p class="insp__marca mono">{dosCifras(2)} · {textos.capaArquitectura}</p>
+      <p class="insp__marca mono">{dosCifras(numeroDe('arquitectura'))} · {textos.capaArquitectura}</p>
       <ol class="insp__pila">
         {
           capas.map((capa, i) => (
@@ -101,8 +113,34 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
       </ol>
     </div>
 
+    {
+      captura && (
+        <div class="insp__panel insp__panel--final">
+          <p class="insp__marca mono">
+            {dosCifras(numeroDe('final'))} · {textos.capaFinal}
+          </p>
+          <figure class="insp__pantalla">
+            <span class="insp__barra" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <Picture
+              src={captura}
+              formats={['avif', 'webp']}
+              widths={[640, 960, 1280]}
+              sizes="(max-width: 760px) 92vw, 56vw"
+              alt={plano.capturaNota?.[idioma] ?? ''}
+              loading="lazy"
+            />
+            <figcaption class="mono">{plano.capturaNota?.[idioma]}</figcaption>
+          </figure>
+        </div>
+      )
+    }
+
     <div class="insp__panel insp__panel--datos">
-      <p class="insp__marca mono">{dosCifras(3)} · {textos.capaDatos}</p>
+      <p class="insp__marca mono">{dosCifras(numeroDe('datos'))} · {textos.capaDatos}</p>
       <ul class="insp__hechos">
         {
           hechos.map((hecho) =>
@@ -129,6 +167,15 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
   </div>
 </div>
 
+<script>
+  // Cambiar de capa es un pequeño salto de dimensión: lo anuncia el sonido, si está encendido.
+  for (const radio of document.querySelectorAll<HTMLInputElement>('.insp__mesa input[type="radio"]')) {
+    radio.addEventListener('change', () => {
+      window.dispatchEvent(new CustomEvent('danielverse:efecto', { detail: radio.classList.contains('es-final') ? 'glitch' : 'tic' }));
+    });
+  }
+</script>
+
 <style>
   /* Sin motor: la mesa quieta. */
   .insp {
@@ -149,7 +196,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
   .insp__mesa {
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) minmax(190px, 0.6fr);
-    grid-template-rows: auto repeat(3, auto) minmax(0, 1fr) auto;
+    grid-template-rows: auto repeat(var(--capas), auto) minmax(0, 1fr) auto;
     column-gap: clamp(16px, 3vw, 48px);
     row-gap: 8px;
     min-height: 0;
@@ -164,12 +211,12 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
   }
 
   .insp__proyecto {
-    font-size: clamp(2rem, 4.6vw, 4rem);
+    font-size: clamp(1.8rem, 3.3vw, 3.6rem);
     font-weight: 900;
     line-height: 0.92;
     letter-spacing: -0.015em;
     color: var(--acento);
-    overflow-wrap: anywhere;
+    white-space: nowrap;
   }
 
   .insp__rotulo {
@@ -225,7 +272,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
 
   .insp__enlace {
     grid-column: 2;
-    grid-row: 6;
+    grid-row: calc(var(--capas) + 3);
     justify-self: start;
     display: inline-flex;
     align-items: center;
@@ -259,6 +306,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
 
   .es-boceto:checked ~ .insp__panel--boceto,
   .es-arquitectura:checked ~ .insp__panel--arquitectura,
+  .es-final:checked ~ .insp__panel--final,
   .es-datos:checked ~ .insp__panel--datos {
     display: grid;
     align-content: center;
@@ -335,6 +383,95 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
     color: var(--carmin-texto);
     font-size: 1.05rem;
     rotate: -3deg;
+  }
+
+  /* Capa «Final»: el producto de verdad, en una pantalla con borde de tinta y su glitch al llegar. */
+  .insp__panel--final {
+    justify-items: center;
+  }
+
+  .insp__pantalla {
+    position: relative;
+    display: grid;
+    width: min(100%, 860px);
+    margin: 0;
+    border: 3px solid #05030c;
+    background: #05030c;
+    box-shadow:
+      9px 9px 0 var(--acento),
+      15px 15px 0 var(--magenta);
+    rotate: -0.8deg;
+  }
+
+  .insp__barra {
+    display: flex;
+    gap: 6px;
+    padding: 7px 10px;
+    background: #05030c;
+  }
+
+  .insp__barra i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--acento);
+  }
+
+  .insp__barra i + i {
+    background: var(--amarillo);
+  }
+
+  .insp__barra i + i + i {
+    background: var(--magenta);
+  }
+
+  .insp__pantalla :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: min(46svh, 470px);
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .insp__pantalla figcaption {
+    padding: 7px 12px;
+    background: #05030c;
+    color: var(--gris-sala);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .es-final:checked ~ .insp__panel--final .insp__pantalla {
+      animation: llega-glitch var(--f8) steps(6, end) both;
+    }
+  }
+
+  /* Al encenderse, la pantalla tiembla entre las dos tintas, como un salto de dimensión. */
+  @keyframes llega-glitch {
+    0% {
+      clip-path: inset(0 0 100% 0);
+      translate: -14px 0;
+      filter: drop-shadow(-8px 0 0 var(--magenta)) drop-shadow(8px 0 0 var(--cian));
+    }
+
+    35% {
+      clip-path: inset(18% 0 30% 0);
+      translate: 10px 0;
+    }
+
+    60% {
+      clip-path: inset(0 0 12% 0);
+      translate: -5px 0;
+      filter: drop-shadow(-4px 0 0 var(--magenta)) drop-shadow(4px 0 0 var(--cian));
+    }
+
+    100% {
+      clip-path: inset(0);
+      translate: 0;
+      filter: none;
+    }
   }
 
   /* Capa 2 · La arquitectura: placas apiladas en escalera, cada una un nivel más adentro. */
@@ -434,7 +571,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0');
   /* En pantallas estrechas: nombre, pestañas en fila, panel y enlace. */
   @media (max-width: 760px) {
     .insp__mesa {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(var(--capas), minmax(0, 1fr));
       grid-template-rows: auto auto minmax(0, 1fr) auto;
       column-gap: 6px;
       align-content: center;
