@@ -26,6 +26,8 @@ export interface TextosInterfaz {
   capaBoceto: string;
   capaTinta: string;
   capaFinal: string;
+  altFoto: string;
+  tomaReal: string;
   capaBocetoNota: string;
   capaArquitectura: string;
   capaDatos: string;
@@ -65,6 +67,8 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     capaBoceto: 'Boceto',
     capaTinta: 'Tinta',
     capaFinal: 'Final',
+    altFoto: 'Foto de Daniel Mayorga sonriendo, con saco gris y polo blanco',
+    tomaReal: 'toma real',
     capaBocetoNota: 'la idea, antes del código',
     capaArquitectura: 'Arquitectura',
     capaDatos: 'Datos',
@@ -105,6 +109,8 @@ export const INTERFAZ: Record<Idioma, TextosInterfaz> = {
     capaBoceto: 'Sketch',
     capaTinta: 'Ink',
     capaFinal: 'Final',
+    altFoto: 'Photo of Daniel Mayorga smiling, in a grey blazer and white polo',
+    tomaReal: 'the real take',
     capaBocetoNota: 'the idea, before the code',
     capaArquitectura: 'Architecture',
     capaDatos: 'Facts',
